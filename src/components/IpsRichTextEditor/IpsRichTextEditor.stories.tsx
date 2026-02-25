@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import * as Y from 'yjs'
 
 import { IpsRichTextEditor } from './IpsRichTextEditor'
 import type { IpsRteToolbarConfig } from './IpsRteToolbar.types'
@@ -199,6 +200,37 @@ export const WithLink: Story = {
       <IpsRichTextEditor
         label="Editor with link support"
         defaultValue="<p>Select this text and click the link button to add a hyperlink.</p>"
+        minHeight={150}
+      />
+    </Stack>
+  ),
+}
+
+// ── 11. Collaborative editing ─────────────────────────────────────────────────
+
+// A single Y.Doc is created outside the render function so it persists across
+// Storybook re-renders and is shared by both editor instances below.
+const sharedDoc = new Y.Doc()
+
+export const Collaborative: Story = {
+  name: 'Collaborative editing (shared Y.Doc)',
+  render: () => (
+    <Stack spacing={2}>
+      <Typography variant="body2" color="text.secondary">
+        Both editors share the same <code>Y.Doc</code>. Type in one and the changes
+        appear instantly in the other — exactly as they would for two remote users
+        connected via a WebSocket provider (e.g. <code>y-websocket</code>).
+      </Typography>
+      <IpsRichTextEditor
+        label="Editor A"
+        collaboration={{ document: sharedDoc }}
+        placeholder="Type here…"
+        minHeight={150}
+      />
+      <IpsRichTextEditor
+        label="Editor B"
+        collaboration={{ document: sharedDoc }}
+        placeholder="Type here…"
         minHeight={150}
       />
     </Stack>

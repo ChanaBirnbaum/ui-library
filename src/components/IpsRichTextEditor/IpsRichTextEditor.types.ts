@@ -1,6 +1,19 @@
 import type React from 'react'
 import type { SxProps, Theme } from '@mui/material/styles'
+import type * as Y from 'yjs'
 import type { IpsRteToolbarConfig } from './IpsRteToolbar.types'
+
+// ─── Collaboration config ─────────────────────────────────────────────────────
+
+export interface IpsRichTextEditorCollaborationConfig {
+  /**
+   * A Y.js document shared across all clients that should edit together.
+   * Create it once (`new Y.Doc()`) and pass the same instance to every
+   * `IpsRichTextEditor` that should share state — on the same page or across
+   * the network via a provider such as `y-websocket` or `@hocuspocus/provider`.
+   */
+  document: Y.Doc
+}
 
 export interface IpsRichTextEditorProps {
   // ─── Controlled mode ──────────────────────────────────────────────────────
@@ -57,6 +70,18 @@ export interface IpsRichTextEditorProps {
   onBlur?: (event: React.FocusEvent) => void
   /** Called when the editor gains focus. */
   onFocus?: (event: React.FocusEvent) => void
+
+  // ─── Collaboration ────────────────────────────────────────────────────────
+  /**
+   * When provided, enables real-time collaborative editing via Y.js.
+   * Pass the same `Y.Doc` to every editor instance (local or remote) that
+   * should share the same document.  Pair with a network provider
+   * (e.g. `y-websocket`) to sync changes across clients.
+   *
+   * When `collaboration` is active the editor's built-in undo/redo history
+   * is replaced by Y.js undo/redo, which is user-aware.
+   */
+  collaboration?: IpsRichTextEditorCollaborationConfig
 
   // ─── Style ───────────────────────────────────────────────────────────────
   /** MUI sx override on the outer wrapper Box. */
