@@ -14,6 +14,7 @@ import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import TiptapTypography from '@tiptap/extension-typography'
 import Paragraph from '@tiptap/extension-paragraph'
+import Collaboration from '@tiptap/extension-collaboration'
 
 import { IpsRteToolbar } from './IpsRteToolbar'
 import { DEFAULT_TOOLBAR } from './IpsRteToolbar.types'
@@ -59,6 +60,7 @@ export const IpsRichTextEditor = forwardRef<HTMLDivElement, IpsRichTextEditorPro
       toolbar = DEFAULT_TOOLBAR,
       onBlur,
       onFocus,
+      collaboration,
       sx,
       className,
     },
@@ -77,7 +79,9 @@ export const IpsRichTextEditor = forwardRef<HTMLDivElement, IpsRichTextEditorPro
       extensions: [
         // Disable StarterKit's built-in Paragraph so our DirectionParagraph
         // (which adds the `dir` attribute) is used instead.
-        StarterKit.configure({ paragraph: false }),
+        // Disable built-in history when collaboration is active — Y.js undo/redo
+        // is provided by the Collaboration extension instead.
+        StarterKit.configure({ paragraph: false, ...(collaboration ? { history: false } : {}) }),
         DirectionParagraph,
         Underline,
         Link.configure({ openOnClick: false, autolink: true }),
@@ -88,6 +92,8 @@ export const IpsRichTextEditor = forwardRef<HTMLDivElement, IpsRichTextEditorPro
         Highlight.configure({ multicolor: true }),
         Placeholder.configure({ placeholder: placeholder ?? '' }),
         TiptapTypography,
+        // Collaboration extension — only when a Y.Doc is supplied
+        ...(collaboration ? [Collaboration.configure({ document: collaboration.document })] : []),
       ],
       // Controlled: seed with `value`; Uncontrolled: seed with `defaultValue`.
       content: value !== undefined ? (value ?? '') : (defaultValue ?? ''),

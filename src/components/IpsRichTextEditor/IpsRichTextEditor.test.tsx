@@ -55,10 +55,15 @@ jest.mock('@tiptap/extension-paragraph', () => ({
   __esModule: true,
   default: { extend: jest.fn(() => ({})) },
 }))
+jest.mock('@tiptap/extension-collaboration', () => ({
+  __esModule: true,
+  default: { configure: jest.fn(() => ({})) },
+}))
 
 // ─── Imports (after mocks) ────────────────────────────────────────────────────
 import { IpsRichTextEditor } from './IpsRichTextEditor'
 import { useEditor } from '@tiptap/react'
+import Collaboration from '@tiptap/extension-collaboration'
 
 // ─── Shared mock editor factory ───────────────────────────────────────────────
 function makeMockEditor(overrides: Record<string, unknown> = {}) {
@@ -197,5 +202,21 @@ describe('IpsRichTextEditor', () => {
   it('appends custom className to root element', () => {
     const { container } = render(<IpsRichTextEditor className="my-custom" />)
     expect(container.querySelector('.ips-rich-text-editor.my-custom')).toBeInTheDocument()
+  })
+
+  // ── Collaboration ─────────────────────────────────────────────────────────────
+
+  it('passes collaboration.document to Collaboration.configure when provided', () => {
+    const fakeDoc = { guid: 'test-doc' } as unknown as import('yjs').Doc
+    render(<IpsRichTextEditor collaboration={{ document: fakeDoc }} />)
+    expect((Collaboration.configure as jest.Mock)).toHaveBeenCalledWith(
+      expect.objectContaining({ document: fakeDoc }),
+    )
+  })
+
+  it('does NOT call Collaboration.configure when collaboration prop is omitted', () => {
+    ;(Collaboration.configure as jest.Mock).mockClear()
+    render(<IpsRichTextEditor />)
+    expect((Collaboration.configure as jest.Mock)).not.toHaveBeenCalled()
   })
 })
