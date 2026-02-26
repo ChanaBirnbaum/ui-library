@@ -7,6 +7,7 @@ export default defineConfig({
     react(),
     dts({ insertTypesEntry: true }),
   ],
+  base: '/base-components-library/',
   build: {
     lib: {
       entry: 'src/index.ts',
