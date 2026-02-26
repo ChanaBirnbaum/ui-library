@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import type { GridColDef } from '@mui/x-data-grid'
 import { IpsTable } from './IpsTable'
@@ -116,7 +116,9 @@ describe('IpsTable', () => {
     const onRowClick = jest.fn()
     wrap(<IpsTable columns={COLUMNS} rows={ROWS} onRowClick={onRowClick} />)
     const cell = screen.getByText('Alice')
-    cell.click()
+    await act(async () => {
+      cell.click()
+    })
     expect(onRowClick).toHaveBeenCalled()
   })
 

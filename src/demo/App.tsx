@@ -39,6 +39,7 @@ import { TOAST_TYPES } from '../components/IpsToast/IpsToast.types'
 import { IpsRichTextEditor } from '../components/IpsRichTextEditor/IpsRichTextEditor'
 import { DEFAULT_TOOLBAR } from '../components/IpsRichTextEditor/IpsRteToolbar.types'
 import type { IpsRteToolbarConfig } from '../components/IpsRichTextEditor/IpsRteToolbar.types'
+import { IpsFileUpload } from '../components/IpsFileUpload/IpsFileUpload'
 import type { GridColDef } from '@mui/x-data-grid'
 import type { Moment } from 'moment'
 import moment from 'moment'
@@ -917,7 +918,7 @@ const HEBREW_SAMPLE =
   '<p dir="rtl">ניתן לכתוב, לעצב ולנהל <u>כיוון טקסט</u> בכל פסקה בנפרד.</p>'
 
 function RichTextEditorPanel() {
-  const [html, setHtml]         = useState('<p>התחל לכתוב כאן…</p>')
+  const [html, setHtml]         = useState('')
   const [readOnly, setReadOnly] = useState(false)
   const [disabled, setDisabled] = useState(false)
   const [error, setError]       = useState(false)
@@ -1009,6 +1010,70 @@ function RichTextEditorPanel() {
   )
 }
 
+function FileUploadPanel() {
+  const [lastResult, setLastResult] = useState<string | null>(null)
+  const [disabled, setDisabled]     = useState(false)
+  const [camera, setCamera]         = useState(false)
+  const [screenshot, setScreenshot] = useState(false)
+  const [scan, setScan]             = useState(false)
+  const [multiple, setMultiple]     = useState(true)
+  const [maxSize, setMaxSize]       = useState(10)
+
+  return (
+    <Box>
+      <PropsTable props={[
+        { name: 'sviva',          value: 'string',             description: 'סביבה (dev/staging/prod) — לבניית ה-URL' },
+        { name: 'system',         value: 'string',             description: 'שם אתר SharePoint — יעד ההעלאה' },
+        { name: 'camera',         value: 'boolean',            description: 'הצג כפתור "מצלמה"' },
+        { name: 'screenshot',     value: 'boolean',            description: 'הצג כפתור "צילום מסך" (ברירת מחדל: false)' },
+        { name: 'scan',           value: 'boolean',            description: 'הצג כפתור "סריקה"' },
+        { name: 'multiple',       value: 'boolean',            description: 'אפשר בחירת מספר קבצים (ברירת מחדל: true)' },
+        { name: 'maxFileSizeMB',  value: 'number',             description: 'גודל קובץ מקסימלי ב-MB (ברירת מחדל: 10)' },
+        { name: 'accept',         value: 'string[]',           description: 'סוגי קבצים מותרים, למשל ["image/*", ".pdf"]' },
+        { name: 'disabled',       value: 'boolean',            description: 'מנטרל את כל האינטראקציות' },
+        { name: 'onSaveSuccess',  value: '(results) => void',  description: 'callback לאחר העלאה מוצלחת' },
+        { name: 'onSaveError',    value: '(error) => void',    description: 'callback כשהעלאה נכשלת' },
+        { name: 'onBeforeSave',   value: '() => Promise<bool>',description: 'ולידציה אסינכרונית לפני שמירה' },
+      ]} />
+
+      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+        <FormControlLabel control={<Switch checked={disabled}    onChange={e => setDisabled(e.target.checked)}    />} label="disabled" />
+        <FormControlLabel control={<Switch checked={camera}      onChange={e => setCamera(e.target.checked)}      />} label="camera" />
+        <FormControlLabel control={<Switch checked={screenshot}  onChange={e => setScreenshot(e.target.checked)}  />} label="screenshot" />
+        <FormControlLabel control={<Switch checked={scan}        onChange={e => setScan(e.target.checked)}        />} label="scan" />
+        <FormControlLabel control={<Switch checked={multiple}    onChange={e => setMultiple(e.target.checked)}    />} label="multiple" />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2">maxFileSizeMB:</Typography>
+          {[1, 5, 10, 50].map(s => (
+            <IpsButton key={s} variant={maxSize === s ? 'contained' : 'outlined'} size="small"
+              onClick={() => setMaxSize(s)}>{s}</IpsButton>
+          ))}
+        </Box>
+      </Box>
+
+      <IpsFileUpload
+        sviva="dev"
+        system="demo-site"
+        camera={camera}
+        screenshot={screenshot}
+        scan={scan}
+        multiple={multiple}
+        maxFileSizeMB={maxSize}
+        disabled={disabled}
+        onSaveSuccess={results => setLastResult(results.map(r => r.name).join(', '))}
+        onSaveError={err => setLastResult(`שגיאה: ${String(err)}`)}
+        sx={{ maxWidth: 600 }}
+      />
+
+      {lastResult && (
+        <Typography variant="body2" sx={{ mt: 2, color: 'text.secondary' }}>
+          תוצאה: {lastResult}
+        </Typography>
+      )}
+    </Box>
+  )
+}
+
 const TABS = [
   { label: 'Button', component: <ButtonPanel /> },
   { label: 'TextField', component: <TextFieldPanel /> },
@@ -1029,6 +1094,7 @@ const TABS = [
   { label: 'Table', component: <TablePanel /> },
   { label: 'Toast', component: <ToastPanel /> },
   { label: 'RichTextEditor', component: <RichTextEditorPanel /> },
+  { label: 'FileUpload', component: <FileUploadPanel /> },
 ]
 
 export default function App() {

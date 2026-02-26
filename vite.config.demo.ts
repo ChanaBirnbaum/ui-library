@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 // Does NOT use vite-plugin-dts or lib mode — builds a standard SPA.
 export default defineConfig({
   plugins: [react()],
-  base: '/base-components-library/',
+  base: '/ui-library/',  // must match exact GitHub repo name
   build: {
     outDir: 'dist-demo',
     rollupOptions: {
