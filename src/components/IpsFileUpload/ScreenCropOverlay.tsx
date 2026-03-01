@@ -1,165 +1,140 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
+import html2canvas from 'html2canvas'
 
 interface Point { x: number; y: number }
 interface Rect  { x: number; y: number; w: number; h: number }
 
 interface ScreenCropOverlayProps {
-  imageBitmap: ImageBitmap
   onCrop: (file: File) => void
   onCancel: () => void
 }
 
 /**
- * Full-screen overlay drawn on a canvas.
- * User drags a rectangle to select the crop area.
+ * Full-screen snipping overlay — like Win+Shift+S.
+ * Uses html2canvas to capture the current page only (no getDisplayMedia / no multi-screen picker).
+ * User drags to select an area → cropped PNG is returned as a File.
  */
-export function ScreenCropOverlay({ imageBitmap, onCrop, onCancel }: ScreenCropOverlayProps) {
-  const canvasRef   = useRef<HTMLCanvasElement>(null)
-  const startRef    = useRef<Point | null>(null)
+export function ScreenCropOverlay({ onCrop, onCancel }: ScreenCropOverlayProps) {
+  const startRef = useRef<Point | null>(null)
   const [rect, setRect] = useState<Rect | null>(null)
 
-  // Draw background screenshot + selection rect on every render
-  function draw(currentRect: Rect | null) {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')!
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
 
-    // Screenshot as background (dimmed)
-    ctx.globalAlpha = 0.45
-    ctx.drawImage(imageBitmap, 0, 0, canvas.width, canvas.height)
-    ctx.globalAlpha = 1
-
-    if (currentRect) {
-      // Clear selected area (full brightness)
-      ctx.clearRect(currentRect.x, currentRect.y, currentRect.w, currentRect.h)
-      ctx.drawImage(
-        imageBitmap,
-        currentRect.x, currentRect.y, currentRect.w, currentRect.h,
-        currentRect.x, currentRect.y, currentRect.w, currentRect.h
-      )
-      // Border
-      ctx.strokeStyle = '#1565C0'
-      ctx.lineWidth   = 2
-      ctx.strokeRect(currentRect.x, currentRect.y, currentRect.w, currentRect.h)
-
-      // Size label
-      ctx.fillStyle = '#1565C0'
-      ctx.font      = '13px sans-serif'
-      ctx.fillText(
-        `${Math.abs(currentRect.w)} × ${Math.abs(currentRect.h)}`,
-        currentRect.x + 4,
-        currentRect.y - 6
-      )
-    }
+  const handleMouseDown = (e: React.MouseEvent) => {
+    startRef.current = { x: e.clientX, y: e.clientY }
+    setRect({ x: e.clientX, y: e.clientY, w: 0, h: 0 })
   }
 
-  function getPos(e: React.MouseEvent): Point {
-    const r = canvasRef.current!.getBoundingClientRect()
-    return { x: e.clientX - r.left, y: e.clientY - r.top }
-  }
-
-  function onMouseDown(e: React.MouseEvent) {
-    startRef.current = getPos(e)
-    setRect(null)
-    draw(null)
-  }
-
-  function onMouseMove(e: React.MouseEvent) {
+  const handleMouseMove = (e: React.MouseEvent) => {
     if (!startRef.current) return
-    const cur  = getPos(e)
-    const r: Rect = {
-      x: Math.min(startRef.current.x, cur.x),
-      y: Math.min(startRef.current.y, cur.y),
-      w: Math.abs(cur.x - startRef.current.x),
-      h: Math.abs(cur.y - startRef.current.y),
+    setRect({
+      x: Math.min(e.clientX, startRef.current.x),
+      y: Math.min(e.clientY, startRef.current.y),
+      w: Math.abs(e.clientX - startRef.current.x),
+      h: Math.abs(e.clientY - startRef.current.y),
+    })
+  }
+
+  const overlayRef = useRef<HTMLDivElement>(null)
+
+  const handleMouseUp = async () => {
+    if (!startRef.current || !rect || rect.w < 4 || rect.h < 4) {
+      startRef.current = null
+      return
     }
-    setRect(r)
-    draw(r)
-  }
-
-  function onMouseUp() {
+    // Capture the rect values before clearing state
+    const capturedRect = { ...rect }
     startRef.current = null
-  }
 
-  function confirmCrop() {
-    if (!rect || rect.w < 4 || rect.h < 4) return
-    const canvas  = canvasRef.current!
-    const scaleX  = imageBitmap.width  / canvas.width
-    const scaleY  = imageBitmap.height / canvas.height
+    // Hide overlay so it doesn't appear in the screenshot
+    if (overlayRef.current) overlayRef.current.style.display = 'none'
 
-    const tmp     = document.createElement('canvas')
-    tmp.width     = rect.w * scaleX
-    tmp.height    = rect.h * scaleY
-    const ctx     = tmp.getContext('2d')!
-    ctx.drawImage(
-      imageBitmap,
-      rect.x * scaleX, rect.y * scaleY, tmp.width, tmp.height,
-      0, 0, tmp.width, tmp.height
+    const scale  = window.devicePixelRatio || 1
+    // Account for page scroll — clientX/Y are viewport coords, html2canvas captures full page
+    const scrollX = window.scrollX
+    const scrollY = window.scrollY
+
+    const canvas = await html2canvas(document.body, {
+      useCORS:    true,
+      allowTaint: true,
+      scale,
+      logging:    false,
+      // Capture only the viewport area the user can see
+      x:      scrollX,
+      y:      scrollY,
+      width:  window.innerWidth,
+      height: window.innerHeight,
+    })
+
+    // Restore overlay visibility
+    if (overlayRef.current) overlayRef.current.style.display = ''
+
+    const cropCanvas = document.createElement('canvas')
+    cropCanvas.width  = capturedRect.w * scale
+    cropCanvas.height = capturedRect.h * scale
+    cropCanvas.getContext('2d')!.drawImage(
+      canvas,
+      capturedRect.x * scale,
+      capturedRect.y * scale,
+      capturedRect.w * scale,
+      capturedRect.h * scale,
+      0, 0,
+      capturedRect.w * scale,
+      capturedRect.h * scale,
     )
-    tmp.toBlob(blob => {
+
+    cropCanvas.toBlob(blob => {
       if (!blob) return
       onCrop(new File([blob], `screenshot-${Date.now()}.png`, { type: 'image/png' }))
     }, 'image/png')
   }
 
-  // Initial draw after mount — hide app content so only screenshot shows
-  const didInit = useRef(false)
-  const canvasReady = (el: HTMLCanvasElement | null) => {
-    if (!el || didInit.current) return
-    didInit.current = true
-    ;(canvasRef as React.MutableRefObject<HTMLCanvasElement | null>).current = el
-    el.width  = window.innerWidth
-    el.height = window.innerHeight
-    // Hide all other page content so only the screenshot bitmap is visible
-    document.body.style.overflow = 'hidden'
-    draw(null)
-  }
-
-  // Cleanup: restore page when overlay unmounts
-  React.useEffect(() => {
-    return () => { document.body.style.overflow = '' }
-  }, [])
-
   return (
     <div
+      ref={overlayRef}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
       style={{
         position: 'fixed', inset: 0, zIndex: 99999,
         cursor: 'crosshair', userSelect: 'none',
+        backgroundColor: 'rgba(0,0,0,0.25)',
       }}
     >
-      <canvas
-        ref={canvasReady}
-        style={{ display: 'block', width: '100%', height: '100%' }}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
-      />
+      {/* Selection rectangle */}
+      {rect && rect.w > 2 && rect.h > 2 && (
+        <div style={{
+          position:        'absolute',
+          left:            rect.x,
+          top:             rect.y,
+          width:           rect.w,
+          height:          rect.h,
+          border:          '2px solid #1565C0',
+          backgroundColor: 'rgba(255,255,255,0.15)',
+          boxSizing:       'border-box',
+        }} />
+      )}
 
-      {/* Controls bar at bottom */}
+      {/* Instruction / cancel bar */}
       <div style={{
         position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-        display: 'flex', gap: 12,
+        display: 'flex', gap: 12, alignItems: 'center',
         background: 'rgba(0,0,0,0.7)', borderRadius: 8, padding: '10px 20px',
+        pointerEvents: 'none',
       }}>
-        <span style={{ color: '#fff', fontSize: 14, alignSelf: 'center' }}>
-          {rect ? 'גרור לשינוי • לחץ "אישור" לקבלת הצילום' : 'גרור לבחירת אזור'}
+        <span style={{ color: '#fff', fontSize: 14 }}>
+          {rect && rect.w > 2 ? 'שחרר כדי לצלם' : 'גרור לבחירת אזור במסך'}
         </span>
         <button
-          onClick={confirmCrop}
-          disabled={!rect || rect.w < 4}
-          style={{
-            background: '#1565C0', color: '#fff', border: 'none',
-            borderRadius: 6, padding: '6px 18px', cursor: 'pointer', fontSize: 14,
-          }}
-        >
-          אישור
-        </button>
-        <button
+          onMouseDown={e => e.stopPropagation()}
           onClick={onCancel}
           style={{
             background: 'transparent', color: '#fff', border: '1px solid #fff',
-            borderRadius: 6, padding: '6px 18px', cursor: 'pointer', fontSize: 14,
+            borderRadius: 6, padding: '4px 14px', cursor: 'pointer', fontSize: 14,
+            pointerEvents: 'auto',
           }}
         >
           ביטול

@@ -8,10 +8,8 @@ import { useTheme, alpha } from '@mui/material/styles'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import CameraAltIcon from '@mui/icons-material/CameraAlt'
 import ScannerIcon from '@mui/icons-material/Scanner'
-import CropFreeIcon from '@mui/icons-material/CropFree'
 import FolderOpenIcon from '@mui/icons-material/FolderOpen'
 import ScreenshotMonitorIcon from '@mui/icons-material/ScreenshotMonitor'
-import CircularProgress from '@mui/material/CircularProgress'
 import { CameraDialog } from './CameraDialog'
 import { ScanDialog } from './ScanDialog'
 import { ScreenCropOverlay } from './ScreenCropOverlay'
@@ -38,8 +36,7 @@ export function IpsDropZone({
   const [screenshotError, setScreenshotError] = useState<string | null>(null)
   const [cameraOpen, setCameraOpen]         = useState(false)
   const [scanOpen,   setScanOpen]           = useState(false)
-  const [screenshotStep, setScreenshotStep] = useState<'idle' | 'waiting' | 'crop'>('idle')
-  const [cropBitmap, setCropBitmap]         = useState<ImageBitmap | null>(null)
+  const [screenshotOpen, setScreenshotOpen]     = useState(false)
 
   const acceptStr = accept?.join(',')
 
@@ -73,62 +70,7 @@ export function IpsDropZone({
 
   // ─── Screenshot → crop overlay ──────────────────────────────────────────────
 
-  const handleScreenshot = async () => {
-    setScreenshotError(null)
-    try {
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { frameRate: 1 } as MediaTrackConstraints,
-        // @ts-expect-error non-standard Chrome hints
-        selfBrowserSurface: 'exclude',
-        systemAudio:        'exclude',
-      })
-
-      const video     = document.createElement('video')
-      video.srcObject = stream
-      video.muted     = true
-
-      await new Promise<void>((resolve, reject) => {
-        video.onloadedmetadata = () => video.play().then(resolve).catch(reject)
-        video.onerror = reject
-      })
-
-      await new Promise<void>(r => requestAnimationFrame(() => { requestAnimationFrame(() => r()) }))
-
-      const canvas  = document.createElement('canvas')
-      canvas.width  = video.videoWidth  || window.screen.width
-      canvas.height = video.videoHeight || window.screen.height
-      canvas.getContext('2d')!.drawImage(video, 0, 0)
-
-      stream.getTracks().forEach(t => t.stop())
-      video.srcObject = null
-
-      const bitmap = await createImageBitmap(canvas)
-
-      // If user went to another tab/window — wait for them to return, then show overlay
-      if (document.visibilityState === 'hidden') {
-        setScreenshotStep('waiting')
-        await new Promise<void>(resolve => {
-          const handler = () => {
-            if (document.visibilityState === 'visible') {
-              document.removeEventListener('visibilitychange', handler)
-              resolve()
-            }
-          }
-          document.addEventListener('visibilitychange', handler)
-        })
-      }
-
-      setScreenshotStep('crop')
-      setCropBitmap(bitmap)
-    } catch (err: unknown) {
-      setScreenshotStep('idle')
-      if (err instanceof Error && err.name === 'NotAllowedError') {
-        setScreenshotError('הגישה למסך נדחתה על ידי המשתמש')
-      } else {
-        setScreenshotError('אירעה שגיאה בצילום המסך')
-      }
-    }
-  }
+  const handleScreenshot = () => setScreenshotOpen(true)
 
   // ─── Scan ────────────────────────────────────────────────────────────────────
 
@@ -258,14 +200,10 @@ export function IpsDropZone({
             <Button
               variant="outlined"
               size="small"
-              startIcon={screenshotStep === 'waiting'
-                ? <CircularProgress size={14} />
-                : <ScreenshotMonitorIcon />
-              }
+              startIcon={<ScreenshotMonitorIcon />}
               onClick={handleScreenshot}
-              disabled={screenshotStep !== 'idle'}
             >
-              {screenshotStep === 'waiting' ? 'ממתין לחזרה...' : 'צילום מסך'}
+              צילום מסך
             </Button>
           )}
 
@@ -309,12 +247,11 @@ export function IpsDropZone({
         />
       )}
 
-      {/* Screen crop overlay — shown after getDisplayMedia capture */}
-      {cropBitmap && (
+      {/* Screen crop overlay — html2canvas based, current page only */}
+      {screenshotOpen && (
         <ScreenCropOverlay
-          imageBitmap={cropBitmap}
-          onCrop={file => { onFilesAdded([file]); setCropBitmap(null); setScreenshotStep('idle') }}
-          onCancel={() => { setCropBitmap(null); setScreenshotStep('idle') }}
+          onCrop={file => { onFilesAdded([file]); setScreenshotOpen(false) }}
+          onCancel={() => setScreenshotOpen(false)}
         />
       )}
     </>
