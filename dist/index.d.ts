@@ -37,6 +37,8 @@ export { IpsTableLight } from './components/IpsTableLight';
 export type { IpsTableLightProps, IpsTableLightColumn } from './components/IpsTableLight/IpsTableLight.types';
 export { IpsTable } from './components/IpsTable';
 export type { IpsTableProps } from './components/IpsTable/IpsTable.types';
+export { IpsDataTable, flexRender, TableHeader, TableBody, TableFooter, DataCell, EditableCell, ActionCell, ExpandCell, ExpandedRow, SkeletonRows, DeleteConfirmDialog } from './components/IpsDataTable';
+export type { IpsDataTableProps, ExpandedRowProps, SubColumnDef, ActionDef, EditableConfig, SelectOption, PaginationConfig, FilterConfig, ColumnDef, SortingState } from './components/IpsDataTable';
 export { IpsToastProvider } from './components/IpsToast';
 export { useToast } from './components/IpsToast';
 export { useToast as useIpsToast } from './components/IpsToast';

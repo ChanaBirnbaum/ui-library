@@ -5,7 +5,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import type { Moment } from 'moment'
 import 'moment/locale/he'
-import { IpsTextField } from '../IpsTextField/IpsTextField'
 import type { IpsTimePickerProps } from './IpsTimePicker.types'
 
 export const IpsTimePicker = forwardRef<HTMLDivElement, IpsTimePickerProps>(
@@ -46,14 +45,7 @@ export const IpsTimePicker = forwardRef<HTMLDivElement, IpsTimePickerProps>(
           <TimePicker
             {...props}
             onChange={handleChange as any}
-            // IpsTextField renders a plain <input>; v8 default (PickersSectionList)
-            // requires a custom field. Keep legacy input structure.
-            enableAccessibleFieldDOMStructure={false}
             slotProps={mergedSlotProps}
-            slots={{
-              // IpsTextField is fully compatible with MUI TextFieldProps
-              textField: IpsTextField as React.ComponentType<any>,
-            }}
           />
         </LocalizationProvider>
       </Box>

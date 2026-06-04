@@ -1,11 +1,13 @@
+import { default as React } from 'react';
+
 interface ScreenCropOverlayProps {
-    imageBitmap: ImageBitmap;
     onCrop: (file: File) => void;
     onCancel: () => void;
 }
 /**
- * Full-screen overlay drawn on a canvas.
- * User drags a rectangle to select the crop area.
+ * Full-screen snipping overlay — like Win+Shift+S.
+ * Uses html2canvas to capture the current page only (no getDisplayMedia / no multi-screen picker).
+ * User drags to select an area → cropped PNG is returned as a File.
  */
-export declare function ScreenCropOverlay({ imageBitmap, onCrop, onCancel }: ScreenCropOverlayProps): import("react/jsx-runtime").JSX.Element;
+export declare function ScreenCropOverlay({ onCrop, onCancel }: ScreenCropOverlayProps): React.JSX.Element;
 export {};

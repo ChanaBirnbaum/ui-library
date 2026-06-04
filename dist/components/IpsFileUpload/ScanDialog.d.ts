@@ -1,3 +1,5 @@
+import { default as React } from 'react';
+
 interface ScanDialogProps {
     open: boolean;
     onClose: () => void;
@@ -29,5 +31,5 @@ declare global {
         };
     }
 }
-export declare function ScanDialog({ open, onClose, onScan, containerId }: ScanDialogProps): import("react/jsx-runtime").JSX.Element;
+export declare function ScanDialog({ open, onClose, onScan, containerId }: ScanDialogProps): React.JSX.Element;
 export {};

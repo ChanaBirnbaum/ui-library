@@ -1,3 +1,4 @@
+import { default as React } from 'react';
 import { Editor } from '@tiptap/core';
 import { IpsRteToolbarConfig } from './IpsRteToolbar.types';
 
@@ -7,4 +8,4 @@ export interface IpsRteToolbarProps {
     /** Toolbar configuration (groups + items) */
     config: IpsRteToolbarConfig;
 }
-export declare function IpsRteToolbar({ editor, config }: IpsRteToolbarProps): import("react/jsx-runtime").JSX.Element;
+export declare function IpsRteToolbar({ editor, config }: IpsRteToolbarProps): React.JSX.Element;

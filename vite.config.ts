@@ -24,8 +24,6 @@ export default defineConfig({
         'react/jsx-runtime',
         '@mui/material',
         /^@mui\/material\//,
-        '@mui/icons-material',
-        /^@mui\/icons-material\//,
         '@emotion/react',
         '@emotion/styled',
         '@emotion/cache',

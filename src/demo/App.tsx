@@ -33,6 +33,9 @@ import { IpsDatePicker } from '../components/IpsDatePicker/IpsDatePicker'
 import { IpsDateTimePicker } from '../components/IpsDateTimePicker/IpsDateTimePicker'
 import { IpsTableLight } from '../components/IpsTableLight/IpsTableLight'
 import { IpsTable } from '../components/IpsTable/IpsTable'
+import { IpsDataTable } from '../components/IpsDataTable/IpsDataTable'
+import { ExpandedRow } from '../components/IpsDataTable/components/ExpandedRow'
+import type { ColumnDef, ActionDef, SubColumnDef } from '../components/IpsDataTable/IpsDataTable.types'
 import { IpsToastProvider } from '../components/IpsToast/IpsToastProvider'
 import { useToast } from '../components/IpsToast/useToast'
 import { TOAST_TYPES } from '../components/IpsToast/IpsToast.types'
@@ -817,6 +820,147 @@ function TableLightPanel() {
     </Box>
   )
 }
+// ─── IpsDataTable Panel ────────────────────────────────────────────────────
+interface Employee {
+  id: number
+  name: string
+  role: string
+  department: string
+  salary: number
+  status: string
+  projects?: { name: string; status: string; due: string }[]
+}
+
+const DT_DATA: Employee[] = [
+  { id: 1, name: 'Alice Cohen',  role: 'Developer', department: 'R&D',     salary: 32000, status: 'פעיל',   projects: [{ name: 'Portal', status: 'בביצוע', due: '2026-08-01' }, { name: 'API v3', status: 'הושלם', due: '2026-03-15' }] },
+  { id: 2, name: 'Bob Levi',     role: 'Designer',  department: 'Product', salary: 28000, status: 'פעיל',   projects: [{ name: 'Design System', status: 'בביצוע', due: '2026-07-01' }] },
+  { id: 3, name: 'Carol Shapir', role: 'PM',        department: 'Product', salary: 35000, status: 'חופשה',  projects: [] },
+  { id: 4, name: 'Dan Mizrahi',  role: 'QA',        department: 'R&D',     salary: 26000, status: 'פעיל',   projects: [{ name: 'Portal', status: 'בביצוע', due: '2026-08-01' }] },
+  { id: 5, name: 'Eve Katz',     role: 'DevOps',    department: 'Infra',   salary: 38000, status: 'פעיל',   projects: [{ name: 'CI/CD', status: 'הושלם', due: '2026-01-30' }] },
+  { id: 6, name: 'Frank Avraham', role: 'Developer', department: 'R&D',    salary: 31000, status: 'מחלה',  projects: [] },
+  { id: 7, name: 'Gal Bar-On',   role: 'Analyst',   department: 'BI',      salary: 29000, status: 'פעיל',   projects: [{ name: 'Dashboard', status: 'בתכנון', due: '2026-10-01' }] },
+]
+
+const DT_PROJECT_COLS: SubColumnDef[] = [
+  { id: 'name',   header: 'שם פרויקט', accessorKey: 'name' },
+  { id: 'status', header: 'סטטוס',      accessorKey: 'status' },
+  { id: 'due',    header: 'תאריך יעד',  accessorKey: 'due', align: 'center' },
+]
+
+const DT_COLUMNS: ColumnDef<Employee>[] = [
+  { accessorKey: 'id',         header: 'מזהה',   size: 60 },
+  { accessorKey: 'name',       header: 'שם',     meta: { editable: { type: 'text', mode: 'click' }, width: 160 } },
+  { accessorKey: 'role',       header: 'תפקיד',  meta: { editable: { type: 'select', options: [
+    { value: 'Developer', label: 'Developer' }, { value: 'Designer', label: 'Designer' },
+    { value: 'PM', label: 'PM' }, { value: 'QA', label: 'QA' }, { value: 'DevOps', label: 'DevOps' },
+    { value: 'Analyst', label: 'Analyst' },
+  ]}} },
+  { accessorKey: 'department', header: 'מחלקה' },
+  { accessorKey: 'salary',     header: 'שכר (₪)', meta: { align: 'end', editable: { type: 'number' } },
+    cell: ({ getValue }) => `₪${(getValue() as number).toLocaleString()}` },
+  { accessorKey: 'status',     header: 'סטטוס',
+    cell: ({ getValue }) => {
+      const v = getValue() as string
+      const color = v === 'פעיל' ? 'success.main' : v === 'חופשה' ? 'warning.main' : 'error.main'
+      return <Box component="span" sx={{ color, fontWeight: 600 }}>{v}</Box>
+    }
+  },
+]
+
+function DataTablePanel() {
+  const [rows, setRows] = useState<Employee[]>(DT_DATA)
+  const [sorting, setSorting] = useState(false)
+  const [filtering, setFiltering] = useState(false)
+  const [pagination, setPagination] = useState(false)
+  const [expand, setExpand] = useState(false)
+  const [inlineEdit, setInlineEdit] = useState(false)
+  const [withDelete, setWithDelete] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [variant, setVariant] = useState<'default' | 'bordered' | 'striped'>('default')
+  const [size, setSize] = useState<'sm' | 'md' | 'lg'>('md')
+
+  const handleSave = async (_orig: Employee, updated: Employee) => {
+    setRows(prev => prev.map(r => r.id === updated.id ? updated : r))
+  }
+
+  const handleDelete = (row: Employee) => {
+    setRows(prev => prev.filter(r => r.id !== row.id))
+  }
+
+  const customActions: ActionDef<Employee>[] = [
+    {
+      key: 'view',
+      label: 'צפייה בפרויקטים',
+      icon: <Box component="span" sx={{ fontSize: 16 }}>📂</Box>,
+      onClick: (row) => alert(`${row.name} — ${row.projects?.length ?? 0} פרויקטים`),
+      isVisible: (row) => (row.projects?.length ?? 0) > 0,
+    },
+  ]
+
+  return (
+    <Box>
+      <PropsTable props={[
+        { name: 'data / columns', value: 'T[] / ColumnDef<T>[]', description: 'נתונים והגדרות עמודות (חובה)' },
+        { name: 'sorting', value: 'boolean | SortingState', description: 'הפעלת מיון (true = uncontrolled)' },
+        { name: 'filtering', value: 'boolean | FilterConfig', description: 'חיפוש גלובלי / per-column' },
+        { name: 'pagination', value: 'PaginationConfig | false', description: 'עימוד (false = כל השורות)' },
+        { name: 'expandedContent', value: '(row) => ReactNode', description: 'תוכן מורחב לכל שורה' },
+        { name: 'onSave', value: '(orig, updated) => void', description: 'עריכה מוטבעת — לחץ 🖊 לעריכה' },
+        { name: 'onDelete', value: '(row) => void', description: 'מחיקה עם אישור dialog' },
+        { name: 'variant', value: "'default' | 'bordered' | 'striped'", description: 'גרסת עיצוב' },
+        { name: 'size', value: "'sm' | 'md' | 'lg'", description: 'גודל שורה' },
+        { name: 'isLoading', value: 'boolean', description: 'מצב טעינה — Skeleton animation' },
+      ]} />
+
+      {/* Controls */}
+      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+        <FormControlLabel control={<Switch checked={sorting}    onChange={e => setSorting(e.target.checked)} />}   label="sorting" />
+        <FormControlLabel control={<Switch checked={filtering}  onChange={e => setFiltering(e.target.checked)} />} label="filtering" />
+        <FormControlLabel control={<Switch checked={pagination} onChange={e => setPagination(e.target.checked)} />} label="pagination" />
+        <FormControlLabel control={<Switch checked={expand}     onChange={e => setExpand(e.target.checked)} />}    label="expandedContent" />
+        <FormControlLabel control={<Switch checked={inlineEdit} onChange={e => setInlineEdit(e.target.checked)} />} label="onSave (inline edit)" />
+        <FormControlLabel control={<Switch checked={withDelete} onChange={e => setWithDelete(e.target.checked)} />} label="onDelete" />
+        <FormControlLabel control={<Switch checked={loading}    onChange={e => setLoading(e.target.checked)} />}   label="isLoading" />
+      </Box>
+      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Typography variant="body2" sx={{ mr: 1 }}>variant:</Typography>
+        {(['default', 'bordered', 'striped'] as const).map(v => (
+          <IpsButton key={v} size="small" variant={variant === v ? 'contained' : 'outlined'} onClick={() => setVariant(v)}>{v}</IpsButton>
+        ))}
+        <Box sx={{ mx: 1 }} />
+        <Typography variant="body2" sx={{ mr: 1 }}>size:</Typography>
+        {(['sm', 'md', 'lg'] as const).map(s => (
+          <IpsButton key={s} size="small" variant={size === s ? 'contained' : 'outlined'} onClick={() => setSize(s)}>{s}</IpsButton>
+        ))}
+        {(inlineEdit || withDelete) && (
+          <IpsButton size="small" buttonType="clean" onClick={() => setRows(DT_DATA)} sx={{ ml: 2 }}>איפוס נתונים</IpsButton>
+        )}
+      </Box>
+
+      <IpsDataTable<Employee>
+        data={rows}
+        columns={DT_COLUMNS}
+        sorting={sorting}
+        filtering={filtering}
+        pagination={pagination ? { pageSize: 4, pageSizeOptions: [4, 7], showTotal: true } : false}
+        expandedContent={expand ? (row) => (
+          <ExpandedRow
+            title={`פרויקטים של ${row.name}`}
+            subData={row.projects}
+            subColumns={DT_PROJECT_COLS}
+          />
+        ) : undefined}
+        onSave={inlineEdit ? handleSave : undefined}
+        onDelete={withDelete ? handleDelete : undefined}
+        customActions={customActions}
+        isLoading={loading}
+        variant={variant}
+        size={size}
+      />
+    </Box>
+  )
+}
+
 function TablePanel() {
   const COLUMNS: GridColDef[] = [
     { field: 'id',         headerName: 'ID',      width: 70  },
@@ -1092,6 +1236,7 @@ const TABS = [
   { label: 'DateTimePicker', component: <DateTimePickerPanel /> },
   { label: 'TableLight', component: <TableLightPanel /> },
   { label: 'Table', component: <TablePanel /> },
+  { label: 'DataTable', component: <DataTablePanel /> },
   { label: 'Toast', component: <ToastPanel /> },
   { label: 'RichTextEditor', component: <RichTextEditorPanel /> },
   { label: 'FileUpload', component: <FileUploadPanel /> },
