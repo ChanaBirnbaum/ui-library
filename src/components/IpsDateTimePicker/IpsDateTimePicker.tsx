@@ -3,7 +3,6 @@ import Box from '@mui/material/Box'
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
-import { IpsTextField } from '../IpsTextField/IpsTextField'
 import type { IpsDateTimePickerProps } from './IpsDateTimePicker.types'
 
 export const IpsDateTimePicker = forwardRef<HTMLDivElement, IpsDateTimePickerProps>(
@@ -54,12 +53,7 @@ export const IpsDateTimePicker = forwardRef<HTMLDivElement, IpsDateTimePickerPro
             {...(props as any)}
             readOnly={readOnly}
             onChange={handleChange as any}
-            // DateTimePicker v8: custom textField slot requires this flag
-            enableAccessibleFieldDOMStructure={false}
             slotProps={mergedSlotProps}
-            slots={{
-              textField: IpsTextField as React.ComponentType<any>,
-            }}
           />
         </LocalizationProvider>
       </Box>

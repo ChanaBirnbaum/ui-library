@@ -26,13 +26,14 @@ export const IpsAutocomplete = forwardRef<
 
   // Custom renderOption with checkboxes
   const customRenderOption = (
-    renderProps: React.HTMLAttributes<HTMLLIElement>,
+    props: React.HTMLAttributes<HTMLLIElement> & { key: React.Key },
     option: any,
-    state: { selected: boolean }
+    { selected }: { selected: boolean }
   ) => {
+    const { key, ...restProps } = props as React.HTMLAttributes<HTMLLIElement> & { key: string }
     // If custom renderOption provided, use it
     if (typeof renderOption === 'function') {
-      const customResult = (renderOption as any)(renderProps, option, state);
+      const customResult = (renderOption as any)(restProps, option, { selected });
       return customResult;
     }
 
@@ -42,10 +43,10 @@ export const IpsAutocomplete = forwardRef<
       typeof option === 'string' ? option : option?.label || String(option);
 
     return (
-      <li {...renderProps}>
+      <li key={key} {...restProps}>
         {showCheckbox && (
           <Checkbox
-            checked={state.selected}
+            checked={selected}
             style={isRtl ? { marginLeft: 8 } : { marginRight: 8 }}
           />
         )}

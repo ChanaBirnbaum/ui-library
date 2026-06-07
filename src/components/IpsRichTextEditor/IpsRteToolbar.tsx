@@ -1,11 +1,14 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState, useLayoutEffect, useCallback } from 'react'
 import Paper from '@mui/material/Paper'
 import IconButton from '@mui/material/IconButton'
 import Divider from '@mui/material/Divider'
 import Tooltip from '@mui/material/Tooltip'
 import Typography from '@mui/material/Typography'
+import Popover from '@mui/material/Popover'
+import Box from '@mui/material/Box'
 import { useTheme, alpha } from '@mui/material/styles'
 import type { Editor } from '@tiptap/core'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 
 // ─── MUI Icons ────────────────────────────────────────────────────────────────
 import FormatBoldIcon               from '@mui/icons-material/FormatBold'
@@ -29,6 +32,7 @@ import UndoIcon                     from '@mui/icons-material/Undo'
 import RedoIcon                     from '@mui/icons-material/Redo'
 import FormatClearIcon              from '@mui/icons-material/FormatClear'
 import AttachFileIcon               from '@mui/icons-material/AttachFile'
+import TableChartIcon               from '@mui/icons-material/TableChart'
 
 import type { IpsRteToolbarConfig, IpsRteToolbarItem } from './IpsRteToolbar.types'
 
@@ -59,7 +63,7 @@ export interface IpsRteToolbarProps {
 interface ToolbarItemDef {
   icon: React.ReactNode
   label: string
-  action: () => void
+  action: (e?: React.MouseEvent<HTMLElement>) => void
   isActive: boolean
   disabled?: boolean
 }
@@ -76,6 +80,12 @@ export function IpsRteToolbar({ editor, config }: IpsRteToolbarProps) {
   const activeBg      = alpha(theme.palette.primary.main, 0.15)
   const activeHoverBg = alpha(theme.palette.primary.main, 0.25)
 
+  // ── Table picker state ──────────────────────────────────────────────────────
+  const [tableAnchor, setTableAnchor] = useState<HTMLElement | null>(null)
+  const [hovered, setHovered]         = useState({ rows: 0, cols: 0 })
+  const MAX_ROWS = 8
+  const MAX_COLS = 8
+
   // Extension commands (setColor, setHighlight, setTextAlign, setLink, etc.)
   // are augmented into @tiptap/core by each extension package at import time.
   // Cast to `any` once here so individual cases stay readable without per-line casts.
@@ -84,7 +94,71 @@ export function IpsRteToolbar({ editor, config }: IpsRteToolbarProps) {
    
   const can = editor.can() as any
 
-  // ─── Item factory ──────────────────────────────────────────────────────────
+  // ─── Split groups into top (text formatting) and bottom (insert/actions) ───
+  const BOTTOM_ITEMS: IpsRteToolbarItem[] = ['link', 'image', 'file', 'insertTable', 'textColor', 'bgColor', 'rtl', 'ltr']
+
+  const topGroups    = config.groups
+    .map(g => ({ items: g.items.filter(i => !BOTTOM_ITEMS.includes(i)) }))
+    .filter(g => g.items.length > 0)
+
+  const bottomGroups = config.groups
+    .map(g => ({ items: g.items.filter(i => BOTTOM_ITEMS.includes(i)) }))
+    .filter(g => g.items.length > 0)
+
+  // ─── Overflow logic for top row ──────────────────────────────────────────────
+  const topRowRef       = useRef<HTMLDivElement>(null)
+  const [overflowItems, setOverflowItems] = useState<IpsRteToolbarItem[]>([])
+  const [overflowAnchor, setOverflowAnchor] = useState<HTMLElement | null>(null)
+
+  const allTopItems = topGroups.flatMap(g => g.items)
+
+  const measureOverflow = useCallback(() => {
+    const row = topRowRef.current
+    if (!row) return
+    const BTN_W  = 30  // approx button width px
+    const GAP    = 4
+    const ARROW  = 34  // reserve space for the "▾" button
+    const available = row.offsetWidth - ARROW
+    const maxVisible = Math.max(1, Math.floor(available / (BTN_W + GAP)))
+    setOverflowItems(allTopItems.slice(maxVisible))
+  }, [allTopItems.join(',')])
+
+  useLayoutEffect(() => {
+    measureOverflow()
+    const ro = new ResizeObserver(measureOverflow)
+    if (topRowRef.current) ro.observe(topRowRef.current)
+    return () => ro.disconnect()
+  }, [measureOverflow])
+
+  const visibleTopItems = overflowItems.length > 0
+    ? allTopItems.slice(0, allTopItems.length - overflowItems.length)
+    : allTopItems
+
+  // helper — render a single toolbar button
+  function renderBtn(item: IpsRteToolbarItem) {
+    const { icon, label, action, isActive, disabled } = getItemDef(item)
+    return (
+      <Tooltip key={item} title={label} placement="top">
+        <span>
+          <IconButton
+            size="small"
+            onClick={(e) => action(e)}
+            disabled={disabled ?? false}
+            aria-pressed={isActive}
+            aria-label={label}
+            sx={{
+              borderRadius: 1,
+              p: 0.5,
+              bgcolor: isActive ? activeBg : 'transparent',
+              '&:hover': { bgcolor: isActive ? activeHoverBg : undefined },
+            }}
+          >
+            {icon}
+          </IconButton>
+        </span>
+      </Tooltip>
+    )
+  }
 
   function getItemDef(item: IpsRteToolbarItem): ToolbarItemDef {
     switch (item) {
@@ -303,6 +377,17 @@ export function IpsRteToolbar({ editor, config }: IpsRteToolbarProps) {
           isActive: false,
         }
 
+      // ── Table ────────────────────────────────────────────────────────────────
+      case 'insertTable':
+        return {
+          icon:     <TableChartIcon fontSize="small" />,
+          label:    'הוסף טבלה',
+          action:   (e?: React.MouseEvent<HTMLElement>) => {
+            if (e) setTableAnchor(e.currentTarget)
+          },
+          isActive: editor.isActive('table'),
+        }
+
       // ── Exhaustive guard ─────────────────────────────────────────────────────
       default: {
         const _exhaustive: never = item
@@ -315,40 +400,27 @@ export function IpsRteToolbar({ editor, config }: IpsRteToolbarProps) {
 
   return (
     <Paper
-      elevation={1}
+      elevation={0}
       className="ips-rte-toolbar"
       sx={{
-        display:     'flex',
-        flexWrap:    'wrap',
-        alignItems:  'center',
-        gap:         0.5,
-        px:          1,
-        py:          0.5,
-        position:    'sticky',
-        bottom:      0,
-        zIndex:      1,
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'sticky',
+        bottom: 0,
+        zIndex: 1,
         borderRadius: '0 0 4px 4px',
         borderTop: `1px solid ${theme.palette.divider}`,
+        bgcolor: 'transparent',
       }}
     >
-      {/* ── Hidden native color pickers — triggered by ref.click() ── */}
-      <input
-        type="color"
-        ref={textColorRef}
+      {/* ── Hidden inputs ── */}
+      <input type="color" ref={textColorRef}
         style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }}
-        onChange={(e) => c().setColor(e.target.value).run()}
-      />
-      <input
-        type="color"
-        ref={bgColorRef}
+        onChange={(e) => c().setColor(e.target.value).run()} />
+      <input type="color" ref={bgColorRef}
         style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }}
-        onChange={(e) => c().setHighlight({ color: e.target.value }).run()}
-      />
-      {/* Image picker — resizes to max 400 px wide via canvas before inserting */}
-      <input
-        type="file"
-        ref={imageFileRef}
-        accept="image/*"
+        onChange={(e) => c().setHighlight({ color: e.target.value }).run()} />
+      <input type="file" ref={imageFileRef} accept="image/*"
         style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }}
         onChange={(e) => {
           const file = e.target.files?.[0]
@@ -359,80 +431,111 @@ export function IpsRteToolbar({ editor, config }: IpsRteToolbarProps) {
             const dataUrl = ev.target?.result as string
             const img = new window.Image()
             img.onload = () => {
-              // Scale down proportionally if wider than MAX_PX
               const scale = img.width > MAX_PX ? MAX_PX / img.width : 1
-              const w = Math.round(img.width  * scale)
+              const w = Math.round(img.width * scale)
               const h = Math.round(img.height * scale)
               const canvas = document.createElement('canvas')
-              canvas.width  = w
-              canvas.height = h
+              canvas.width = w; canvas.height = h
               canvas.getContext('2d')!.drawImage(img, 0, 0, w, h)
-              const resized = canvas.toDataURL(file.type || 'image/png')
-              ;(editor.chain().focus() as any)
-                .setImage({ src: resized, width: w, height: h })
-                .run()
+              ;(editor.chain().focus() as any).setImage({ src: canvas.toDataURL(file.type || 'image/png'), width: w, height: h }).run()
             }
             img.src = dataUrl
           }
           reader.readAsDataURL(file)
-        }}
-      />
-      {/* File picker — inserts a downloadable link with the file name */}
-      <input
-        type="file"
-        ref={fileRef}
+        }} />
+      <input type="file" ref={fileRef}
         style={{ position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }}
         onChange={(e) => {
           const file = e.target.files?.[0]
           if (!file) return
           const objectUrl = URL.createObjectURL(file)
-          // Insert as a link so the user can click-to-download
-          editor
-            .chain()
-            .focus()
-            .insertContent(
-              `<a href="${objectUrl}" download="${file.name}">📎 ${file.name}</a>`
-            )
-            .run()
+          editor.chain().focus().insertContent(`<a href="${objectUrl}" download="${file.name}">📎 ${file.name}</a>`).run()
+        }} />
+
+      {/* ── TOP ROW: text-formatting buttons + overflow arrow ── */}
+      <Box
+        ref={topRowRef}
+        sx={{
+          display: 'flex', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden',
+          px: 1, py: 0.5, gap: 0.5,
+          bgcolor: theme.palette.grey[100],
+          borderRadius: '0 0 0 0',
         }}
-      />
+      >
+        {visibleTopItems.map(renderBtn)}
 
-      {/* ── Button groups ── */}
-      {config.groups.map((group, gi) => (
-        <React.Fragment key={gi}>
-          {gi > 0 && (
-            <Divider orientation="vertical" flexItem sx={{ mx: 0.5, my: 0.25 }} />
-          )}
+        {/* overflow arrow */}
+        <Tooltip title="עוד אפשרויות" placement="top">
+          <span>
+            <IconButton
+              size="small"
+              onClick={(e) => setOverflowAnchor(e.currentTarget)}
+              sx={{ borderRadius: 1, p: 0.5, ml: 'auto', opacity: overflowItems.length > 0 ? 1 : 0, pointerEvents: overflowItems.length > 0 ? 'auto' : 'none' }}
+            >
+              <ExpandMoreIcon fontSize="small" />
+            </IconButton>
+          </span>
+        </Tooltip>
+      </Box>
 
-          {group.items.map((item) => {
-            const { icon, label, action, isActive, disabled } = getItemDef(item)
-            return (
-              <Tooltip key={item} title={label} placement="top">
-                {/* span wrapper required so Tooltip works on disabled buttons */}
-                <span>
-                  <IconButton
-                    size="small"
-                    onClick={action}
-                    disabled={disabled ?? false}
-                    aria-pressed={isActive}
-                    aria-label={label}
+      {/* overflow popover */}
+      <Popover
+        open={Boolean(overflowAnchor)}
+        anchorEl={overflowAnchor}
+        onClose={() => setOverflowAnchor(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+      >
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', p: 0.5, gap: 0.5, maxWidth: 240 }}>
+          {overflowItems.map(renderBtn)}
+        </Box>
+      </Popover>
+
+      {/* ── BOTTOM ROW: insert/action buttons ── */}
+      {bottomGroups.length > 0 && (
+        <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', px: 1, py: 0.5, gap: 0.5, bgcolor: 'transparent' }}>
+          {bottomGroups.map((group, gi) => (
+            <React.Fragment key={gi}>
+              {gi > 0 && <Divider orientation="vertical" flexItem sx={{ mx: 0.5, my: 0.25 }} />}
+              {group.items.map(renderBtn)}
+            </React.Fragment>
+          ))}
+        </Box>
+      )}
+
+      {/* ── Table size picker popover ── */}
+      <Popover
+        open={Boolean(tableAnchor)}
+        anchorEl={tableAnchor}
+        onClose={() => { setTableAnchor(null); setHovered({ rows: 0, cols: 0 }) }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+      >
+        <Box sx={{ p: 1.5 }}>
+          <Typography variant="caption" sx={{ display: 'block', mb: 1, color: 'text.secondary', textAlign: 'center' }}>
+            {hovered.rows > 0 && hovered.cols > 0 ? `${hovered.rows} × ${hovered.cols}` : 'בחר גודל טבלה'}
+          </Typography>
+          <Box sx={{ display: 'grid', gridTemplateColumns: `repeat(${MAX_COLS}, 20px)`, gap: '3px' }}>
+            {Array.from({ length: MAX_ROWS }, (_, r) =>
+              Array.from({ length: MAX_COLS }, (_, col) => {
+                const row = r + 1; const c2 = col + 1
+                const isHighlighted = row <= hovered.rows && c2 <= hovered.cols
+                return (
+                  <Box key={`${row}-${c2}`}
+                    onMouseEnter={() => setHovered({ rows: row, cols: c2 })}
+                    onClick={() => { c().insertTable({ rows: row, cols: c2, withHeaderRow: true }).run(); setTableAnchor(null); setHovered({ rows: 0, cols: 0 }) }}
                     sx={{
-                      borderRadius: 1,
-                      p:            0.5,
-                      bgcolor:      isActive ? activeBg : 'transparent',
-                      '&:hover': {
-                        bgcolor: isActive ? activeHoverBg : undefined,
-                      },
+                      width: 20, height: 20, border: '1px solid', borderRadius: '2px', cursor: 'pointer', transition: 'all 0.1s',
+                      borderColor: isHighlighted ? 'primary.main' : 'divider',
+                      bgcolor: isHighlighted ? alpha(theme.palette.primary.main, 0.15) : 'background.paper',
                     }}
-                  >
-                    {icon}
-                  </IconButton>
-                </span>
-              </Tooltip>
-            )
-          })}
-        </React.Fragment>
-      ))}
+                  />
+                )
+              })
+            )}
+          </Box>
+        </Box>
+      </Popover>
     </Paper>
   )
 }

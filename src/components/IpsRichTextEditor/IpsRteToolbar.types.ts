@@ -9,6 +9,7 @@ export type IpsRteToolbarItem =
   | 'textColor' | 'bgColor'
   | 'rtl'  | 'ltr'
   | 'undo' | 'redo' | 'clearFormat'
+  | 'insertTable'
 
 // ─── Group = one cluster of buttons separated by a Divider ───────────────────
 
@@ -34,5 +35,6 @@ export const DEFAULT_TOOLBAR: IpsRteToolbarConfig = {
     { items: ['textColor', 'bgColor'] },
     { items: ['rtl', 'ltr'] },
     { items: ['undo', 'redo', 'clearFormat'] },
+    { items: ['insertTable'] },
   ],
 }

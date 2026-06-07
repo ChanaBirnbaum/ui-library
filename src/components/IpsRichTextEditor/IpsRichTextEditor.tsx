@@ -8,12 +8,16 @@ import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import TextAlign from '@tiptap/extension-text-align'
-import TextStyle from '@tiptap/extension-text-style'
+import { TextStyle } from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
 import Placeholder from '@tiptap/extension-placeholder'
 import TiptapTypography from '@tiptap/extension-typography'
 import Paragraph from '@tiptap/extension-paragraph'
+import { Table } from '@tiptap/extension-table'
+import { TableRow } from '@tiptap/extension-table-row'
+import { TableHeader } from '@tiptap/extension-table-header'
+import { TableCell } from '@tiptap/extension-table-cell'
 
 import { IpsRteToolbar } from './IpsRteToolbar'
 import { DEFAULT_TOOLBAR } from './IpsRteToolbar.types'
@@ -88,6 +92,10 @@ export const IpsRichTextEditor = forwardRef<HTMLDivElement, IpsRichTextEditorPro
         Highlight.configure({ multicolor: true }),
         Placeholder.configure({ placeholder: placeholder ?? '' }),
         TiptapTypography,
+        Table.configure({ resizable: false }),
+        TableRow,
+        TableHeader,
+        TableCell,
       ],
       // Controlled: seed with `value`; Uncontrolled: seed with `defaultValue`.
       content: value !== undefined ? (value ?? '') : (defaultValue ?? ''),
@@ -110,7 +118,7 @@ export const IpsRichTextEditor = forwardRef<HTMLDivElement, IpsRichTextEditorPro
       if (!editor || editor.isDestroyed) return
       if (value === undefined) return // uncontrolled — nothing to sync
       if (editor.getHTML() !== value) {
-        editor.commands.setContent(value, false)
+        editor.commands.setContent(value, { emitUpdate: false })
       }
     }, [editor, value])
 
@@ -246,6 +254,35 @@ export const IpsRichTextEditor = forwardRef<HTMLDivElement, IpsRichTextEditorPro
               '& .ProseMirror ul, & .ProseMirror ol': {
                 paddingLeft: '1.5em',
                 margin: '4px 0',
+              },
+
+              // Table
+              '& .ProseMirror table': {
+                borderCollapse: 'collapse',
+                width: '100%',
+                margin: '8px 0',
+                tableLayout: 'fixed',
+                overflow: 'hidden',
+              },
+              '& .ProseMirror td, & .ProseMirror th': {
+                border: `1px solid ${theme.palette.divider}`,
+                padding: '6px 10px',
+                verticalAlign: 'top',
+                position: 'relative',
+                minWidth: 60,
+                boxSizing: 'border-box',
+              },
+              '& .ProseMirror th': {
+                background: theme.palette.grey[100],
+                fontWeight: 600,
+              },
+              '& .ProseMirror .selectedCell:after': {
+                content: '""',
+                position: 'absolute',
+                inset: 0,
+                background: theme.palette.primary.main,
+                opacity: 0.15,
+                pointerEvents: 'none',
               },
             }}
           >
