@@ -152,8 +152,10 @@ const er = {
     h6: { fontFamily: tr.fonts.heading },
     fontSize: 14
   },
-  shape: {
-    borderRadius: 6
+  weights: {
+    regular: 400,
+    medium: 500,
+    bold: 700
   }
 }), aw = Oe(
   (t, e) => {
@@ -509,10 +511,6 @@ const p1 = Oe(
 );
 p1.displayName = "IpsChipSelect";
 const g1 = (t) => /* @__PURE__ */ S(YE, { ...t, children: /* @__PURE__ */ S("path", { d: "M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z" }) }), m1 = Oe(
-  ({
-    summary: t,
-    children: e,
-    className: A,
     defaultExpanded: n = !1,
     disabled: r = !1,
     onChange: s,
@@ -650,7 +648,7 @@ function w1() {
           return y;
         return u._isValid;
       }
-      function Q(u) {
+      function S(u) {
         var p = g(NaN);
         return u != null ? h(w(p), u) : w(p).userInvalidated = !0, p;
       }
@@ -1501,11 +1499,7 @@ Arguments: ` + Array.prototype.slice.call(y).join("") + `
           return _s;
         if (!s(u)) {
           if (p = Fo(u), p)
-            return p;
           u = [u];
-        }
-        return nF(u);
-      }
       function iF() {
         return ie(Re);
       }
@@ -1517,7 +1511,7 @@ Arguments: ` + Array.prototype.slice.call(y).join("") + `
         ["YYYYYY-MM-DD", /[+-]\d{6}-\d\d-\d\d/],
         ["YYYY-MM-DD", /\d{4}-\d\d-\d\d/],
         ["GGGG-[W]WW-E", /\d{4}-W\d\d-\d/],
-        ["GGGG-[W]WW", /\d{4}-W\d\d/, !1],
+        ["GGGG-[W]WW", /\d{4}-W\d\d/, !1],P
         ["YYYY-DDD", /\d{4}-\d{3}/],
         ["YYYY-MM", /\d{4}-\d\d/, !1],
         ["YYYYYYMMDD", /[+-]\d{10}/],
@@ -2151,7 +2145,7 @@ Arguments: ` + Array.prototype.slice.call(y).join("") + `
       function BQ(u) {
         return this.to(Me(), u);
       }
-      function Fp(u) {
+      function Mh(u) {
         var p;
         return u === void 0 ? this._locale._abbr : (p = NA(u), p != null && (this._locale = p), this);
       }
@@ -3218,9 +3212,9 @@ function Q1({ open: t, onClose: e, onScan: A, containerId: n = "dwtcontrolContai
     w.ConvertToBlob(
       C,
       w.EnumDWT_ImageType.IT_PNG,
-      (F) => {
-        const Q = new File([F], `scan-${Date.now()}.png`, { type: "image/png" });
-        A(Q), m();
+      (Q) => {
+        const S = new File([Q], `scan-${Date.now()}.png`, { type: "image/png" });
+        A(S), m();
       },
       (F, Q, E) => {
         o(`שגיאת המרה: ${E}`), l(!1);
@@ -5961,7 +5955,7 @@ var hk = 1, lu = 2, cu = 3, mg = 4, Bg = 5, pk = 7, wg = 8, uu = 9, du = 10, Cg 
     return !1;
   }
   return !0;
-}, Fg = function(t) {
+}, Mp = function(t) {
   return t[0] === 0 && t[1] === 255 && t[2] === 0 && t[3] === 255;
 }, xk = function(t) {
   var e = t.createElement("canvas"), A = 100;
@@ -5980,7 +5974,7 @@ var hk = 1, lu = 2, cu = 3, mg = 4, Bg = 5, pk = 7, wg = 8, uu = 9, du = 10, Cg 
     var l = t.createElement("div");
     return l.style.backgroundImage = "url(" + s + ")", l.style.height = A + "px", Fg(a) ? Qg(Dd(A, A, 0, 0, l)) : Promise.reject(!1);
   }).then(function(o) {
-    return n.drawImage(o, 0, 0), Fg(n.getImageData(0, 0, A, A).data);
+    return n.drawImage(o, 0, 0), Mp(n.getImageData(0, 0, A, A).data);
   }).catch(function() {
     return !1;
   });
@@ -7185,7 +7179,7 @@ var De = function(t, e, A, n, r) {
   return t.type === 1;
 }, QM = function(t) {
   return t.type === 2;
-}, Og = function(t, e) {
+}, Gp = function(t, e) {
   return t.length === e.length ? t.some(function(A, n) {
     return A === e[n];
   }) : !1;
@@ -8379,10 +8373,10 @@ function h0({
     /* @__PURE__ */ S(
       F1,
       {
-        open: F,
-        onClose: () => Q(!1),
-        onCapture: (H) => {
-          t([H]), Q(!1);
+        open: Q,
+        onClose: () => S(!1),
+        onCapture: (D) => {
+          t([D]), S(!1);
         }
       }
     ),
@@ -8566,9 +8560,9 @@ function AT(t) {
         const x = await b.json();
         F.push({ name: Q.name, path: x.path });
       }
-      o == null || o(F), m();
-    } catch (Q) {
-      a == null || a(Q);
+      o == null || o(Q), m();
+    } catch (S) {
+      a == null || a(S);
     } finally {
       f(!1);
     }
@@ -18295,7 +18289,7 @@ class po {
       g = w;
     }
     let o = this.domFromPos(e, e ? -1 : 1), a = A == e ? o : this.domFromPos(A, A ? -1 : 1), l = n.root.getSelection(), c = n.domSelectionRange(), d = !1;
-    if ((iA || Ft) && e == A) {
+    if ((rA || St) && e == A) {
       let { node: h, offset: g } = o;
       if (h.nodeType == 3) {
         if (d = !!(g && h.nodeValue[g - 1] == `
@@ -19706,7 +19700,7 @@ function sL(t, e) {
   let A = e.x - t.clientX, n = e.y - t.clientY;
   return A * A + n * n < 100;
 }
-function Fh(t, e, A, n, r) {
+function Tf(t, e, A, n, r) {
   if (n == -1)
     return !1;
   let s = t.state.doc.resolve(n);
@@ -20756,7 +20750,7 @@ function xL(t) {
   if (!Lm.has(t) && (Lm.set(t, null), ["normal", "nowrap", "pre-line"].indexOf(getComputedStyle(t.dom).whiteSpace) !== -1)) {
     if (t.requiresGeckoHackNode = iA, Om)
       return;
-    console.warn("ProseMirror expects the CSS white-space property to be set, preferably to 'pre-wrap'. It is recommended to load style/prosemirror.css from the prosemirror-view package."), Om = !0;
+    console.warn("ProseMirror expects the CSS white-space property to be set, preferably to 'pre-wrap'. It is recommended to load style/prosemirror.css from the prosemirror-view package."), Gg = !0;
   }
 }
 function Nm(t, e) {
@@ -20838,10 +20832,10 @@ function TL(t) {
   if (e)
     return e.parseRule();
   if (t.nodeName == "BR" && t.parentNode) {
-    if (Ft && /^(ul|ol)$/i.test(t.parentNode.nodeName)) {
+    if (St && /^(ul|ol)$/i.test(t.parentNode.nodeName)) {
       let A = document.createElement("div");
       return A.appendChild(document.createElement("li")), { skip: A };
-    } else if (t.parentNode.lastChild == t || Ft && /^(tr|table)$/i.test(t.parentNode.nodeName))
+    } else if (t.parentNode.lastChild == t || St && /^(tr|table)$/i.test(t.parentNode.nodeName))
       return { ignore: !0 };
   } else if (t.nodeName == "IMG" && t.getAttribute("mark-placeholder"))
     return { ignore: !0 };
@@ -25523,7 +25517,7 @@ function jN(t) {
           const [, E, b] = w;
           F = E, C = b || "";
         }
-        const Q = r(F.trim());
+        const S = r(Q.trim());
         return {
           type: e,
           raw: w[0],
@@ -25597,7 +25591,7 @@ function yf(t, e, A) {
       raw: l
     };
 }
-function Oh(t, e, A, n) {
+function Wf(t, e, A, n) {
   if (!t || !Array.isArray(t.content))
     return "";
   const r = typeof A == "function" ? A(n) : A, [s, ...i] = t.content, o = e.renderChildren([s]);
@@ -28274,8 +28268,8 @@ ${A}
             }
             m += h[x].length + 1;
           }
-          const F = ((a = h[g].match(/^ */)) == null ? void 0 : a[0]) || "", Q = Math.min(F.length, A);
-          if (Q === 0)
+          const Q = ((a = h[g].match(/^ */)) == null ? void 0 : a[0]) || "", S = Math.min(Q.length, A);
+          if (S === 0)
             return !0;
           let E = c;
           for (let x = 0; x < g; x += 1)
@@ -29832,7 +29826,7 @@ var Iv = ot.create({
       content: r
     };
   },
-  renderMarkdown: (t, e, A) => Oh(
+  renderMarkdown: (t, e, A) => Wf(
     t,
     e,
     (n) => {
@@ -33154,7 +33148,7 @@ function SK(t, e) {
   }
   return null;
 }
-function OB(t) {
+function Om(t) {
   return function(e, A) {
     if (!CA(e)) return !1;
     const n = SK(Uc(e), t);
@@ -34677,26 +34671,26 @@ const nV = {
                       "& .ProseMirror p.is-editor-empty:first-of-type::before": {
                         content: "attr(data-placeholder)",
                         float: "left",
-                        color: Q.palette.text.disabled,
+                        color: S.palette.text.disabled,
                         pointerEvents: "none",
                         height: 0
                       },
                       // Hyperlinks
                       "& .ProseMirror a": {
-                        color: Q.palette.primary.main,
+                        color: S.palette.primary.main,
                         textDecoration: "underline"
                       },
                       // Blockquote — write LTR source; stylis flips border/padding in RTL
                       "& .ProseMirror blockquote": {
-                        borderLeft: `3px solid ${Q.palette.grey[400]}`,
+                        borderLeft: `3px solid ${S.palette.grey[400]}`,
                         paddingLeft: "12px",
-                        color: Q.palette.grey[600],
+                        color: S.palette.grey[600],
                         margin: "0 0 8px",
                         fontStyle: "italic"
                       },
                       // Inline code
                       "& .ProseMirror code": {
-                        background: Q.palette.grey[100],
+                        background: S.palette.grey[100],
                         fontFamily: "monospace",
                         padding: "2px 4px",
                         borderRadius: "3px",
@@ -34720,7 +34714,7 @@ const nV = {
                         overflow: "hidden"
                       },
                       "& .ProseMirror td, & .ProseMirror th": {
-                        border: `1px solid ${Q.palette.divider}`,
+                        border: `1px solid ${S.palette.divider}`,
                         padding: "6px 10px",
                         verticalAlign: "top",
                         position: "relative",
@@ -34728,14 +34722,14 @@ const nV = {
                         boxSizing: "border-box"
                       },
                       "& .ProseMirror th": {
-                        background: Q.palette.grey[100],
+                        background: S.palette.grey[100],
                         fontWeight: 600
                       },
                       "& .ProseMirror .selectedCell:after": {
                         content: '""',
                         position: "absolute",
                         inset: 0,
-                        background: Q.palette.primary.main,
+                        background: S.palette.primary.main,
                         opacity: 0.15,
                         pointerEvents: "none"
                       }

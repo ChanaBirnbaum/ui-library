@@ -55,6 +55,8 @@ import type { IpsDrawerCloseReason } from '../components/IpsDrawer/IpsDrawer.typ
 import type { GridColDef } from '@mui/x-data-grid'
 import type { Moment } from 'moment'
 import moment from 'moment'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore – moment locale files have no TS declarations
 import 'moment/locale/he'
 import SvgIcon from '@mui/material/SvgIcon'
 
