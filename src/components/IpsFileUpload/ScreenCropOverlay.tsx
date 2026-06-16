@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react'
-import html2canvas from 'html2canvas'
 
 interface Point { x: number; y: number }
 interface Rect  { x: number; y: number; w: number; h: number }
@@ -57,7 +56,8 @@ export function ScreenCropOverlay({ onCrop, onCancel }: ScreenCropOverlayProps) 
     const scrollX = window.scrollX
     const scrollY = window.scrollY
 
-    const canvas = await html2canvas(document.body, {
+    const h2c = await import('html2canvas')
+    const canvas = await h2c.default(document.body, {
       useCORS:    true,
       allowTaint: true,
       scale,

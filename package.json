@@ -6,11 +6,11 @@
     "README.md"
   ],
   "main": "dist/ui-library.cjs.js",
-  "module": "dist/ui-library.es.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/ui-library.es.js",
+      "import": "./dist/index.js",
       "require": "./dist/ui-library.cjs.js",
       "types": "./dist/index.d.ts"
     }
@@ -104,7 +104,7 @@
     "@mui/material": "^7.0.0",
     "@mui/x-data-grid": "^8.0.0",
     "@mui/x-date-pickers": "^8.0.0",
-    "date-fns": ">=2",
+"date-fns": ">=2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   }

@@ -12,12 +12,8 @@ export default defineConfig({
     lib: {
       entry: 'src/index.ts',
       name: 'UILibrary',
-      fileName: (format) => `ui-library.${format === 'es' ? 'es' : 'cjs'}.js`,
-      formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      // All peerDependencies must be external so they are NOT bundled.
-      // Consumers provide their own copies — avoids duplicate React / MUI instances.
       external: [
         'react',
         'react-dom',
@@ -39,17 +35,30 @@ export default defineConfig({
         'date-fns',
         /^date-fns\//,
         'moment',
+        'html2canvas',
       ],
-      output: {
-        // Keep named exports stable — no mangled names in CJS build.
-        exports: 'named',
-        // Provide global variable names for UMD/IIFE consumers.
-        globals: {
-          react: 'React',
-          'react-dom': 'ReactDOM',
-          '@mui/material': 'MaterialUI',
+      output: [
+        // CJS: single bundle (unchanged behaviour for require() consumers)
+        {
+          format: 'cjs',
+          entryFileNames: 'ui-library.cjs.js',
+          exports: 'named',
+          globals: {
+            react: 'React',
+            'react-dom': 'ReactDOM',
+            '@mui/material': 'MaterialUI',
+          },
         },
-      },
+        // ES: one file per source module — eliminates Rollup linearisation and
+        // therefore all circular-dependency TDZ errors ("X is not defined").
+        {
+          format: 'es',
+          preserveModules: true,
+          preserveModulesRoot: 'src',
+          entryFileNames: '[name].js',
+          exports: 'named',
+        },
+      ],
     },
   },
 })
