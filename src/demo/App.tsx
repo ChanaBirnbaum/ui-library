@@ -120,6 +120,12 @@ function PropsTable({ props }: { props: { name: string; value: string; descripti
 
 // ─── Panels ─────────────────────────────────────────────────────────────────
 
+const PlusIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 5V19M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+  </svg>
+)
+
 function ButtonPanel() {
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(false)
@@ -127,22 +133,40 @@ function ButtonPanel() {
   return (
     <Box>
       <PropsTable props={[
-        { name: 'buttonType', value: "'add' | 'save' | 'clean' | 'primary' | 'secondary'", description: 'סוג הכפתור — קובע צבע + אייקון אוטומטי' },
+        { name: 'variant', value: "'contained' | 'outlined'", description: 'סגנון הכפתור' },
+        { name: 'size', value: "'small' | 'medium'", description: 'גודל הכפתור' },
+        { name: 'startIcon', value: 'ReactNode', description: 'אייקון משמאל לטקסט' },
         { name: 'loading', value: 'boolean', description: 'מציג ספינר ומנטרל לחיצה' },
         { name: 'disabled', value: 'boolean', description: 'מנטרל את הכפתור' },
       ]} />
-      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+      <Box sx={{ mb: 3, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
         <FormControlLabel control={<Switch checked={loading} onChange={e => setLoading(e.target.checked)} />} label="loading" />
         <FormControlLabel control={<Switch checked={disabled} onChange={e => setDisabled(e.target.checked)} />} label="disabled" />
       </Box>
-      <SectionTitle>buttonType variants</SectionTitle>
-      <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+
+      <SectionTitle>Outlined — Primary</SectionTitle>
+      <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+        <IpsButton variant="outlined" color="primary" size="small" startIcon={<PlusIcon />} loading={loading} disabled={disabled}>Button</IpsButton>
+        <IpsButton variant="outlined" color="primary" size="medium" startIcon={<PlusIcon />} loading={loading} disabled={disabled}>Button</IpsButton>
+        <IpsButton variant="outlined" color="primary" size="small" loading={loading} disabled={disabled}>Button</IpsButton>
+        <IpsButton variant="outlined" color="primary" size="medium" loading={loading} disabled={disabled}>Button</IpsButton>
+      </Stack>
+
+      <SectionTitle>Contained — Primary</SectionTitle>
+      <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+        <IpsButton variant="contained" color="primary" size="small" startIcon={<PlusIcon />} loading={loading} disabled={disabled}>Button</IpsButton>
+        <IpsButton variant="contained" color="primary" size="medium" startIcon={<PlusIcon />} loading={loading} disabled={disabled}>Button</IpsButton>
+        <IpsButton variant="contained" color="primary" size="small" loading={loading} disabled={disabled}>Button</IpsButton>
+        <IpsButton variant="contained" color="primary" size="medium" loading={loading} disabled={disabled}>Button</IpsButton>
+      </Stack>
+
+      <SectionTitle>buttonType shortcuts</SectionTitle>
+      <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
         <IpsButton buttonType="add" loading={loading} disabled={disabled}>Add</IpsButton>
         <IpsButton buttonType="save" loading={loading} disabled={disabled}>Save</IpsButton>
         <IpsButton buttonType="clean" loading={loading} disabled={disabled}>Clean</IpsButton>
         <IpsButton buttonType="primary" loading={loading} disabled={disabled}>Primary</IpsButton>
         <IpsButton buttonType="secondary" loading={loading} disabled={disabled}>Secondary</IpsButton>
-        <IpsButton loading={loading} disabled={disabled}>Default</IpsButton>
       </Stack>
     </Box>
   )

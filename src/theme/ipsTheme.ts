@@ -79,6 +79,47 @@ export const ipsTheme = createTheme({
         },
       },
     },
+    MuiButton: {
+      defaultProps: {
+        disableElevation: true,
+      },
+      styleOverrides: {
+        root: {
+          borderRadius: 8,
+          textTransform: 'none',
+          fontWeight: 600,
+          fontSize: '14px',
+          lineHeight: 1.43,
+        },
+        sizeSmall: {
+          padding: '6px 16px',
+        },
+        sizeMedium: {
+          padding: '10px 20px',
+        },
+        outlined: {
+          borderWidth: '1.5px',
+          '&:hover': {
+            borderWidth: '1.5px',
+          },
+        },
+        outlinedPrimary: {
+          borderColor: palette.primary,
+          color: palette.primary,
+          '&:hover': {
+            backgroundColor: `${palette.primary}14`,
+            borderColor: palette.primary,
+          },
+        },
+        containedPrimary: {
+          backgroundColor: palette.primary,
+          color: palette.white,
+          '&:hover': {
+            backgroundColor: palette.primaryDark,
+          },
+        },
+      },
+    },
     MuiSwitch: {
       styleOverrides: {
         root: {
