@@ -72,7 +72,12 @@ ui-library/
 │   │   ├── IpsTextField/
 │   │   ├── IpsTimePicker/
 │   │   ├── IpsToast/
-│   │   └── IpsToolTips/
+│   │   ├── IpsToolTips/
+│   │   ├── IpsCarousel/
+│   │   ├── IpsDialog/
+│   │   ├── IpsDrawer/
+│   │   ├── IpsStepper/
+│   │   └── IpsTabs/
 │   ├── theme/
 │   │   ├── ipsTheme.ts          ← Main MUI theme
 │   │   ├── tokens/
@@ -1101,6 +1106,286 @@ Scan with DWT: containerId prop is the DWT container element ID — pass it to D
 Multiple containerId instances: each useFileUpload hook is fully independent (no shared state)
 
 
+IpsStepper  ←  MUI Stepper
+Purely visual, fully-controlled stepper. Renders only the step rail (nodes, connectors, labels, states); all flow logic stays with the consumer. Stateless — activeStep is controlled.
+
+Prop	Type	Default	Description
+steps	IpsStepItem[]	[]	Ordered step descriptors (required)
+activeStep	number	—	Controlled active step index (required)
+orientation	'horizontal' | 'vertical'	'horizontal'	Layout direction
+alternativeLabel	boolean	false	Horizontal — place label under the icon
+nonLinear	boolean	false	Render steps as clickable StepButton
+onStepClick	(index: number, step: IpsStepItem) => void	—	Fired on a clickable step; navigation logic is external
+renderStepIcon	(ctx: IpsStepRenderContext) => ReactNode	—	Full override of a step's icon
+renderStepLabel	(ctx: IpsStepRenderContext) => ReactNode	—	Full override of a step's label
+renderConnector	() => ReactElement	—	Override the connector
+connector	ReactElement | null	MUI default	Static connector override (null removes connectors)
+sx	SxProps	—	Style override
+Types: IpsStepItem = { label; description?; optional?; icon?; status?: IpsStepStatus; disabled?; content?; key? }
+IpsStepStatus = 'pending' | 'active' | 'completed' | 'warning' | 'error' | 'disabled'
+✅ Required Behaviors:
+Wrap MUI Stepper + Step + StepLabel/StepButton + StepConnector (+ StepContent for vertical)
+Stateless + fully controlled — NO internal active-step or status state; no uncontrolled mode (no defaultActiveStep)
+Resolve per-step status: use step.status if provided, else derive from activeStep (< active → completed, === active → active, > active → pending); step.disabled → disabled
+Status → MUI mapping: completed → Step.completed, error → StepLabel error, active → matches activeStep, disabled → Step.disabled, warning → custom StepIcon (warning.main)
+Clickability is consumer-driven: render StepButton only when nonLinear && onStepClick && !disabled; onStepClick reports intent only and never changes the active step
+Icon precedence: renderStepIcon → step.icon → default numbered/check icon. Label precedence: renderStepLabel → composed label (label + optional + description)
+Vertical orientation renders step.content inside StepContent
+Extend MUI StepperProps; support ref forwarding; apply ipsTheme (active/completed = primary.main, error = error.main)
+className="ips-stepper" on root, "ips-step" per step
+Export IpsStepperProps, IpsStepItem, IpsStepStatus, IpsStepRenderContext
+📖 Storybook Stories Required:
+Horizontal (default)
+Vertical
+Alternative label
+With descriptions and optional captions
+Non-linear / clickable
+Error status on a step
+Warning status on a step
+Disabled step
+Custom step icons (renderStepIcon)
+Vertical with StepContent
+Many steps (overflow / wrap)
+⚠️ AI Implementation Notes:
+activeStep is REQUIRED — no defaultActiveStep, no uncontrolled mode
+onStepClick must NEVER mutate the active step; the consumer owns all navigation/validation
+An explicit step.status always wins over the activeStep-derived default
+
+
+IpsTabs  ←  MUI Tabs
+Purely visual, fully-controlled tabs. Renders the tab bar (and optionally accessible tab panels); all flow logic stays with the consumer. Stateless — value is controlled; selection is by value, not index.
+
+Prop	Type	Default	Description
+tabs	IpsTabItem[]	[]	Ordered tab descriptors (required)
+value	string | number	—	Controlled value of the active tab (required)
+onTabChange	(value: string | number, tab: IpsTabItem) => void	—	Fired on tab activation; navigation logic is external
+orientation	'horizontal' | 'vertical'	'horizontal'	Bar layout direction
+variant	'standard' | 'scrollable' | 'fullWidth'	'standard'	MUI Tabs variant
+scrollButtons	'auto' | true | false	'auto'	Scroll buttons (scrollable variant)
+centered	boolean	false	Center tabs (standard horizontal)
+renderPanels	boolean	false	Also render accessible tab panels from tab.content
+keepMounted	boolean	false	With renderPanels, mount all panels (hide inactive)
+idPrefix	string	'ips-tabs'	Prefix for generated tab/panel aria ids
+renderTabLabel	(ctx: IpsTabRenderContext) => ReactNode	—	Full override of a tab's label
+sx	SxProps	—	Style override
+Types: IpsTabItem = { value; label; icon?; iconPosition?: 'top'|'bottom'|'start'|'end'; disabled?; error?; badge?; content?; key? }
+✅ Required Behaviors:
+Wrap MUI Tabs + Tab (+ a thin internal panel element when renderPanels is true)
+Stateless + fully controlled — value required; NO internal active-tab state; no uncontrolled mode
+Selection is by tab.value, NEVER by index
+Map MUI onChange(event, value) → onTabChange(value, tab); onTabChange reports intent only and never changes the selection
+disabled tabs are not selectable and skipped by keyboard nav; error renders an error style and is exposed non-visually (aria-invalid), not by color alone — IpsTabs runs no validation
+badge renders next to the label; icon + iconPosition map to MUI Tab
+Label precedence: renderTabLabel → composed label (label + badge)
+Always emit per-tab id=`${idPrefix}-tab-${value}` and aria-controls=`${idPrefix}-panel-${value}`; panels (internal or external) mirror the ids with role="tabpanel" + aria-labelledby
+renderPanels: render tab.content in role="tabpanel" (active only by default; keepMounted mounts all and hides inactive via the hidden attribute). When false, render the bar only
+Extend MUI TabsProps; support ref forwarding; apply ipsTheme (indicator/selected = primary.main, error = error.main)
+className="ips-tabs" on root, "ips-tab" per tab, "ips-tab-panel" per panel
+Export IpsTabsProps, IpsTabItem, IpsTabRenderContext
+📖 Storybook Stories Required:
+Horizontal (default)
+Vertical
+Scrollable (many tabs)
+Full width
+Centered
+With icons (each iconPosition)
+With badges / counts
+Disabled tab
+Error tab
+With built-in panels (renderPanels)
+Built-in panels with keepMounted
+Custom label via renderTabLabel
+⚠️ AI Implementation Notes:
+value is REQUIRED and selection is by value not index — no uncontrolled mode
+onTabChange must NEVER change the selection itself; the consumer owns navigation
+error/disabled are consumer-controlled and purely visual
+
+
+IpsDialog  ←  MUI Dialog
+Generic, fully-controlled popup/modal. A visual shell that renders ANY consumer component as children; all logic stays with the consumer. Stateless — open is controlled. (Rename to IpsPopup if preferred — API unchanged.)
+
+Prop	Type	Default	Description
+open	boolean	—	Controlled visibility (required)
+onClose	(reason: IpsDialogCloseReason) => void	—	Fired on a close intent; consumer decides whether to close
+title	React.ReactNode	—	Header title (ignored if renderHeader is set)
+icon	React.ReactNode	—	Optional icon beside the title
+children	React.ReactNode	—	Body content — the rendered inner component (required)
+actions	React.ReactNode	—	Footer content / buttons (ignored if renderFooter is set)
+maxWidth	'xs'|'sm'|'md'|'lg'|'xl'|number|false	'sm'	Max surface width (number = px)
+fullWidth	boolean	true	Stretch to maxWidth
+fullScreen	boolean	false	Render full-screen
+fullScreenBreakpoint	'xs'|'sm'|'md'|'lg'|'xl'	—	Auto full-screen at/below this breakpoint
+scroll	'paper' | 'body'	'paper'	Scroll behavior
+dividers	boolean	false	Dividers between header / content / footer
+showCloseButton	boolean	true	Show header close (X) button
+disableBackdropClose	boolean	false	Do not emit onClose on backdrop click
+disableEscapeKeyDown	boolean	false	Do not emit onClose on Esc
+transition	'fade' | 'grow' | 'slide' | 'zoom'	'fade'	Enter/exit animation
+loading	boolean	false	Busy overlay on the surface (visual only)
+keepMounted	boolean	false	Keep content mounted while closed
+rtl	boolean	false	Force RTL layout on the surface
+idPrefix	string	'ips-dialog'	Prefix for generated aria ids
+renderHeader	(ctx: IpsDialogRenderContext) => ReactNode	—	Full override of the header
+renderFooter	(ctx: IpsDialogRenderContext) => ReactNode	—	Full override of the footer
+sx	SxProps	—	Style override on the paper
+Types: IpsDialogCloseReason = 'backdropClick' | 'escapeKeyDown' | 'closeButton'
+✅ Required Behaviors:
+Wrap MUI Dialog + DialogTitle + DialogContent + DialogActions
+Stateless + fully controlled — open required; NO internal open state; no uncontrolled mode (no defaultOpen)
+onClose reports intent only and NEVER closes the dialog itself (consumer flips open): backdrop → onClose('backdropClick') unless disableBackdropClose; Esc → onClose('escapeKeyDown') unless disableEscapeKeyDown; close button → onClose('closeButton')
+Render children verbatim in DialogContent (component-agnostic body); render actions verbatim in DialogActions (no built-in button behavior)
+Header precedence: renderHeader → composed header (icon + title + optional close). Footer precedence: renderFooter → actions. Omit header/footer when nothing applies
+maxWidth (incl. px), fullWidth, scroll, dividers map to MUI; fullScreen forces full-screen; fullScreenBreakpoint via useMediaQuery (explicit fullScreen wins)
+transition enum → MUI Fade/Grow/Slide(up)/Zoom; loading → centered spinner overlay + aria-busy (no async itself); rtl → dir="rtl" on the paper
+aria-labelledby → `${idPrefix}-title`, aria-describedby → `${idPrefix}-content`; inherit MUI focus trap + focus restore
+Support ref forwarding; apply ipsTheme
+className="ips-dialog" on the paper, "ips-dialog-title" / "ips-dialog-content" / "ips-dialog-actions" on sections
+Export IpsDialogProps, IpsDialogCloseReason, IpsDialogRenderContext
+📖 Storybook Stories Required:
+Default (title + content + actions)
+Content only (no header/footer)
+Sizes (each maxWidth)
+Full width
+Full screen
+Responsive full screen (fullScreenBreakpoint)
+Scroll paper vs body (long content)
+With dividers
+Without close button
+disableBackdropClose + disableEscapeKeyDown
+Each transition (fade/grow/slide/zoom)
+With header icon
+Loading overlay
+Custom header via renderHeader
+Custom footer via renderFooter
+RTL layout
+⚠️ AI Implementation Notes:
+open is REQUIRED — no defaultOpen, no uncontrolled mode
+onClose must NEVER close the dialog itself; it only reports the reason
+children are rendered as-is — make no assumption about the inner component
+
+
+IpsDrawer  ←  MUI Drawer
+Generic, fully-controlled sliding panel (drawer). A visual shell that renders ANY consumer component as children; all logic stays with the consumer. Stateless — open is controlled.
+
+Prop	Type	Default	Description
+open	boolean	—	Controlled visibility (required)
+onClose	(reason: IpsDrawerCloseReason) => void	—	Fired on a close intent; consumer decides whether to close
+anchor	'left' | 'right' | 'top' | 'bottom'	'right'	Edge the drawer slides from
+variant	'temporary' | 'persistent' | 'permanent'	'temporary'	MUI drawer variant (temporary = modal + backdrop)
+size	number | string	400	Width (left/right) or height (top/bottom); number = px
+title	React.ReactNode	—	Header title (ignored if renderHeader is set)
+icon	React.ReactNode	—	Optional icon beside the title
+children	React.ReactNode	—	Body content — the rendered inner component (required)
+actions	React.ReactNode	—	Footer content / buttons (ignored if renderFooter is set)
+dividers	boolean	false	Dividers between header / content / footer
+showCloseButton	boolean	true	Show header close (X) button
+disableBackdropClose	boolean	false	Do not emit onClose on backdrop click (temporary)
+disableEscapeKeyDown	boolean	false	Do not emit onClose on Esc
+hideBackdrop	boolean	false	Hide the backdrop (temporary)
+elevation	number	theme default	Surface elevation
+loading	boolean	false	Busy overlay on the surface (visual only)
+keepMounted	boolean	false	Keep content mounted while closed
+rtl	boolean	false	Force RTL layout on the surface
+idPrefix	string	'ips-drawer'	Prefix for generated aria ids
+renderHeader	(ctx: IpsDrawerRenderContext) => ReactNode	—	Full override of the header
+renderFooter	(ctx: IpsDrawerRenderContext) => ReactNode	—	Full override of the footer
+sx	SxProps	—	Style override on the paper
+Types: IpsDrawerCloseReason = 'backdropClick' | 'escapeKeyDown' | 'closeButton'
+✅ Required Behaviors:
+Wrap MUI Drawer; compose a pinned header (title + close), an independently scrolling content region, and a pinned footer inside the paper
+Stateless + fully controlled — open required; NO internal open state; no uncontrolled mode
+onClose reports intent only and NEVER closes the drawer itself: backdrop → 'backdropClick' unless disableBackdropClose (not emitted for persistent/permanent); Esc → 'escapeKeyDown' unless disableEscapeKeyDown; close button → 'closeButton'
+Render children verbatim as the body (component-agnostic); render actions verbatim in the footer (no built-in button behavior)
+size maps to paper width for left/right and height for top/bottom (numbers = px)
+Header precedence: renderHeader → composed header (icon + title + optional close). Footer precedence: renderFooter → actions. Omit when nothing applies
+variant, hideBackdrop, elevation map to MUI; loading → spinner overlay + aria-busy; rtl → dir="rtl" (anchor stays physical)
+aria-labelledby → `${idPrefix}-title`, aria-describedby → `${idPrefix}-content`; temporary inherits MUI focus trap + restore; persistent/permanent are non-modal (no focus trap)
+Extend MUI DrawerProps; support ref forwarding; apply ipsTheme
+className="ips-drawer" on the paper, "ips-drawer-title" / "ips-drawer-content" / "ips-drawer-actions" on sections
+Export IpsDrawerProps, IpsDrawerCloseReason, IpsDrawerRenderContext
+📖 Storybook Stories Required:
+Each anchor (left/right/top/bottom)
+Each variant (temporary/persistent/permanent)
+Sizes (px and %)
+Default (title + content + actions)
+Content only (no header/footer)
+With dividers
+Without close button
+disableBackdropClose + disableEscapeKeyDown
+Hidden backdrop
+Loading overlay
+Long scrolling content (pinned header/footer)
+Custom header via renderHeader
+Custom footer via renderFooter
+RTL layout
+⚠️ AI Implementation Notes:
+open is REQUIRED — no uncontrolled mode
+onClose must NEVER close the drawer itself; it only reports the reason
+children are rendered as-is — make no assumption about the inner component
+
+
+IpsCarousel  ←  composed (MUI Box / Fade / Slide / IconButton / MobileStepper)
+Content-agnostic carousel. Takes a list of components and renders each as a slide, auto-advancing on a timer, with indicator dots at the bottom and optional left/right arrows for manual navigation. Owns only presentation/timing — no business logic.
+
+Prop	Type	Default	Description
+items	React.ReactNode[]	[]	Ordered slides — each is any component, rendered verbatim (required)
+activeIndex	number	—	Controlled current index (when set, component is controlled)
+defaultIndex	number	0	Initial index (uncontrolled mode)
+onIndexChange	(index: number) => void	—	Fired whenever the active slide changes (auto or manual)
+autoPlay	boolean	true	Auto-advance slides on a timer
+interval	number	5000	Auto-advance interval in ms
+loop	boolean	true	Wrap around past the first/last slide
+pauseOnHover	boolean	true	Pause auto-play while hovered or focused
+swipeable	boolean	true	Allow touch/drag to change slides
+showArrows	boolean	false	Show left/right arrows for manual navigation
+showDots	boolean	true	Show the bottom indicator dots
+dotsClickable	boolean	true	Clicking a dot jumps to that slide
+showPlayPause	boolean	false	Show a play/pause control (recommended with autoPlay)
+transition	'slide' | 'fade'	'slide'	Animation between slides
+height	number | string	—	Fixed viewport height (px or CSS)
+aspectRatio	number | string	—	Viewport aspect ratio (e.g. 16/9)
+rtl	boolean	false	Mirror arrow direction and slide motion
+idPrefix	string	'ips-carousel'	Prefix for generated aria ids
+renderDot	(ctx: IpsCarouselDotContext) => ReactNode	—	Override dot rendering
+renderArrow	(ctx: IpsCarouselArrowContext) => ReactNode	—	Override arrow rendering
+sx	SxProps	—	Style override on the root
+Types: IpsCarouselDotContext = { index; active; onClick }
+IpsCarouselArrowContext = { direction: 'prev' | 'next'; disabled; onClick }
+✅ Required Behaviors:
+DOCUMENTED EXCEPTION to the stateless rule: because auto-play is intrinsic, IpsCarousel supports BOTH controlled (activeIndex + onIndexChange) and uncontrolled (defaultIndex + internal index/timer) modes. Slide CONTENT is always external and rendered verbatim
+Controlled: never mutate index internally — auto-play/arrows/dots call onIndexChange(next) only. Uncontrolled: keep internal index seeded by defaultIndex; on every change update it AND call onIndexChange
+Auto-play (autoPlay && items.length > 1): advance every interval ms via setInterval; CLEAR the timer on unmount and on prop change; pause on hover/focus when pauseOnHover; respect prefers-reduced-motion (disable auto-advance + reduce animation)
+loop: wrap past first/last; when false, stop auto-play at the last slide and disable the matching arrow at each end
+Dots (showDots): one dot per slide, active highlighted; dotsClickable navigates; renderDot overrides
+Arrows (showArrows): prev/next IconButtons for manual navigation, disabled at ends when !loop; renderArrow overrides
+showPlayPause toggles auto-play; swipeable advances via touch/drag; transition = MUI Slide (directional, respects rtl) or Fade
+height/aspectRatio size the viewport; rtl mirrors arrow icons/positions and slide direction (prev/next stay logical)
+Gracefully handle 0 items (render nothing) and 1 item (no dots/arrows/auto-play)
+WAI-ARIA carousel semantics: root role="region" + aria-roledescription="carousel"; each slide role="group" aria-roledescription="slide" aria-label="{n} of {total}"; dots are buttons with aria-current; arrows have aria-labels
+Support ref forwarding; apply ipsTheme (active dot = primary.main)
+className="ips-carousel" on root, "ips-carousel-viewport" / "ips-carousel-slide" / "ips-carousel-dots" / "ips-carousel-arrow" on the parts
+Export IpsCarouselProps, IpsCarouselDotContext, IpsCarouselArrowContext
+📖 Storybook Stories Required:
+Auto-play (default) with dots
+Manual navigation with arrows (showArrows)
+Clickable dots
+Fade transition
+No loop (arrows disable at ends, auto-play stops)
+Single item
+Pause on hover/focus
+Play/Pause control
+Fixed height and aspectRatio
+Custom dots via renderDot
+Custom arrows via renderArrow
+RTL
+Controlled mode (external index)
+Swipeable (touch/drag)
+prefers-reduced-motion (auto-play disabled)
+⚠️ AI Implementation Notes:
+Do NOT add a third-party carousel dependency — compose from MUI primitives
+Always clear the auto-play timer on unmount; use fake timers in auto-play tests
+In controlled mode the index must never change internally — only onIndexChange fires
+
 7. Public API — src/index.ts
 The following must all be exported from src/index.ts. Nothing else should be exported from deep paths.
 // Components
@@ -1124,10 +1409,20 @@ export { IpsTextField } from './components/IpsTextField';
 export { IpsTimePicker } from './components/IpsTimePicker';
 export { IpsToastProvider, useToast, TOAST_TYPES } from './components/IpsToast';
 export { IpsToolTips } from './components/IpsToolTips';
+export { IpsStepper } from './components/IpsStepper';
+export { IpsTabs } from './components/IpsTabs';
+export { IpsDialog } from './components/IpsDialog';
+export { IpsDrawer } from './components/IpsDrawer';
+export { IpsCarousel } from './components/IpsCarousel';
 
 // Types
 export type { IpsAccordionProps } from './components/IpsAccordion';
 // ... (all Ips*Props types)
+export type { IpsStepperProps, IpsStepItem, IpsStepStatus, IpsStepRenderContext } from './components/IpsStepper';
+export type { IpsTabsProps, IpsTabItem, IpsTabRenderContext } from './components/IpsTabs';
+export type { IpsDialogProps, IpsDialogCloseReason, IpsDialogRenderContext } from './components/IpsDialog';
+export type { IpsDrawerProps, IpsDrawerCloseReason, IpsDrawerRenderContext } from './components/IpsDrawer';
+export type { IpsCarouselProps, IpsCarouselDotContext, IpsCarouselArrowContext } from './components/IpsCarousel';
 
 // Theme
 export { ipsTheme } from './theme/ipsTheme';
@@ -1216,14 +1511,19 @@ Keyboard navigation must work (Tab, Enter, Space, Arrow keys) — inherited from
 Components must not break screen reader flow
 RTL-aware components (IpsDatePicker) must flip layout correctly
 Run @storybook/addon-a11y on every story and fix any violations
+IpsDialog / IpsDrawer (temporary): inherit MUI modal semantics — focus trap, aria-modal, focus restore on close; wire aria-labelledby (title) + aria-describedby (content) from idPrefix
+IpsDrawer persistent/permanent: non-modal — do not trap focus; keep reachable in tab order
+IpsTabs / IpsStepper: aria-current on the active item; tab/panel ids wired via idPrefix; error states exposed non-visually (not color alone)
+IpsCarousel: full WAI-ARIA carousel pattern — region + slide roles, dot/arrow buttons with labels, pause auto-play on hover/focus, honor prefers-reduced-motion
+RTL-aware components now also include IpsDialog, IpsDrawer and IpsCarousel (rtl prop)
 
 
 12. Final AI Instruction Summary
-1. Generate ALL 20 components. Do not skip any.
+1. Generate ALL 25 components. Do not skip any.
 2. Every component: .tsx + .types.ts + .stories.tsx + .test.tsx + index.ts
 3. All exports go through src/index.ts only.
 4. All components wrap MUI — except IpsRichTextEditor (Tiptap), IpsToast (custom portal),
-   and IpsFileUpload (custom + native browser APIs).
+   IpsFileUpload (custom + native browser APIs), and IpsCarousel (composed from MUI primitives).
 5. All components use forwardRef (where applicable).
 6. Storybook stories always wrap with IpsThemeProvider.
 7. IpsTable → MUI DataGrid. IpsTableLight → MUI Table (no DataGrid).
@@ -1245,5 +1545,23 @@ Run @storybook/addon-a11y on every story and fix any violations
        Do NOT use deprecated InputProps, inputProps (use slotProps.htmlInput).
 17. Apply ipsTheme to ALL components.
 18. Run: npm install, npm run lint, npm test, npm run build — all must pass.
+19. IpsStepper → wrap MUI Stepper/Step/StepLabel/StepButton/StepConnector/StepContent.
+       Stateless & fully controlled (activeStep required; no internal flow state).
+       Per-step status is consumer-controlled and overrides the activeStep-derived default.
+       renderStepIcon/renderStepLabel/renderConnector escape hatches. onStepClick reports intent only.
+20. IpsTabs → wrap MUI Tabs/Tab. Stateless & fully controlled (value required; selection by value, not index).
+       onTabChange reports intent only. Always emit tab/panel aria ids from idPrefix; renderPanels (keepMounted) optional.
+       Per-tab icon/badge/disabled/error are consumer-controlled and visual only.
+21. IpsDialog → wrap MUI Dialog/DialogTitle/DialogContent/DialogActions. Generic popup/modal.
+       Stateless & fully controlled (open required). onClose reports intent only
+       (reason: backdropClick | escapeKeyDown | closeButton) and NEVER closes itself.
+       Render children verbatim (component-agnostic) and actions in the footer (no built-in button behavior).
+22. IpsDrawer → wrap MUI Drawer. Generic sliding panel; same controlled/onClose contract as IpsDialog.
+       anchor left/right/top/bottom; size maps to width (left/right) or height (top/bottom); variant
+       temporary/persistent/permanent. Pinned header/footer with independently scrolling content.
+23. IpsCarousel → composed from MUI primitives (NO third-party carousel dep). items: ReactNode[] rendered verbatim.
+       DOCUMENTED EXCEPTION to the stateless rule: supports BOTH uncontrolled (internal index + timer, the auto-run
+       behavior) and controlled (activeIndex + onIndexChange). Auto-play on interval, pause on hover/focus, clear
+       timer on unmount, honor prefers-reduced-motion. Bottom dots, manual arrows (showArrows), WAI-ARIA carousel.
 
 END OF SPEC — @company/ui v2.0

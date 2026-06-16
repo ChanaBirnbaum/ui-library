@@ -16,6 +16,7 @@ import {
 } from '@mui/material'
 import { CacheProvider } from '@emotion/react'
 import { createRtlCache } from '../utils/rtlUtils'
+import { ipsTheme } from '../theme/ipsTheme'
 
 import { IpsButton } from '../components/IpsButton/IpsButton'
 import { IpsTextField } from '../components/IpsTextField/IpsTextField'
@@ -52,6 +53,7 @@ import { IpsDialog } from '../components/IpsDialog/IpsDialog'
 import type { IpsDialogCloseReason } from '../components/IpsDialog/IpsDialog.types'
 import { IpsDrawer } from '../components/IpsDrawer/IpsDrawer'
 import type { IpsDrawerCloseReason } from '../components/IpsDrawer/IpsDrawer.types'
+import { IpsCarousel } from '../components/IpsCarousel/IpsCarousel'
 import type { GridColDef } from '@mui/x-data-grid'
 import type { Moment } from 'moment'
 import moment from 'moment'
@@ -62,12 +64,8 @@ import SvgIcon from '@mui/material/SvgIcon'
 
 const rtlCache = createRtlCache()
 
-const theme = createTheme({
+const theme = createTheme(ipsTheme, {
   direction: 'rtl',
-  palette: {
-    primary: { main: '#1565C0', light: '#42A5F5', dark: '#0D47A1' },
-    secondary: { main: '#616161' }
-  },
   typography: {
     fontFamily: 'Heebo, Roboto, Arial, sans-serif',
   },
@@ -89,7 +87,7 @@ const options = [
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <Typography variant="h6" color="primary" sx={{ mb: 1, mt: 3, borderBottom: '2px solid', borderColor: 'primary.light', pb: 0.5 }}>
+    <Typography variant="h6" color="primary.dark" sx={{ mb: 1, mt: 3, borderBottom: '2px solid', borderColor: 'primary.dark', pb: 0.5 }}>
       {children}
     </Typography>
   )
@@ -100,16 +98,16 @@ function PropsTable({ props }: { props: { name: string; value: string; descripti
     <Box sx={{ mb: 2, overflowX: 'auto' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead>
-          <tr style={{ backgroundColor: '#e3f2fd' }}>
-            <th style={{ padding: '6px 12px', textAlign: 'left', border: '1px solid #bbdefb' }}>Prop</th>
-            <th style={{ padding: '6px 12px', textAlign: 'left', border: '1px solid #bbdefb' }}>Value</th>
-            <th style={{ padding: '6px 12px', textAlign: 'left', border: '1px solid #bbdefb' }}>Description</th>
+          <tr style={{ backgroundColor: '#E6F4FF' }}>
+            <th style={{ padding: '6px 12px', textAlign: 'left', border: '1px solid #E0EBFF' }}>Prop</th>
+            <th style={{ padding: '6px 12px', textAlign: 'left', border: '1px solid #E0EBFF' }}>Value</th>
+            <th style={{ padding: '6px 12px', textAlign: 'left', border: '1px solid #E0EBFF' }}>Description</th>
           </tr>
         </thead>
         <tbody>
           {props.map((p, i) => (
             <tr key={i} style={{ backgroundColor: i % 2 ? '#f8f9fa' : 'white' }}>
-              <td style={{ padding: '5px 12px', border: '1px solid #e0e0e0', fontWeight: 600, color: '#1565C0' }}>{p.name}</td>
+              <td style={{ padding: '5px 12px', border: '1px solid #e0e0e0', fontWeight: 600, color: '#1D4ED8' }}>{p.name}</td>
               <td style={{ padding: '5px 12px', border: '1px solid #e0e0e0', fontFamily: 'monospace', color: '#c62828' }}>{p.value}</td>
               <td style={{ padding: '5px 12px', border: '1px solid #e0e0e0', color: '#555' }}>{p.description}</td>
             </tr>
@@ -156,11 +154,14 @@ function TextFieldPanel() {
   const [readOnly, setReadOnly] = useState(false)
   const [error, setError] = useState(false)
   const [helperText, setHelperText] = useState(false)
+  const [required, setRequired] = useState(false)
 
   return (
     <Box>
       <PropsTable props={[
         { name: 'label', value: 'string', description: 'תווית השדה' },
+        { name: 'required', value: 'boolean', description: 'שדה חובה — מציג כוכבית אדומה בכותרת' },
+        { name: 'type="search"', value: 'string', description: 'מציג אייקון חיפוש אוטומטי' },
         { name: 'disabled', value: 'boolean', description: 'מנטרל את השדה' },
         { name: 'readOnly', value: 'boolean', description: 'קריאה בלבד' },
         { name: 'error', value: 'boolean', description: 'מציג שגיאה' },
@@ -171,14 +172,33 @@ function TextFieldPanel() {
         <FormControlLabel control={<Switch checked={readOnly} onChange={e => setReadOnly(e.target.checked)} />} label="readOnly" />
         <FormControlLabel control={<Switch checked={error} onChange={e => setError(e.target.checked)} />} label="error" />
         <FormControlLabel control={<Switch checked={helperText} onChange={e => setHelperText(e.target.checked)} />} label="helperText" />
+        <FormControlLabel control={<Switch checked={required} onChange={e => setRequired(e.target.checked)} />} label="required" />
       </Box>
-      <Stack spacing={2} sx={{ maxWidth: 400 }}>
-        <IpsTextField label="שדה טקסט" placeholder="הכנס טקסט..." value={value}
-          onChange={e => setValue(e.target.value)} disabled={disabled}
-          inputProps={{ readOnly }} error={error}
-          helperText={helperText ? 'זהו טקסט עזר לשדה' : undefined} />
-        <IpsTextField label="עם ערך קבוע" value="ערך לדוגמה" readOnly disabled={disabled} error={error}
-          helperText={helperText ? 'שדה קריאה בלבד' : undefined} />
+      <Stack spacing={2}>
+        <IpsTextField
+          label="שדה טקסט"
+          placeholder="הכנס טקסט..."
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          disabled={disabled}
+          readOnly={readOnly}
+          required={required}
+          error={error}
+          helperText={helperText ? 'זהו טקסט עזר לשדה' : undefined}
+        />
+        <IpsTextField
+          label="שדה חובה לדוגמה"
+          placeholder="שדה זה הוא חובה"
+          required
+          error={error}
+          helperText={helperText ? 'שדה חובה' : undefined}
+          disabled={disabled}
+        />
+        <IpsTextField
+          type="search"
+          placeholder="חיפוש..."
+          disabled={disabled}
+        />
       </Stack>
     </Box>
   )
@@ -188,19 +208,25 @@ function TextAreaPanel() {
   const [value, setValue] = useState('')
   const [disabled, setDisabled] = useState(false)
   const [error, setError] = useState(false)
+  const [required, setRequired] = useState(false)
+  const [wide, setWide] = useState(false)
   const [rows, setRows] = useState(4)
 
   return (
     <Box>
       <PropsTable props={[
         { name: 'label', value: 'string', description: 'תווית השדה' },
+        { name: 'required', value: 'boolean', description: 'שדה חובה — כוכבית אדומה בכותרת' },
+        { name: 'wide', value: 'boolean', description: 'רוחב כפול (576px במקום 288px)' },
         { name: 'rows', value: 'number', description: 'מספר שורות' },
         { name: 'disabled', value: 'boolean', description: 'מנטרל את השדה' },
-        { name: 'error', value: 'boolean', description: 'מציג שגיאה' },
+        { name: 'error', value: 'boolean', description: 'מציג שגיאה עם אייקון בהלפר טקסט' },
       ]} />
       <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
         <FormControlLabel control={<Switch checked={disabled} onChange={e => setDisabled(e.target.checked)} />} label="disabled" />
         <FormControlLabel control={<Switch checked={error} onChange={e => setError(e.target.checked)} />} label="error" />
+        <FormControlLabel control={<Switch checked={required} onChange={e => setRequired(e.target.checked)} />} label="required" />
+        <FormControlLabel control={<Switch checked={wide} onChange={e => setWide(e.target.checked)} />} label="wide" />
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Typography variant="body2">rows:</Typography>
           {[2, 4, 6, 8].map(r => (
@@ -208,9 +234,18 @@ function TextAreaPanel() {
           ))}
         </Box>
       </Box>
-      <IpsTextArea label="שדה טקסט גדול" placeholder="הכנס טקסט ארוך..." value={value}
-        onChange={e => setValue(e.target.value)} disabled={disabled} rows={rows} error={error}
-        helperText={error ? 'שגיאה בשדה זה' : 'הכנס תוכן'} sx={{ maxWidth: 500 }} />
+      <IpsTextArea
+        label="שדה טקסט גדול"
+        placeholder="הכנס טקסט ארוך..."
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        disabled={disabled}
+        required={required}
+        wide={wide}
+        rows={rows}
+        error={error}
+        helperText={error ? 'שגיאה בשדה זה' : 'הכנס תוכן'}
+      />
     </Box>
   )
 }
@@ -286,9 +321,9 @@ function IconButtonPanel() {
       </Box>
       <SectionTitle>גדלים</SectionTitle>
       <Stack direction="row" spacing={1} alignItems="center">
-        <IpsIconButton icon={<StarIcon />} tooltip={showTooltip ? 'Small' : undefined} size="small" disabled={disabled} color="primary" />
-        <IpsIconButton icon={<StarIcon />} tooltip={showTooltip ? 'Medium' : undefined} size="medium" disabled={disabled} color="primary" />
-        <IpsIconButton icon={<StarIcon />} tooltip={showTooltip ? 'Large' : undefined} size="large" disabled={disabled} color="primary" />
+        <IpsIconButton icon={<StarIcon />} tooltip={showTooltip ? 'Small' : undefined} size="small" disabled={disabled} sx={{ color: 'primary.dark' }} />
+        <IpsIconButton icon={<StarIcon />} tooltip={showTooltip ? 'Medium' : undefined} size="medium" disabled={disabled} sx={{ color: 'primary.dark' }} />
+        <IpsIconButton icon={<StarIcon />} tooltip={showTooltip ? 'Large' : undefined} size="large" disabled={disabled} sx={{ color: 'primary.dark' }} />
       </Stack>
       <SectionTitle>צבעים</SectionTitle>
       <Stack direction="row" spacing={1}>
@@ -1802,6 +1837,108 @@ function IpsDialogPanel() {
   )
 }
 
+function IpsCarouselPanel() {
+  const [autoPlay, setAutoPlay] = useState(true)
+  const [loop, setLoop] = useState(true)
+  const [pauseOnHover, setPauseOnHover] = useState(true)
+  const [swipeable, setSwipeable] = useState(true)
+  const [showArrows, setShowArrows] = useState(false)
+  const [showDots, setShowDots] = useState(true)
+  const [dotsClickable, setDotsClickable] = useState(true)
+  const [showPlayPause, setShowPlayPause] = useState(false)
+  const [rtl, setRtl] = useState(false)
+  const [transition, setTransition] = useState<'slide' | 'fade'>('slide')
+  const [interval, setIntervalMs] = useState(3000)
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  const COLORS = ['#1565C0', '#2E7D32', '#C62828', '#F57F17', '#6A1B9A']
+  const sampleSlides = COLORS.map((color, i) => (
+    <Box
+      key={i}
+      sx={{
+        height: 180,
+        bgcolor: color,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 2,
+      }}
+    >
+      <Typography variant="h3" color="white" fontWeight={700}>{i + 1}</Typography>
+    </Box>
+  ))
+
+  return (
+    <Box>
+      <PropsTable props={[
+        { name: 'items', value: 'ReactNode[]', description: 'רשימת slides — כל אחד component שרנדרים כמות שהוא' },
+        { name: 'activeIndex', value: 'number', description: 'index נשלט מבחוץ — מצב controlled' },
+        { name: 'defaultIndex', value: 'number', description: 'index התחלתי במצב uncontrolled' },
+        { name: 'onIndexChange', value: '(index: number) => void', description: 'נקרא בכל שינוי slide' },
+        { name: 'autoPlay', value: 'boolean', description: 'מעבר אוטומטי בין slides' },
+        { name: 'interval', value: 'number', description: 'מרווח זמן בין מעברים (ms)' },
+        { name: 'loop', value: 'boolean', description: 'חזרה לתחילה אחרי הslide האחרון' },
+        { name: 'pauseOnHover', value: 'boolean', description: 'עצירה בעת hover/focus' },
+        { name: 'swipeable', value: 'boolean', description: 'החלקה עם עכבר/מגע' },
+        { name: 'showArrows', value: 'boolean', description: 'חיצים לניווט ידני' },
+        { name: 'showDots', value: 'boolean', description: 'נקודות אינדיקטור בתחתית' },
+        { name: 'dotsClickable', value: 'boolean', description: 'לחיצה על נקודה מנווטת' },
+        { name: 'showPlayPause', value: 'boolean', description: 'כפתור play/pause' },
+        { name: 'transition', value: "'slide' | 'fade'", description: 'סוג אנימציה' },
+        { name: 'height / aspectRatio', value: 'number | string', description: 'גובה / יחס גובה-רוחב של ה-viewport' },
+        { name: 'rtl', value: 'boolean', description: 'כיוון RTL — הופך חיצים וכיוון החלקה' },
+      ]} />
+
+      <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+        <FormControlLabel control={<Switch checked={autoPlay} onChange={e => setAutoPlay(e.target.checked)} />} label="autoPlay" />
+        <FormControlLabel control={<Switch checked={loop} onChange={e => setLoop(e.target.checked)} />} label="loop" />
+        <FormControlLabel control={<Switch checked={pauseOnHover} onChange={e => setPauseOnHover(e.target.checked)} />} label="pauseOnHover" />
+        <FormControlLabel control={<Switch checked={swipeable} onChange={e => setSwipeable(e.target.checked)} />} label="swipeable" />
+        <FormControlLabel control={<Switch checked={showArrows} onChange={e => setShowArrows(e.target.checked)} />} label="showArrows" />
+        <FormControlLabel control={<Switch checked={showDots} onChange={e => setShowDots(e.target.checked)} />} label="showDots" />
+        <FormControlLabel control={<Switch checked={dotsClickable} onChange={e => setDotsClickable(e.target.checked)} />} label="dotsClickable" />
+        <FormControlLabel control={<Switch checked={showPlayPause} onChange={e => setShowPlayPause(e.target.checked)} />} label="showPlayPause" />
+        <FormControlLabel control={<Switch checked={rtl} onChange={e => setRtl(e.target.checked)} />} label="rtl" />
+      </Box>
+
+      <Box sx={{ mb: 2, display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2">transition:</Typography>
+          {(['slide', 'fade'] as const).map(t => (
+            <IpsButton key={t} size="small" variant={transition === t ? 'contained' : 'outlined'} onClick={() => setTransition(t)}>{t}</IpsButton>
+          ))}
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="body2">interval (ms):</Typography>
+          {[1000, 2000, 3000, 5000].map(ms => (
+            <IpsButton key={ms} size="small" variant={interval === ms ? 'contained' : 'outlined'} onClick={() => setIntervalMs(ms)}>{ms}</IpsButton>
+          ))}
+        </Box>
+      </Box>
+
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        Current index: <strong>{currentIndex}</strong>
+      </Typography>
+
+      <IpsCarousel
+        items={sampleSlides}
+        autoPlay={autoPlay}
+        loop={loop}
+        pauseOnHover={pauseOnHover}
+        swipeable={swipeable}
+        showArrows={showArrows}
+        showDots={showDots}
+        dotsClickable={dotsClickable}
+        showPlayPause={showPlayPause}
+        transition={transition}
+        interval={interval}
+        rtl={rtl}
+        onIndexChange={setCurrentIndex}
+      />
+    </Box>
+  )
+}
+
 const TABS = [
   { label: 'Button', component: <ButtonPanel /> },
   { label: 'TextField', component: <TextFieldPanel /> },
@@ -1828,6 +1965,7 @@ const TABS = [
   { label: 'Tabs', component: <IpsTabsPanel /> },
   { label: 'Dialog', component: <IpsDialogPanel /> },
   { label: 'Drawer', component: <IpsDrawerPanel /> },
+  { label: 'Carousel', component: <IpsCarouselPanel /> },
 ]
 
 export default function App() {
@@ -1840,7 +1978,7 @@ export default function App() {
           <CssBaseline />
         <Box sx={{ minHeight: '100vh', bgcolor: '#f5f7fa' }} dir="rtl">
           {/* Header */}
-          <Box sx={{ background: 'linear-gradient(135deg, #1565C0 0%, #0D47A1 100%)', color: 'white', px: 4, py: 3 }}>
+          <Box sx={{ background: 'linear-gradient(135deg, #1D4ED8 0%, #00033D 100%)', color: 'white', px: 4, py: 3 }}>
             <Typography variant="h4" fontWeight={700}>🎨 IPS UI Library</Typography>
             <Typography variant="subtitle1" sx={{ opacity: 0.85 }}>תצוגת פקדים — React 18 + TypeScript + MUI</Typography>
           </Box>
@@ -1863,7 +2001,7 @@ export default function App() {
           {/* Content */}
           <Box sx={{ p: 4, maxWidth: 900, mx: 'auto' }}>
             <Paper elevation={1} sx={{ p: 4, borderRadius: 2 }}>
-              <Typography variant="h5" fontWeight={700} color="primary" gutterBottom>
+              <Typography variant="h5" fontWeight={700} color="primary.dark" gutterBottom>
                 Ips{TABS[tab].label}
               </Typography>
               <Divider sx={{ mb: 3 }} />

@@ -121,7 +121,7 @@ function IpsTableLightBase<Row extends IpsTableLightRow>(
                 align={col.align ?? 'left'}
                 sx={{
                   backgroundColor: 'primary.main',
-                  color: 'common.white',
+                  color: 'text.primary',
                   fontWeight: 600,
                   whiteSpace: 'nowrap',
                   // MUI copies background via a separate internal rule when stickyHeader is true

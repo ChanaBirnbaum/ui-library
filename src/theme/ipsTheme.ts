@@ -6,17 +6,27 @@ export const ipsTheme = createTheme({
   palette: {
     primary: {
       main: palette.primary,
+      light: palette.primaryLight,
       dark: palette.primaryDark,
+    },
+    secondary: {
+      main: '#006AFF',
     },
     success: {
       main: palette.success,
+    },
+    warning: {
+      main: '#ed6c02',
+    },
+    info: {
+      main: '#0288d1',
     },
     error: {
       main: palette.danger,
     },
     text: {
-      primary: palette.gray900,
-      secondary: palette.gray500,
+      primary: palette.textMain,
+      secondary: palette.textSecondary,
     },
     background: {
       default: palette.white,
@@ -34,6 +44,92 @@ export const ipsTheme = createTheme({
   },
   shape: {
     borderRadius: 6,
+  },
+  components: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          backgroundColor: palette.white,
+          '&:hover:not(.Mui-disabled):not(.Mui-error):not(.Mui-focused) .MuiOutlinedInput-notchedOutline': {
+            borderColor: palette.textMain,
+          },
+          '&.Mui-focused:not(.Mui-error) .MuiOutlinedInput-notchedOutline': {
+            borderColor: palette.primary,
+            borderWidth: '2px',
+          },
+          '&.Mui-disabled .MuiOutlinedInput-notchedOutline': {
+            borderColor: palette.gray200,
+          },
+          '&.Mui-disabled': {
+            backgroundColor: '#F5F5F5',
+          },
+        },
+        input: {
+          padding: '8px 14px',
+        },
+        notchedOutline: {
+          borderColor: palette.gray300,
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          width: '288px',
+        },
+      },
+    },
+    MuiSwitch: {
+      styleOverrides: {
+        root: {
+          width: 44,
+          height: 20,
+          padding: 0,
+          '& .MuiSwitch-switchBase': {
+            padding: 0,
+            margin: 2,
+            transitionDuration: '200ms',
+            '&.Mui-checked': {
+              transform: 'translateX(24px)',
+              color: palette.white,
+              '& + .MuiSwitch-track': {
+                opacity: 1,
+              },
+            },
+            '&.Mui-disabled': {
+              opacity: 0.5,
+            },
+            '&.Mui-disabled + .MuiSwitch-track': {
+              opacity: 0.5,
+            },
+          },
+          '& .MuiSwitch-thumb': {
+            width: 16,
+            height: 16,
+            backgroundColor: palette.white,
+            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+          },
+          '& .MuiSwitch-track': {
+            borderRadius: 10,
+            backgroundColor: '#C4C6D0',
+            opacity: 1,
+          },
+        },
+      },
+    },
+    MuiFormLabel: {
+      styleOverrides: {
+        asterisk: {
+          color: palette.danger,
+        },
+        root: {
+          color: palette.gray500,
+          '&.Mui-error': {
+            color: palette.danger,
+          },
+        },
+      },
+    },
   },
 })
 
