@@ -11,7 +11,8 @@ import {
   Divider,
   Switch,
   FormControlLabel,
-  Stack
+  Stack,
+  Chip,
 } from '@mui/material'
 import { CacheProvider } from '@emotion/react'
 import { createRtlCache } from '../utils/rtlUtils'
@@ -43,6 +44,14 @@ import { IpsRichTextEditor } from '../components/IpsRichTextEditor/IpsRichTextEd
 import { DEFAULT_TOOLBAR } from '../components/IpsRichTextEditor/IpsRteToolbar.types'
 import type { IpsRteToolbarConfig } from '../components/IpsRichTextEditor/IpsRteToolbar.types'
 import { IpsFileUpload } from '../components/IpsFileUpload/IpsFileUpload'
+import { IpsStepper } from '../components/IpsStepper/IpsStepper'
+import type { IpsStepItem } from '../components/IpsStepper/IpsStepper.types'
+import { IpsTabs } from '../components/IpsTabs/IpsTabs'
+import type { IpsTabItem } from '../components/IpsTabs/IpsTabs.types'
+import { IpsDialog } from '../components/IpsDialog/IpsDialog'
+import type { IpsDialogCloseReason } from '../components/IpsDialog/IpsDialog.types'
+import { IpsDrawer } from '../components/IpsDrawer/IpsDrawer'
+import type { IpsDrawerCloseReason } from '../components/IpsDrawer/IpsDrawer.types'
 import type { GridColDef } from '@mui/x-data-grid'
 import type { Moment } from 'moment'
 import moment from 'moment'
@@ -773,52 +782,143 @@ function DateTimePickerPanel() {
 }
 
 function TableLightPanel() {
-  const COLUMNS = [
-    { key: 'name',       label: 'שם',         width: 160 },
-    { key: 'role',       label: 'תפקיד',      width: 160 },
-    { key: 'department', label: 'מחלקה',      width: 160 },
-    { key: 'status',     label: 'סטטוס',      width: 120 },
+  type EmpRow = {
+    id: number; name: string; role: string; dept: string
+    status: string; avatar: string; profile: string
+  }
+
+  const ROWS: EmpRow[] = [
+    { id: 1, name: 'Alice Cohen',   role: 'Developer', dept: 'R&D',     status: 'פעיל',    avatar: 'https://i.pravatar.cc/40?u=1', profile: '/users/1' },
+    { id: 2, name: 'Bob Levi',      role: 'Designer',  dept: 'Product', status: 'פעיל',    avatar: 'https://i.pravatar.cc/40?u=2', profile: '/users/2' },
+    { id: 3, name: 'Carol Shapir',  role: 'PM',        dept: 'Product', status: 'חופשה',   avatar: 'https://i.pravatar.cc/40?u=3', profile: '/users/3' },
+    { id: 4, name: 'Dan Mizrahi',   role: 'QA',        dept: 'R&D',     status: 'פעיל',    avatar: 'https://i.pravatar.cc/40?u=4', profile: '/users/4' },
+    { id: 5, name: 'Eve Katz',      role: 'DevOps',    dept: 'Infra',   status: 'לא פעיל', avatar: 'https://i.pravatar.cc/40?u=5', profile: '/users/5' },
+    { id: 6, name: 'Frank Avraham', role: 'Analyst',   dept: 'BI',      status: 'פעיל',    avatar: 'https://i.pravatar.cc/40?u=6', profile: '/users/6' },
   ]
-  const ROWS = [
-    { name: 'Alice Cohen',  role: 'Developer', department: 'R&D',     status: 'פעיל'  },
-    { name: 'Bob Levi',     role: 'Designer',  department: 'Product', status: 'פעיל'  },
-    { name: 'Carol Shapir', role: 'PM',        department: 'Product', status: 'חופשה' },
-    { name: 'Dan Mizrahi',  role: 'QA',        department: 'R&D',     status: 'פעיל'  },
-    { name: 'Eve Katz',     role: 'DevOps',    department: 'Infra',   status: 'פעיל'  },
+
+  const BASIC_COLS = [
+    { key: 'name',   label: 'שם',     width: 160 },
+    { key: 'role',   label: 'תפקיד', width: 140 },
+    { key: 'dept',   label: 'מחלקה', width: 140 },
+    { key: 'status', label: 'סטטוס', width: 120 },
   ]
+
+  const STATUS_COLOR: Record<string, 'success' | 'warning' | 'error'> = {
+    'פעיל': 'success', 'חופשה': 'warning', 'לא פעיל': 'error',
+  }
 
   const [striped, setStriped] = useState(true)
   const [dense, setDense] = useState(false)
   const [stickyHeader, setStickyHeader] = useState(false)
   const [showEmpty, setShowEmpty] = useState(false)
+  const [enableRowClick, setEnableRowClick] = useState(false)
+  const [lastClick, setLastClick] = useState<string | null>(null)
 
   return (
     <Box>
       <PropsTable props={[
-        { name: 'columns', value: 'IpsTableLightColumn[]', description: 'הגדרות עמודות (חובה)' },
-        { name: 'rows', value: 'Record<string, ReactNode>[]', description: 'מערך שורות (חובה)' },
-        { name: 'striped', value: 'boolean', description: 'שורות זוגיות בצבע אפור' },
-        { name: 'dense', value: 'boolean', description: 'ריווח מצומצם' },
-        { name: 'stickyHeader', value: 'boolean', description: 'כותרת קבועה בגלילה' },
-        { name: 'emptyText', value: 'string', description: 'טקסט כשאין שורות' },
-        { name: 'sx', value: 'SxProps', description: 'עיצוב MUI על ה-TableContainer' },
+        { name: 'columns',          value: 'IpsTableLightColumn<Row>[]',  description: 'הגדרות עמודות — generic על Row (חובה)' },
+        { name: 'rows',             value: 'Row[]',                        description: 'מערך שורות (חובה)' },
+        { name: 'maxHeight',        value: 'number | string',              description: 'גובה מקסימלי + overflow:auto לגלילה אנכית' },
+        { name: 'stickyHeader',     value: 'boolean',                      description: 'כותרת קבועה בגלילה (דורש maxHeight)' },
+        { name: 'wrap',             value: "'ellipsis'|'wrap'|'nowrap'",   description: "ברירת מחדל לגלישת טקסט לכל העמודות (ברירת מחדל: 'ellipsis')" },
+        { name: 'col.wrap',         value: "'ellipsis'|'wrap'|'nowrap'",   description: 'עקיפת wrap ברמת עמודה בודדת' },
+        { name: 'col.type',         value: "'link'|'image'|'text'",        description: "רנדר מובנה לתא — 'link' מרנדר <Link>, 'image' מרנדר <img>" },
+        { name: 'col.render',       value: '(val, row, i) => ReactNode',   description: 'רנדר מלא מותאם — עדיפות על col.type' },
+        { name: 'onRowClick',       value: '(e, row, idx) => void',        description: 'לחיצה על שורה — מפעיל cursor:pointer אוטומטית' },
+        { name: 'onRowDoubleClick', value: '(e, row, idx) => void',        description: 'לחיצה כפולה על שורה' },
+        { name: 'hover',            value: 'boolean',                      description: 'hover highlight — auto כשיש row handler' },
+        { name: 'getRowId',         value: '(row, i) => string|number',    description: 'מפתח React יציב לכל שורה (ברירת מחדל: row.id ← index)' },
+        { name: 'striped',          value: 'boolean',                      description: 'שורות זוגיות בצבע אפור (ברירת מחדל: true)' },
+        { name: 'dense',            value: 'boolean',                      description: 'ריווח מצומצם' },
+        { name: 'emptyText',        value: 'string',                       description: "טקסט כשאין שורות (ברירת מחדל: 'No data')" },
       ]} />
-      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-        <FormControlLabel control={<Switch checked={striped} onChange={e => setStriped(e.target.checked)} />} label="striped" />
-        <FormControlLabel control={<Switch checked={dense} onChange={e => setDense(e.target.checked)} />} label="dense" />
-        <FormControlLabel control={<Switch checked={stickyHeader} onChange={e => setStickyHeader(e.target.checked)} />} label="stickyHeader" />
-        <FormControlLabel control={<Switch checked={showEmpty} onChange={e => setShowEmpty(e.target.checked)} />} label="empty state" />
-      </Box>
-      <Box sx={stickyHeader ? { maxHeight: 200, overflow: 'auto' } : undefined}>
-        <IpsTableLight
-          columns={COLUMNS}
-          rows={showEmpty ? [] : ROWS}
-          striped={striped}
-          dense={dense}
-          stickyHeader={stickyHeader}
-          emptyText="אין נתונים להצגה"
+
+      {/* ── Section 1: Basic ── */}
+      <SectionTitle>טבלה בסיסית</SectionTitle>
+      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+        <FormControlLabel control={<Switch checked={striped}       onChange={e => setStriped(e.target.checked)} />}      label="striped" />
+        <FormControlLabel control={<Switch checked={dense}         onChange={e => setDense(e.target.checked)} />}        label="dense" />
+        <FormControlLabel control={<Switch checked={stickyHeader}  onChange={e => setStickyHeader(e.target.checked)} />} label="stickyHeader + maxHeight" />
+        <FormControlLabel control={<Switch checked={showEmpty}     onChange={e => setShowEmpty(e.target.checked)} />}    label="empty state" />
+        <FormControlLabel
+          control={<Switch checked={enableRowClick} onChange={e => { setEnableRowClick(e.target.checked); setLastClick(null) }} />}
+          label="onRowClick"
         />
       </Box>
+      <IpsTableLight
+        columns={BASIC_COLS}
+        rows={showEmpty ? [] : ROWS}
+        striped={striped}
+        dense={dense}
+        stickyHeader={stickyHeader}
+        maxHeight={stickyHeader ? 220 : undefined}
+        emptyText="אין נתונים להצגה"
+        onRowClick={enableRowClick ? (_e, row) => setLastClick((row as EmpRow).name) : undefined}
+      />
+      {enableRowClick && (
+        <Typography variant="caption" sx={{ mt: 0.5, display: 'block', color: 'text.secondary' }}>
+          {lastClick ? `✓ נלחץ על: ${lastClick}` : 'לחץ על שורה כלשהי...'}
+        </Typography>
+      )}
+
+      {/* ── Section 2: Rich column types ── */}
+      <SectionTitle>סוגי עמודות — תמונה · קישור · Chip מותאם</SectionTitle>
+      <IpsTableLight
+        rows={ROWS}
+        columns={[
+          {
+            key: 'avatar',
+            label: 'תמונה',
+            width: 70,
+            wrap: 'nowrap',
+            type: 'image',
+            imageSrc: (row) => (row as EmpRow).avatar,
+            imageProps: { width: 36, height: 36, rounded: true, alt: 'avatar' },
+          },
+          {
+            key: 'name',
+            label: 'שם (קישור חיצוני)',
+            width: 180,
+            type: 'link',
+            href: (row) => (row as EmpRow).profile,
+            linkTarget: '_blank',
+          },
+          { key: 'role', label: 'תפקיד', width: 130 },
+          {
+            key: 'status',
+            label: 'סטטוס',
+            width: 130,
+            wrap: 'nowrap',
+            render: (value) => {
+              const v = value as string
+              return <Chip label={v} color={STATUS_COLOR[v] ?? 'default'} size="small" />
+            },
+          },
+        ]}
+        striped
+      />
+
+      {/* ── Section 3: Wrap modes ── */}
+      <SectionTitle>מצבי גלישת טקסט (col.wrap)</SectionTitle>
+      {(['ellipsis', 'wrap', 'nowrap'] as const).map(mode => (
+        <Box key={mode} sx={{ mb: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontFamily: 'monospace' }}>
+            wrap="{mode}"
+          </Typography>
+          <IpsTableLight
+            columns={[
+              { key: 'label', label: 'מצב', width: 90 },
+              { key: 'text',  label: 'טקסט לדוגמה', width: 260, wrap: mode },
+              { key: 'icon', label: 'איקון', width: 90 },
+              { key: 'yy', label: 'פרטים', width: 90 },
+              { key: 'xx', label: 'טלפון', width: 90 }
+            ]}
+            rows={[{ label: mode, text: 'זהו טקסט ארוך מאוד שנועד להדגים את ההבדל בין מצבי הגלישה השונים הזמינים בקומפוננטה' }]}
+            striped={false}
+          />
+        </Box>
+      ))}
     </Box>
   )
 }
@@ -1220,6 +1320,488 @@ function FileUploadPanel() {
   )
 }
 
+function IpsStepperPanel() {
+  const [activeStep, setActiveStep] = useState(1)
+
+  const BASIC_STEPS: IpsStepItem[] = [
+    { label: 'Select settings', description: 'Configure the campaign' },
+    { label: 'Create ad group', optional: true },
+    { label: 'Review & launch' },
+  ]
+
+  const STATUS_STEPS: IpsStepItem[] = [
+    { label: 'Completed step' },
+    { label: 'Error step', status: 'error' },
+    { label: 'Warning step', status: 'warning' },
+    { label: 'Disabled step', disabled: true },
+    { label: 'Pending step' },
+  ]
+
+  const ICON_STEPS: IpsStepItem[] = [
+    { label: 'Home', icon: <SvgIcon viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" /></SvgIcon> },
+    { label: 'Favourite', icon: <SvgIcon viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></SvgIcon> },
+    { label: 'Locked', icon: <SvgIcon viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z" /></SvgIcon> },
+  ]
+
+  const CONTENT_STEPS: IpsStepItem[] = [
+    {
+      label: 'Step 1',
+      content: (
+        <Box sx={{ pb: 2 }}>
+          <Typography variant="body2">Fill in campaign details.</Typography>
+          <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+            <IpsButton buttonType="primary" size="small" onClick={() => setActiveStep(1)}>Next</IpsButton>
+          </Stack>
+        </Box>
+      ),
+    },
+    {
+      label: 'Step 2',
+      content: (
+        <Box sx={{ pb: 2 }}>
+          <Typography variant="body2">Set targeting options.</Typography>
+          <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+            <IpsButton buttonType="primary" size="small" onClick={() => setActiveStep(2)}>Next</IpsButton>
+            <IpsButton buttonType="secondary" size="small" onClick={() => setActiveStep(0)}>Back</IpsButton>
+          </Stack>
+        </Box>
+      ),
+    },
+    {
+      label: 'Step 3',
+      content: (
+        <Box sx={{ pb: 2 }}>
+          <Typography variant="body2">Review and submit.</Typography>
+          <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+            <IpsButton buttonType="secondary" size="small" onClick={() => setActiveStep(0)}>Reset</IpsButton>
+          </Stack>
+        </Box>
+      ),
+    },
+  ]
+
+  return (
+    <Box>
+      <PropsTable props={[
+        { name: 'steps',            value: 'IpsStepItem[]',              description: 'Array of step definitions' },
+        { name: 'activeStep',       value: 'number',                     description: 'Currently active step (0-based)' },
+        { name: 'orientation',      value: '"horizontal" | "vertical"',  description: 'Layout direction' },
+        { name: 'nonLinear',        value: 'boolean',                    description: 'Allow clicking any step' },
+        { name: 'onStepClick',      value: '(i, step) => void',          description: 'Fired when a step is clicked (nonLinear only)' },
+        { name: 'alternativeLabel', value: 'boolean',                    description: 'Labels below icons' },
+        { name: 'renderStepIcon',   value: '(ctx) => ReactNode',         description: 'Custom icon render prop' },
+        { name: 'renderStepLabel',  value: '(ctx) => ReactNode',         description: 'Custom label render prop' },
+        { name: 'renderConnector',  value: '(ctx) => ReactNode',         description: 'Custom connector render prop' },
+      ]} />
+
+      <SectionTitle>Basic — Horizontal (activeStep controlled)</SectionTitle>
+      <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+        <IpsButton size="small" buttonType="secondary" onClick={() => setActiveStep((s) => Math.max(0, s - 1))}>Back</IpsButton>
+        <IpsButton size="small" buttonType="primary" onClick={() => setActiveStep((s) => Math.min(BASIC_STEPS.length - 1, s + 1))}>Next</IpsButton>
+        <Typography variant="body2" sx={{ alignSelf: 'center' }}>activeStep: {activeStep}</Typography>
+      </Stack>
+      <IpsStepper steps={BASIC_STEPS} activeStep={activeStep} />
+
+      <SectionTitle>Alternative Label</SectionTitle>
+      <IpsStepper steps={BASIC_STEPS} activeStep={1} alternativeLabel />
+
+      <SectionTitle>Non-linear / Clickable</SectionTitle>
+      <IpsStepper
+        steps={BASIC_STEPS}
+        activeStep={activeStep}
+        nonLinear
+        onStepClick={(i) => setActiveStep(i)}
+      />
+
+      <SectionTitle>Status Overrides (error / warning / disabled)</SectionTitle>
+      <IpsStepper steps={STATUS_STEPS} activeStep={0} />
+
+      <SectionTitle>Custom Step Icons</SectionTitle>
+      <IpsStepper steps={ICON_STEPS} activeStep={1} />
+
+      <SectionTitle>Custom renderStepIcon</SectionTitle>
+      <IpsStepper
+        steps={BASIC_STEPS}
+        activeStep={1}
+        renderStepIcon={({ index, status }) => (
+          <Box sx={{
+            width: 30, height: 30, borderRadius: '50%',
+            bgcolor: status === 'active' ? 'secondary.main' : status === 'completed' ? 'success.main' : 'grey.400',
+            color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontWeight: 700, fontSize: 13,
+          }}>
+            {index + 1}
+          </Box>
+        )}
+      />
+
+      <SectionTitle>Vertical with StepContent</SectionTitle>
+      <IpsStepper steps={CONTENT_STEPS} activeStep={activeStep} orientation="vertical" />
+    </Box>
+  )
+}
+
+function IpsTabsPanel() {
+  const [value, setValue] = useState<string | number>('details')
+  const [orientation, setOrientation] = useState(false)      // false = horizontal
+  const [centered, setCentered] = useState(false)
+  const [renderPanels, setRenderPanels] = useState(true)
+  const [keepMounted, setKeepMounted] = useState(false)
+  const [variant, setVariant] = useState<'standard' | 'scrollable' | 'fullWidth'>('standard')
+
+  const [tab1Disabled, setTab1Disabled] = useState(false)
+  const [tab2Error, setTab2Error] = useState(false)
+
+  const tabs: IpsTabItem[] = [
+    { value: 'details',  label: 'Details',  disabled: tab1Disabled,
+      content: <Typography variant="body2" sx={{ p: 2 }}>Details panel content.</Typography> },
+    { value: 'payment',  label: 'Payment',  error: tab2Error, badge: tab2Error ? '!' : undefined,
+      content: <Typography variant="body2" sx={{ p: 2 }}>Payment panel content.</Typography> },
+    { value: 'review',   label: 'Review',   badge: 3,
+      content: <Typography variant="body2" sx={{ p: 2 }}>Review panel content.</Typography> },
+    { value: 'history',  label: 'History',
+      content: <Typography variant="body2" sx={{ p: 2 }}>History panel content.</Typography> },
+  ]
+
+  return (
+    <Box>
+      <PropsTable props={[
+        { name: 'tabs',          value: 'IpsTabItem[]',                        description: 'Tab descriptors with value, label, icon, badge, disabled, error, content' },
+        { name: 'value',         value: 'string | number',                     description: 'Controlled active tab — required, owned by consumer' },
+        { name: 'onTabChange',   value: '(value, tab) => void',                description: 'Reports intent only — consumer decides whether to update value' },
+        { name: 'orientation',   value: '"horizontal" | "vertical"',           description: 'Bar direction' },
+        { name: 'variant',       value: '"standard" | "scrollable" | "fullWidth"', description: 'MUI Tabs variant' },
+        { name: 'centered',      value: 'boolean',                             description: 'Center the tabs (standard + horizontal only)' },
+        { name: 'renderPanels',  value: 'boolean',                             description: 'Render built-in role="tabpanel" elements from tab.content' },
+        { name: 'keepMounted',   value: 'boolean',                             description: 'Mount all panels, hide inactive via hidden attr' },
+        { name: 'idPrefix',      value: 'string',                              description: 'Prefix for generated tab + panel ids' },
+        { name: 'renderTabLabel','value': '(ctx) => ReactNode',                description: 'Full override of a tab\'s label content' },
+      ]} />
+
+      <SectionTitle>Controls</SectionTitle>
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 2 }}>
+        <FormControlLabel
+          control={<Switch checked={orientation} onChange={(e) => setOrientation(e.target.checked)} />}
+          label="Vertical orientation"
+        />
+        <FormControlLabel
+          control={<Switch checked={centered} onChange={(e) => setCentered(e.target.checked)} />}
+          label="Centered"
+        />
+        <FormControlLabel
+          control={<Switch checked={renderPanels} onChange={(e) => setRenderPanels(e.target.checked)} />}
+          label="Render panels"
+        />
+        <FormControlLabel
+          control={<Switch checked={keepMounted} onChange={(e) => setKeepMounted(e.target.checked)} disabled={!renderPanels} />}
+          label="Keep mounted"
+        />
+      </Stack>
+      <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+        {(['standard', 'scrollable', 'fullWidth'] as const).map((v) => (
+          <IpsButton
+            key={v}
+            size="small"
+            buttonType={variant === v ? 'primary' : 'secondary'}
+            onClick={() => setVariant(v)}
+          >
+            {v}
+          </IpsButton>
+        ))}
+      </Stack>
+      <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+        <FormControlLabel
+          control={<Switch checked={tab1Disabled} onChange={(e) => setTab1Disabled(e.target.checked)} />}
+          label='Tab "Details" disabled'
+        />
+        <FormControlLabel
+          control={<Switch checked={tab2Error} onChange={(e) => setTab2Error(e.target.checked)} />}
+          label='Tab "Payment" error'
+        />
+      </Stack>
+
+      <Box sx={orientation ? { display: 'flex', gap: 2 } : undefined}>
+        <IpsTabs
+          tabs={tabs}
+          value={value}
+          onTabChange={(v) => setValue(v)}
+          orientation={orientation ? 'vertical' : 'horizontal'}
+          variant={variant}
+          centered={centered && !orientation}
+          renderPanels={renderPanels}
+          keepMounted={keepMounted}
+          sx={orientation ? { borderRight: 1, borderColor: 'divider', minWidth: 160 } : undefined}
+        />
+      </Box>
+
+      <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+        Current value: <strong>{value}</strong>
+      </Typography>
+    </Box>
+  )
+}
+
+function IpsDrawerPanel() {
+  const [open, setOpen] = useState(false)
+  const [lastReason, setLastReason] = useState<IpsDrawerCloseReason | null>(null)
+
+  // selectors
+  const [anchor, setAnchor] = useState<'left' | 'right' | 'top' | 'bottom'>('right')
+  const [variant, setVariant] = useState<'temporary' | 'persistent' | 'permanent'>('temporary')
+  const [size, setSize] = useState<number>(400)
+
+  // boolean toggles
+  const [dividers, setDividers] = useState(false)
+  const [showCloseButton, setShowCloseButton] = useState(true)
+  const [disableBackdropClose, setDisableBackdropClose] = useState(false)
+  const [disableEscapeKeyDown, setDisableEscapeKeyDown] = useState(false)
+  const [hideBackdrop, setHideBackdrop] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [rtl, setRtl] = useState(false)
+
+  const handleClose = (reason: IpsDrawerCloseReason) => {
+    setLastReason(reason)
+    setOpen(false)
+  }
+
+  return (
+    <Box>
+      <PropsTable props={[
+        { name: 'open', value: 'boolean (required)', description: 'Controlled visibility — owned by consumer' },
+        { name: 'onClose', value: '(reason) => void', description: 'Reports intent only — consumer decides whether to close. reason: backdropClick | escapeKeyDown | closeButton' },
+        { name: 'anchor', value: "'left' | 'right' | 'top' | 'bottom'", description: 'Edge the drawer slides from (default: right)' },
+        { name: 'variant', value: "'temporary' | 'persistent' | 'permanent'", description: 'MUI drawer variant (default: temporary)' },
+        { name: 'size', value: 'number | string', description: 'Width (left/right) or height (top/bottom). Number = px' },
+        { name: 'title', value: 'ReactNode', description: 'Header title text' },
+        { name: 'icon', value: 'ReactNode', description: 'Optional icon beside the title' },
+        { name: 'children', value: 'ReactNode', description: 'Body content — rendered verbatim, component-agnostic' },
+        { name: 'actions', value: 'ReactNode', description: 'Footer content — consumer passes buttons and wires onClick' },
+        { name: 'dividers', value: 'boolean', description: 'Show dividers between header / content / footer' },
+        { name: 'showCloseButton', value: 'boolean', description: 'Show the header X close button' },
+        { name: 'disableBackdropClose', value: 'boolean', description: 'Suppress onClose on backdrop click (temporary only)' },
+        { name: 'disableEscapeKeyDown', value: 'boolean', description: 'Suppress onClose on Esc' },
+        { name: 'hideBackdrop', value: 'boolean', description: 'Hide the backdrop (temporary only)' },
+        { name: 'elevation', value: 'number', description: 'Surface elevation' },
+        { name: 'loading', value: 'boolean', description: 'Show centered spinner overlay (consumer-controlled)' },
+        { name: 'keepMounted', value: 'boolean', description: 'Keep content mounted while closed' },
+        { name: 'rtl', value: 'boolean', description: 'Force RTL layout on the surface' },
+        { name: 'idPrefix', value: 'string', description: 'Prefix for aria-labelledby/aria-describedby ids' },
+        { name: 'renderHeader', value: '(ctx) => ReactNode', description: 'Full override of the header area' },
+        { name: 'renderFooter', value: '(ctx) => ReactNode', description: 'Full override of the footer area' },
+        { name: 'sx', value: 'SxProps', description: 'MUI style override on the drawer paper' },
+      ]} />
+
+      <SectionTitle>Controls</SectionTitle>
+
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="caption" color="text.secondary">anchor</Typography>
+        <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+          {(['left', 'right', 'top', 'bottom'] as const).map(a => (
+            <IpsButton key={a} size="small" buttonType={anchor === a ? 'primary' : 'secondary'} onClick={() => setAnchor(a)}>{a}</IpsButton>
+          ))}
+        </Stack>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="caption" color="text.secondary">variant</Typography>
+        <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+          {(['temporary', 'persistent', 'permanent'] as const).map(v => (
+            <IpsButton key={v} size="small" buttonType={variant === v ? 'primary' : 'secondary'} onClick={() => setVariant(v)}>{v}</IpsButton>
+          ))}
+        </Stack>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="caption" color="text.secondary">size (px)</Typography>
+        <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+          {[240, 360, 480, 600].map(s => (
+            <IpsButton key={s} size="small" buttonType={size === s ? 'primary' : 'secondary'} onClick={() => setSize(s)}>{s}px</IpsButton>
+          ))}
+        </Stack>
+      </Box>
+
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 2 }}>
+        <FormControlLabel control={<Switch checked={dividers} onChange={e => setDividers(e.target.checked)} />} label="dividers" />
+        <FormControlLabel control={<Switch checked={showCloseButton} onChange={e => setShowCloseButton(e.target.checked)} />} label="showCloseButton" />
+        <FormControlLabel control={<Switch checked={disableBackdropClose} onChange={e => setDisableBackdropClose(e.target.checked)} />} label="disableBackdropClose" />
+        <FormControlLabel control={<Switch checked={disableEscapeKeyDown} onChange={e => setDisableEscapeKeyDown(e.target.checked)} />} label="disableEscapeKeyDown" />
+        <FormControlLabel control={<Switch checked={hideBackdrop} onChange={e => setHideBackdrop(e.target.checked)} />} label="hideBackdrop" />
+        <FormControlLabel control={<Switch checked={loading} onChange={e => setLoading(e.target.checked)} />} label="loading" />
+        <FormControlLabel control={<Switch checked={rtl} onChange={e => setRtl(e.target.checked)} />} label="rtl" />
+      </Stack>
+
+      <SectionTitle>Live demo</SectionTitle>
+      <IpsButton buttonType="primary" onClick={() => setOpen(true)}>Open Drawer</IpsButton>
+
+      <IpsDrawer
+        open={open}
+        anchor={anchor}
+        variant={variant}
+        size={size}
+        title="סינון ועריכה"
+        dividers={dividers}
+        showCloseButton={showCloseButton}
+        disableBackdropClose={disableBackdropClose}
+        disableEscapeKeyDown={disableEscapeKeyDown}
+        hideBackdrop={hideBackdrop}
+        loading={loading}
+        rtl={rtl}
+        onClose={handleClose}
+        actions={
+          <>
+            <IpsButton buttonType="clean" onClick={() => handleClose('closeButton')}>Cancel</IpsButton>
+            <IpsButton buttonType="save" onClick={() => handleClose('closeButton')}>Apply</IpsButton>
+          </>
+        }
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <IpsTextField label="שם פרטי" placeholder="הכנס שם..." />
+          <IpsTextField label="שם משפחה" placeholder="הכנס שם משפחה..." />
+          <IpsTextField label="אימייל" type="email" placeholder="example@company.com" />
+        </Box>
+      </IpsDrawer>
+
+      <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
+        open: <strong>{String(open)}</strong>
+        {lastReason && <> &nbsp;|&nbsp; last onClose reason: <strong>{lastReason}</strong></>}
+      </Typography>
+    </Box>
+  )
+}
+
+function IpsDialogPanel() {
+  const [open, setOpen] = useState(false)
+  const [lastReason, setLastReason] = useState<IpsDialogCloseReason | null>(null)
+
+  // boolean toggles
+  const [fullWidth, setFullWidth] = useState(true)
+  const [fullScreen, setFullScreen] = useState(false)
+  const [dividers, setDividers] = useState(false)
+  const [showCloseButton, setShowCloseButton] = useState(true)
+  const [disableBackdropClose, setDisableBackdropClose] = useState(false)
+  const [disableEscapeKeyDown, setDisableEscapeKeyDown] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [rtl, setRtl] = useState(false)
+
+  // selectors
+  const [maxWidth, setMaxWidth] = useState<'xs' | 'sm' | 'md' | 'lg' | 'xl'>('sm')
+  const [transition, setTransition] = useState<'fade' | 'grow' | 'slide' | 'zoom'>('fade')
+  const [scroll, setScroll] = useState<'paper' | 'body'>('paper')
+
+  const handleClose = (reason: IpsDialogCloseReason) => {
+    setLastReason(reason)
+    if (reason !== 'backdropClick' || !disableBackdropClose) {
+      setOpen(false)
+    }
+  }
+
+  return (
+    <Box>
+      <PropsTable props={[
+        { name: 'open', value: 'boolean (required)', description: 'Controlled visibility — owned by consumer' },
+        { name: 'onClose', value: '(reason) => void', description: 'Reports intent only — consumer decides whether to close. reason: backdropClick | escapeKeyDown | closeButton' },
+        { name: 'title', value: 'ReactNode', description: 'Header title text' },
+        { name: 'icon', value: 'ReactNode', description: 'Optional icon beside the title' },
+        { name: 'children', value: 'ReactNode', description: 'Body content — rendered verbatim, component-agnostic' },
+        { name: 'actions', value: 'ReactNode', description: 'Footer content — consumer passes buttons and wires onClick' },
+        { name: 'maxWidth', value: "'xs' | 'sm' | 'md' | 'lg' | 'xl' | number | false", description: 'Max surface width' },
+        { name: 'fullWidth', value: 'boolean', description: 'Stretch to maxWidth' },
+        { name: 'fullScreen', value: 'boolean', description: 'Render full-screen' },
+        { name: 'fullScreenBreakpoint', value: "'xs'|'sm'|'md'|'lg'|'xl'", description: 'Auto full-screen at/below this breakpoint' },
+        { name: 'scroll', value: "'paper' | 'body'", description: 'Scroll behavior for tall content' },
+        { name: 'dividers', value: 'boolean', description: 'Show dividers between header / content / footer' },
+        { name: 'showCloseButton', value: 'boolean', description: 'Show the header X close button' },
+        { name: 'disableBackdropClose', value: 'boolean', description: 'Suppress onClose on backdrop click' },
+        { name: 'disableEscapeKeyDown', value: 'boolean', description: 'Suppress onClose on Esc' },
+        { name: 'transition', value: "'fade' | 'grow' | 'slide' | 'zoom'", description: 'Enter/exit animation' },
+        { name: 'loading', value: 'boolean', description: 'Show centered spinner overlay (consumer-controlled)' },
+        { name: 'keepMounted', value: 'boolean', description: 'Keep content mounted while closed' },
+        { name: 'rtl', value: 'boolean', description: 'Force RTL layout on the surface' },
+        { name: 'idPrefix', value: 'string', description: 'Prefix for aria-labelledby/aria-describedby ids' },
+        { name: 'renderHeader', value: '(ctx) => ReactNode', description: 'Full override of the header area' },
+        { name: 'renderFooter', value: '(ctx) => ReactNode', description: 'Full override of the footer area' },
+        { name: 'sx', value: 'SxProps', description: 'MUI style override on the Dialog paper' },
+      ]} />
+
+      <SectionTitle>Controls</SectionTitle>
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 2 }}>
+        <FormControlLabel control={<Switch checked={fullWidth} onChange={e => setFullWidth(e.target.checked)} />} label="fullWidth" />
+        <FormControlLabel control={<Switch checked={fullScreen} onChange={e => setFullScreen(e.target.checked)} />} label="fullScreen" />
+        <FormControlLabel control={<Switch checked={dividers} onChange={e => setDividers(e.target.checked)} />} label="dividers" />
+        <FormControlLabel control={<Switch checked={showCloseButton} onChange={e => setShowCloseButton(e.target.checked)} />} label="showCloseButton" />
+        <FormControlLabel control={<Switch checked={disableBackdropClose} onChange={e => setDisableBackdropClose(e.target.checked)} />} label="disableBackdropClose" />
+        <FormControlLabel control={<Switch checked={disableEscapeKeyDown} onChange={e => setDisableEscapeKeyDown(e.target.checked)} />} label="disableEscapeKeyDown" />
+        <FormControlLabel control={<Switch checked={loading} onChange={e => setLoading(e.target.checked)} />} label="loading" />
+        <FormControlLabel control={<Switch checked={rtl} onChange={e => setRtl(e.target.checked)} />} label="rtl" />
+      </Stack>
+
+      <Stack direction="row" spacing={2} flexWrap="wrap" sx={{ mb: 2 }}>
+        <Box>
+          <Typography variant="caption" color="text.secondary">maxWidth</Typography>
+          <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+            {(['xs', 'sm', 'md', 'lg', 'xl'] as const).map(w => (
+              <IpsButton key={w} size="small" buttonType={maxWidth === w ? 'primary' : 'secondary'} onClick={() => setMaxWidth(w)}>{w}</IpsButton>
+            ))}
+          </Stack>
+        </Box>
+        <Box>
+          <Typography variant="caption" color="text.secondary">transition</Typography>
+          <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+            {(['fade', 'grow', 'slide', 'zoom'] as const).map(t => (
+              <IpsButton key={t} size="small" buttonType={transition === t ? 'primary' : 'secondary'} onClick={() => setTransition(t)}>{t}</IpsButton>
+            ))}
+          </Stack>
+        </Box>
+        <Box>
+          <Typography variant="caption" color="text.secondary">scroll</Typography>
+          <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+            {(['paper', 'body'] as const).map(s => (
+              <IpsButton key={s} size="small" buttonType={scroll === s ? 'primary' : 'secondary'} onClick={() => setScroll(s)}>{s}</IpsButton>
+            ))}
+          </Stack>
+        </Box>
+      </Stack>
+
+      <SectionTitle>Live demo</SectionTitle>
+      <IpsButton buttonType="primary" onClick={() => setOpen(true)}>Open Dialog</IpsButton>
+
+      <IpsDialog
+        open={open}
+        title="Edit user"
+        onClose={handleClose}
+        maxWidth={maxWidth}
+        fullWidth={fullWidth}
+        fullScreen={fullScreen}
+        scroll={scroll}
+        dividers={dividers}
+        showCloseButton={showCloseButton}
+        disableBackdropClose={disableBackdropClose}
+        disableEscapeKeyDown={disableEscapeKeyDown}
+        transition={transition}
+        loading={loading}
+        rtl={rtl}
+        actions={
+          <>
+            <IpsButton buttonType="clean" onClick={() => handleClose('closeButton')}>Cancel</IpsButton>
+            <IpsButton buttonType="save" onClick={() => handleClose('closeButton')}>Save</IpsButton>
+          </>
+        }
+      >
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+          <IpsTextField label="First name" placeholder="Enter first name..." />
+          <IpsTextField label="Last name" placeholder="Enter last name..." />
+          <IpsTextField label="Email" type="email" placeholder="Enter email..." />
+        </Box>
+      </IpsDialog>
+
+      <Typography variant="caption" color="text.secondary" sx={{ mt: 2, display: 'block' }}>
+        open: <strong>{String(open)}</strong>
+        {lastReason && <> &nbsp;|&nbsp; last onClose reason: <strong>{lastReason}</strong></>}
+      </Typography>
+    </Box>
+  )
+}
+
 const TABS = [
   { label: 'Button', component: <ButtonPanel /> },
   { label: 'TextField', component: <TextFieldPanel /> },
@@ -1242,6 +1824,10 @@ const TABS = [
   { label: 'Toast', component: <ToastPanel /> },
   { label: 'RichTextEditor', component: <RichTextEditorPanel /> },
   { label: 'FileUpload', component: <FileUploadPanel /> },
+  { label: 'Stepper', component: <IpsStepperPanel /> },
+  { label: 'Tabs', component: <IpsTabsPanel /> },
+  { label: 'Dialog', component: <IpsDialogPanel /> },
+  { label: 'Drawer', component: <IpsDrawerPanel /> },
 ]
 
 export default function App() {
