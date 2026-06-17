@@ -227,6 +227,59 @@ export function createIpsTheme(mode: 'light' | 'dark'): Theme {
           root: { borderRadius: radiusTokens.chip },
         },
       },
+
+      MuiCheckbox: {
+        styleOverrides: {
+          root: {
+            color: p.grey[400],
+            '&:hover': { backgroundColor: hexToRgba(ab, 0.08) },
+            '&.Mui-checked': { color: p.primary.main },
+            '&.Mui-disabled': { color: p.grey[300] },
+          },
+        },
+      },
+
+      MuiRadio: {
+        styleOverrides: {
+          root: {
+            color: p.grey[400],
+            '&:hover': { backgroundColor: hexToRgba(ab, 0.08) },
+            '&.Mui-checked': { color: p.primary.main },
+            '&.Mui-disabled': { color: p.grey[300] },
+          },
+        },
+      },
+
+      MuiMenu: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: p.background.paper,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            borderRadius: radiusTokens.base,
+          },
+        },
+      },
+
+      MuiMenuItem: {
+        styleOverrides: {
+          root: {
+            '&:hover': { backgroundColor: hexToRgba(ab, 0.08) },
+            '&.Mui-selected': {
+              backgroundColor: hexToRgba(p.primary.main, 0.12),
+              '&:hover': { backgroundColor: hexToRgba(p.primary.main, 0.16) },
+            },
+          },
+        },
+      },
+
+      MuiFormHelperText: {
+        styleOverrides: {
+          root: {
+            color: p.text.secondary,
+            '&.Mui-error': { color: p.error.main },
+          },
+        },
+      },
     },
   })
 }
