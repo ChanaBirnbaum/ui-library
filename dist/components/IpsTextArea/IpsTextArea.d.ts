@@ -4,13 +4,16 @@ export declare const IpsTextArea: React.ForwardRefExoticComponent<(Omit<import('
     rows?: number;
     maxLength?: number;
     className?: string;
+    wide?: boolean;
 }, "ref"> | Omit<import('@mui/material/TextField').OutlinedTextFieldProps & {
     rows?: number;
     maxLength?: number;
     className?: string;
+    wide?: boolean;
 }, "ref"> | Omit<import('@mui/material/TextField').StandardTextFieldProps & {
     rows?: number;
     maxLength?: number;
     className?: string;
+    wide?: boolean;
 }, "ref">) & React.RefAttributes<HTMLTextAreaElement>>;
 export default IpsTextArea;

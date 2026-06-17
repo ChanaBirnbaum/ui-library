@@ -4,6 +4,7 @@ import MuiTableRow from '@mui/material/TableRow'
 import MuiTableCell from '@mui/material/TableCell'
 import { flexRender } from '@tanstack/react-table'
 import type { Table, RowData } from '@tanstack/react-table'
+import type { VirtualItem } from '@tanstack/react-virtual'
 import { DataCell } from './DataCell'
 import { ActionCell } from './ActionCell'
 import type { ActionDef, EditingState } from '../IpsDataTable.types'
@@ -25,6 +26,10 @@ export interface TableBodyProps<T extends RowData> {
   cellSx?: object
   renderEmptyState: () => React.ReactNode
   isLoading: boolean
+  onRowClick?: (row: T, event: React.MouseEvent<HTMLTableRowElement>) => void
+  virtualItems?: VirtualItem[]
+  paddingTop?: number
+  paddingBottom?: number
 }
 
 export function TableBody<T extends RowData>({
@@ -44,11 +49,15 @@ export function TableBody<T extends RowData>({
   cellSx,
   renderEmptyState,
   isLoading,
+  onRowClick,
+  virtualItems,
+  paddingTop = 0,
+  paddingBottom = 0,
 }: TableBodyProps<T>) {
-  const rows = table.getRowModel().rows
+  const allRows = table.getRowModel().rows
   const totalColumns = table.getVisibleLeafColumns().length
 
-  if (!isLoading && rows.length === 0) {
+  if (!isLoading && allRows.length === 0) {
     return (
       <MuiTableBody>
         <MuiTableRow>
@@ -64,43 +73,59 @@ export function TableBody<T extends RowData>({
     )
   }
 
+  const displayRows = virtualItems
+    ? virtualItems
+        .map((vi) => allRows[vi.index])
+        .filter((r): r is (typeof allRows)[number] => !!r)
+    : allRows
+
   return (
     <MuiTableBody>
-      {rows.map((row, rowIndex) => {
+      {paddingTop > 0 && (
+        <MuiTableRow>
+          <MuiTableCell
+            colSpan={totalColumns}
+            sx={{ p: 0, border: 'none', height: paddingTop }}
+          />
+        </MuiTableRow>
+      )}
+
+      {displayRows.map((row, displayIdx) => {
+        const rowIndex = virtualItems ? virtualItems[displayIdx].index : displayIdx
         const isEditing = editingState.rowId === row.id
         const isExpanded = row.getIsExpanded()
         const isEven = rowIndex % 2 === 0
 
         const rowSx = {
-          backgroundColor:
-            variant === 'striped' && !isEven ? 'grey.50' : undefined,
-          '&:hover': { backgroundColor: 'action.hover' },
+          backgroundColor: variant === 'striped' && !isEven ? 'grey.50' : undefined,
+          '&:hover': { backgroundColor: 'grey.100' },
+          cursor: onRowClick ? 'pointer' : undefined,
           ...(isExpanded ? { backgroundColor: '#EFF6FF' } : {}),
           ...(isEditing
-            ? {
-                outline: '2px solid',
-                outlineColor: 'primary.main',
-                outlineOffset: '-2px',
-              }
+            ? { outline: '2px solid', outlineColor: 'primary.main', outlineOffset: '-2px' }
             : {}),
         }
 
         return (
           <React.Fragment key={row.id}>
-            <MuiTableRow sx={rowSx}>
+            <MuiTableRow
+              sx={rowSx}
+              onClick={onRowClick ? (e) => onRowClick(row.original, e) : undefined}
+            >
               {row.getVisibleCells().map((cell) => {
                 const colId = cell.column.id
 
-                // Expand column
-                if (colId === '_expand') {
+                if (colId === '_select' || colId === '_expand') {
                   return (
-                    <MuiTableCell key={cell.id} sx={{ width: 48, p: 0.5 }}>
+                    <MuiTableCell
+                      key={cell.id}
+                      sx={{ width: colId === '_select' ? 40 : 48, p: 0.5 }}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </MuiTableCell>
                   )
                 }
 
-                // Action column
                 if (colId === '_actions') {
                   return (
                     <ActionCell
@@ -119,7 +144,6 @@ export function TableBody<T extends RowData>({
                   )
                 }
 
-                // Data column
                 return (
                   <DataCell
                     key={cell.id}
@@ -138,13 +162,9 @@ export function TableBody<T extends RowData>({
               })}
             </MuiTableRow>
 
-            {/* Expanded row content */}
             {isExpanded && expandedContent && (
               <MuiTableRow>
-                <MuiTableCell
-                  colSpan={totalColumns}
-                  sx={{ p: 0 }}
-                >
+                <MuiTableCell colSpan={totalColumns} sx={{ p: 0 }}>
                   {expandedContent(row.original)}
                 </MuiTableCell>
               </MuiTableRow>
@@ -152,6 +172,15 @@ export function TableBody<T extends RowData>({
           </React.Fragment>
         )
       })}
+
+      {paddingBottom > 0 && (
+        <MuiTableRow>
+          <MuiTableCell
+            colSpan={totalColumns}
+            sx={{ p: 0, border: 'none', height: paddingBottom }}
+          />
+        </MuiTableRow>
+      )}
     </MuiTableBody>
   )
 }

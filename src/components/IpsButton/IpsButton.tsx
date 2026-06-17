@@ -24,12 +24,11 @@ const ClearIcon = (props: any) => (
 import type { IpsButtonProps } from './IpsButton.types';
 
 export const IpsButton = forwardRef<HTMLButtonElement, IpsButtonProps>((props, ref) => {
-  const { buttonType, loading, className, children, ...rest } = props as IpsButtonProps;
+  const { buttonType, loading, className, children, sx: propSx, ...rest } = props as IpsButtonProps;
   const theme = useTheme();
   const isRtl = theme.direction === 'rtl';
 
-  // filter custom props before spreading to MUI Button
-  const muiProps = { ...rest } as Omit<IpsButtonProps, 'buttonType' | 'loading'>;
+  const muiProps = { ...rest } as Omit<IpsButtonProps, 'buttonType' | 'loading' | 'sx'>;
 
   let variant = muiProps.variant;
   let color = muiProps.color as any;
@@ -60,6 +59,10 @@ export const IpsButton = forwardRef<HTMLButtonElement, IpsButtonProps>((props, r
         variant = 'outlined';
         color = 'secondary';
         break;
+      case 'link':
+        variant = 'text';
+        color = 'primary';
+        break;
     }
   }
 
@@ -71,11 +74,21 @@ export const IpsButton = forwardRef<HTMLButtonElement, IpsButtonProps>((props, r
 
   const rootClass = ['ips-button', className].filter(Boolean).join(' ');
 
-  // In RTL: startIcon is semantically the "leading" icon — MUI positions it on
-  // the right automatically when theme.direction='rtl' + stylis-plugin-rtl.
-  // We pass it as endIcon so that explicit endIcon props also flip correctly.
   const resolvedStartIcon = isRtl ? undefined : startIcon;
   const resolvedEndIcon   = isRtl ? startIcon : (muiProps.endIcon as any);
+
+  const baseSx = {
+    fontWeight: 400,
+    ...(buttonType === 'link' ? {
+      textDecoration: 'none',
+      '&:hover, &:active': {
+        textDecoration: 'underline',
+        textUnderlineOffset: '3px',
+        backgroundColor: 'transparent',
+      },
+    } : {}),
+  };
+  const mergedSx = [baseSx, ...(Array.isArray(propSx) ? propSx : propSx != null ? [propSx] : [])] as any;
 
   return (
     <Button
@@ -86,6 +99,7 @@ export const IpsButton = forwardRef<HTMLButtonElement, IpsButtonProps>((props, r
       endIcon={resolvedEndIcon}
       ref={ref}
       className={rootClass}
+      sx={mergedSx}
     >
       {children}
     </Button>

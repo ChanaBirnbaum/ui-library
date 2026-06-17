@@ -38,7 +38,7 @@ export function TableHeader<T extends RowData>({
                   fontWeight: 700,
                   fontSize: '0.8rem',
                   color: 'text.secondary',
-                  backgroundColor: '#F7FAFC', // gray-100
+                  backgroundColor: '#F6F9FC',
                   userSelect: 'none',
                   whiteSpace: 'nowrap',
                   ...cellSx,

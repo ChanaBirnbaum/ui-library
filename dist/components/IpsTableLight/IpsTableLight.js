@@ -26,8 +26,8 @@ function E(o, l) {
     maxHeight: u,
     striped: C = !0,
     dense: T = !1,
-    emptyText: v = "No data",
-    wrap: x = "ellipsis",
+    emptyText: x = "No data",
+    wrap: v = "ellipsis",
     hover: b,
     onRowClick: p,
     onRowDoubleClick: m,
@@ -88,7 +88,7 @@ function E(o, l) {
             align: e.align ?? "left",
             sx: {
               backgroundColor: "primary.main",
-              color: "common.white",
+              color: "text.primary",
               fontWeight: 600,
               whiteSpace: "nowrap",
               // MUI copies background via a separate internal rule when stickyHeader is true
@@ -100,7 +100,7 @@ function E(o, l) {
           },
           e.key
         )) }) }),
-        /* @__PURE__ */ i(D, { children: g.length === 0 ? /* @__PURE__ */ i(c, { children: /* @__PURE__ */ i(f, { colSpan: s.length, align: "center", children: /* @__PURE__ */ i(_, { variant: "body2", color: "text.secondary", sx: { py: 2 }, children: v }) }) }) : g.map((e, t) => {
+        /* @__PURE__ */ i(D, { children: g.length === 0 ? /* @__PURE__ */ i(c, { children: /* @__PURE__ */ i(f, { colSpan: s.length, align: "center", children: /* @__PURE__ */ i(_, { variant: "body2", color: "text.secondary", sx: { py: 2 }, children: x }) }) }) : g.map((e, t) => {
           const d = k ? k(e, t) : e.id != null ? e.id : t;
           return /* @__PURE__ */ i(
             c,
@@ -113,7 +113,7 @@ function E(o, l) {
                 ...C && t % 2 === 1 ? { backgroundColor: "grey.50" } : {}
               },
               children: s.map((r) => {
-                const a = r.wrap ?? x;
+                const a = r.wrap ?? v;
                 return /* @__PURE__ */ i(
                   f,
                   {

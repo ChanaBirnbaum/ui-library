@@ -33,15 +33,13 @@ export { IpsDatePicker } from './components/IpsDatePicker'
 export type { IpsDatePickerProps } from './components/IpsDatePicker/IpsDatePicker.types'
 export { IpsDateTimePicker } from './components/IpsDateTimePicker'
 export type { IpsDateTimePickerProps } from './components/IpsDateTimePicker/IpsDateTimePicker.types'
-export { IpsTableLight } from './components/IpsTableLight'
-export type {
-  IpsTableLightProps,
-  IpsTableLightColumn,
-  IpsTableLightRow,
-  IpsTableLightWrap,
-} from './components/IpsTableLight/IpsTableLight.types'
 export { IpsTable } from './components/IpsTable'
-export type { IpsTableProps } from './components/IpsTable/IpsTable.types'
+export type {
+  IpsTableProps,
+  IpsTableColumn,
+  IpsTableRow,
+  IpsTableWrap,
+} from './components/IpsTable/IpsTable.types'
 export { IpsDataTable, flexRender, TableHeader, TableBody, TableFooter, DataCell, EditableCell, ActionCell, ExpandCell, ExpandedRow, SkeletonRows, DeleteConfirmDialog } from './components/IpsDataTable'
 export type { IpsDataTableProps, ExpandedRowProps, SubColumnDef, ActionDef, EditableConfig, SelectOption, PaginationConfig, FilterConfig, ColumnDef, SortingState } from './components/IpsDataTable'
 export { IpsToastProvider } from './components/IpsToast'

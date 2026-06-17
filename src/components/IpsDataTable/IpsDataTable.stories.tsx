@@ -212,6 +212,62 @@ export const EmptyState: Story = {
   render: () => <IpsDataTable<Fruit> data={[]} columns={COLUMNS} />,
 }
 
+export const WithRowClick: Story = {
+  name: 'לחיצה על שורה',
+  render: () => (
+    <IpsDataTable<Fruit>
+      data={FRUITS}
+      columns={COLUMNS}
+      onRowClick={(row) => alert(`נבחר: ${row.name}`)}
+    />
+  ),
+}
+
+export const WithCheckboxSelection: Story = {
+  name: 'בחירת שורות',
+  render: () => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const [selected, setSelected] = useState<Fruit[]>([])
+    return (
+      <div>
+        <IpsDataTable<Fruit>
+          data={FRUITS}
+          columns={COLUMNS}
+          checkboxSelection
+          getRowId={(row) => String(row.id)}
+          onSelectionChange={setSelected}
+          sorting
+        />
+        <p style={{ marginTop: 8, fontSize: 13, color: '#4A5568' }}>
+          נבחרו: {selected.map((r) => r.name).join(', ') || '—'}
+        </p>
+      </div>
+    )
+  },
+}
+
+// Generate many rows to demonstrate virtual scroll
+const MANY_FRUITS: Fruit[] = Array.from({ length: 1000 }, (_, i) => ({
+  id: i + 1,
+  name: `פרי ${i + 1}`,
+  color: ['אדום', 'צהוב', 'ירוק', 'כתום', 'סגול'][i % 5],
+  price: Math.round((Math.random() * 20 + 1) * 10) / 10,
+  stock: Math.floor(Math.random() * 300),
+}))
+
+export const WithVirtualScroll: Story = {
+  name: 'Virtual Scroll (1000 שורות)',
+  render: () => (
+    <IpsDataTable<Fruit>
+      data={MANY_FRUITS}
+      columns={COLUMNS}
+      virtualScroll
+      maxHeight={500}
+      sorting
+    />
+  ),
+}
+
 export const FullFeatured: Story = {
   name: 'כל הפיצ\'רים',
   render: () => {

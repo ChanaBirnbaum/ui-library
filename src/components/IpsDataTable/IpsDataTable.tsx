@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useRef, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import MuiTable from '@mui/material/Table'
@@ -6,6 +6,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import InputAdornment from '@mui/material/InputAdornment'
+import Checkbox from '@mui/material/Checkbox'
 import SearchIcon from '@mui/icons-material/Search'
 import {
   useReactTable,
@@ -23,7 +24,9 @@ import type {
   ExpandedState,
   ColumnDef,
   RowData,
+  RowSelectionState,
 } from '@tanstack/react-table'
+import { useVirtualizer } from '@tanstack/react-virtual'
 
 import type { IpsDataTableProps, EditingState, ActionDef } from './IpsDataTable.types'
 import { TableHeader } from './components/TableHeader'
@@ -33,14 +36,15 @@ import { SkeletonRows } from './components/SkeletonRows'
 import { ExpandCell } from './components/ExpandCell'
 import { DeleteConfirmDialog } from './components/DeleteConfirmDialog'
 
-// Size → padding mapping
 const SIZE_CELL_SX: Record<string, object> = {
   sm: { py: 0.5, px: 1, fontSize: '0.75rem', height: 32 },
   md: { py: 1, px: 2, fontSize: '0.875rem', height: 48 },
   lg: { py: 1.5, px: 2, fontSize: '1rem', height: 64 },
 }
 
-// Variant → table sx
+// Row height estimates for the virtualizer (cell height + 1px border)
+const SIZE_ROW_HEIGHT: Record<string, number> = { sm: 33, md: 49, lg: 65 }
+
 const VARIANT_SX: Record<string, object> = {
   default: {},
   bordered: {
@@ -70,6 +74,12 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
     variant = 'default',
     size = 'md',
     sx,
+    onRowClick,
+    checkboxSelection = false,
+    onSelectionChange,
+    getRowId,
+    maxHeight,
+    virtualScroll = false,
   } = props
 
   // -------------------------------------------------------------------------
@@ -96,7 +106,7 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
     !!onEdit || !!onDelete || hasInlineEdit || customActions.length > 0
 
   // -------------------------------------------------------------------------
-  // Table state
+  // State
   // -------------------------------------------------------------------------
   const [internalSorting, setInternalSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -106,18 +116,14 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
     pageSize: paginationConfig?.pageSize ?? 10,
   })
   const [expanded, setExpanded] = useState<ExpandedState>({})
-
-  // Inline editing
-  const [editingState, setEditingState] = useState<EditingState>({
-    rowId: null,
-    values: {},
-  })
-
-  // Delete confirmation
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+  const [editingState, setEditingState] = useState<EditingState>({ rowId: null, values: {} })
   const [deleteTarget, setDeleteTarget] = useState<T | null>(null)
 
+  const tableContainerRef = useRef<HTMLDivElement>(null)
+
   // -------------------------------------------------------------------------
-  // Build enhanced columns (prepend expand, append actions)
+  // Enhanced columns (_select → _expand → data → _actions)
   // -------------------------------------------------------------------------
   const enhancedColumns = useMemo<ColumnDef<T>[]>(() => {
     const cols: ColumnDef<T>[] = [...columns]
@@ -133,25 +139,51 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
       })
     }
 
+    if (checkboxSelection) {
+      cols.unshift({
+        id: '_select',
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllRowsSelected()}
+            indeterminate={table.getIsSomeRowsSelected()}
+            onChange={table.getToggleAllRowsSelectedHandler()}
+            size="small"
+            sx={{ p: 0.5 }}
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect()}
+            onChange={row.getToggleSelectedHandler()}
+            size="small"
+            sx={{ p: 0.5 }}
+            onClick={(e) => e.stopPropagation()}
+          />
+        ),
+        enableSorting: false,
+        enableColumnFilter: false,
+        size: 40,
+      })
+    }
+
     if (hasActionColumn) {
       cols.push({
         id: '_actions',
         header: () => null,
-        cell: () => null, // actual rendering done in TableBody
+        cell: () => null,
         enableSorting: false,
         enableColumnFilter: false,
       })
     }
 
     return cols
-  }, [columns, hasExpand, hasActionColumn])
+  }, [columns, hasExpand, hasActionColumn, checkboxSelection])
 
   // -------------------------------------------------------------------------
   // TanStack table instance
   // -------------------------------------------------------------------------
-  const sortingState = isControlledSorting
-    ? (sorting as SortingState)
-    : internalSorting
+  const sortingState = isControlledSorting ? (sorting as SortingState) : internalSorting
 
   const table = useReactTable<T>({
     data,
@@ -162,12 +194,15 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
       globalFilter,
       pagination: { pageIndex, pageSize },
       expanded,
+      rowSelection,
     },
     onSortingChange: isControlledSorting ? undefined : setInternalSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     onExpandedChange: setExpanded,
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: checkboxSelection,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: hasSorting ? getSortedRowModel() : undefined,
     getFilteredRowModel:
@@ -177,10 +212,40 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
     getRowCanExpand: hasExpand ? () => true : undefined,
     manualPagination: false,
     manualSorting: isControlledSorting,
+    getRowId: getRowId ? (row) => getRowId(row) : undefined,
   })
 
   // -------------------------------------------------------------------------
-  // Editing handlers
+  // Notify parent of selection changes
+  // -------------------------------------------------------------------------
+  useEffect(() => {
+    if (onSelectionChange) {
+      onSelectionChange(table.getSelectedRowModel().rows.map((r) => r.original))
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowSelection])
+
+  // -------------------------------------------------------------------------
+  // Virtual scroll
+  // -------------------------------------------------------------------------
+  const allRows = table.getRowModel().rows
+
+  const rowVirtualizer = useVirtualizer({
+    count: virtualScroll ? allRows.length : 0,
+    getScrollElement: () => tableContainerRef.current,
+    estimateSize: () => SIZE_ROW_HEIGHT[size] ?? 49,
+    overscan: 10,
+  })
+
+  const virtualItems = virtualScroll ? rowVirtualizer.getVirtualItems() : undefined
+  const totalVirtualSize = rowVirtualizer.getTotalSize()
+  const paddingTop = virtualItems?.length ? virtualItems[0].start : 0
+  const paddingBottom = virtualItems?.length
+    ? totalVirtualSize - (virtualItems[virtualItems.length - 1]?.end ?? 0)
+    : 0
+
+  // -------------------------------------------------------------------------
+  // Inline editing handlers
   // -------------------------------------------------------------------------
   const handleStartInlineEdit = (rowId: string) => {
     const row = table.getRowModel().rows.find((r) => r.id === rowId)
@@ -195,10 +260,7 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
   }
 
   const handleEditValueChange = (columnId: string, value: unknown) => {
-    setEditingState((prev) => ({
-      ...prev,
-      values: { ...prev.values, [columnId]: value },
-    }))
+    setEditingState((prev) => ({ ...prev, values: { ...prev.values, [columnId]: value } }))
   }
 
   const handleSaveInline = async (rowId: string) => {
@@ -209,24 +271,20 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
     setEditingState({ rowId: null, values: {} })
   }
 
-  const handleCancelEdit = () => {
-    setEditingState({ rowId: null, values: {} })
-  }
+  const handleCancelEdit = () => setEditingState({ rowId: null, values: {} })
 
   // -------------------------------------------------------------------------
   // Delete handlers
   // -------------------------------------------------------------------------
   const handleDeleteRequest = (row: T) => setDeleteTarget(row)
-
   const handleDeleteConfirm = () => {
     if (deleteTarget && onDelete) onDelete(deleteTarget)
     setDeleteTarget(null)
   }
-
   const handleDeleteCancel = () => setDeleteTarget(null)
 
   // -------------------------------------------------------------------------
-  // Empty state
+  // Helpers
   // -------------------------------------------------------------------------
   const renderEmptyState = () =>
     emptyState ?? (
@@ -235,18 +293,15 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
       </Typography>
     )
 
-  // -------------------------------------------------------------------------
-  // Cell sx from size
-  // -------------------------------------------------------------------------
   const cellSx = SIZE_CELL_SX[size]
   const colSpan = table.getVisibleLeafColumns().length
+  const needsScroll = maxHeight != null || virtualScroll
 
   // -------------------------------------------------------------------------
   // Render
   // -------------------------------------------------------------------------
   return (
     <Box sx={sx}>
-      {/* Global filter */}
       {hasGlobalFilter && (
         <Box sx={{ mb: 1.5 }}>
           <TextField
@@ -270,8 +325,14 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
         variant="outlined"
         sx={{ borderRadius: 1, overflow: 'hidden', ...VARIANT_SX[variant] }}
       >
-        <TableContainer>
-          <MuiTable stickyHeader={stickyHeader} size={size === 'sm' ? 'small' : 'medium'}>
+        <TableContainer
+          ref={tableContainerRef}
+          sx={needsScroll ? { maxHeight: maxHeight ?? 400, overflow: 'auto' } : undefined}
+        >
+          <MuiTable
+            stickyHeader={stickyHeader || virtualScroll}
+            size={size === 'sm' ? 'small' : 'medium'}
+          >
             <TableHeader
               table={table}
               showPerColumnFilter={hasPerColumnFilter}
@@ -280,11 +341,7 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
 
             {isLoading ? (
               <tbody>
-                <SkeletonRows
-                  rowCount={pageSize}
-                  columnCount={colSpan}
-                  cellSx={cellSx}
-                />
+                <SkeletonRows rowCount={pageSize} columnCount={colSpan} cellSx={cellSx} />
               </tbody>
             ) : (
               <TableBody
@@ -304,6 +361,10 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
                 cellSx={cellSx}
                 renderEmptyState={renderEmptyState}
                 isLoading={isLoading}
+                onRowClick={onRowClick}
+                virtualItems={virtualItems}
+                paddingTop={paddingTop}
+                paddingBottom={paddingBottom}
               />
             )}
 
@@ -329,5 +390,4 @@ export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
   )
 }
 
-// Convenience re-export so consumers get useful flexRender if needed
 export { flexRender }

@@ -1,29 +1,15 @@
 import React from 'react'
 import { Preview } from '@storybook/react'
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material'
+import { ThemeProvider, CssBaseline, createTheme } from '@mui/material'
 import { CacheProvider } from '@emotion/react'
 import { createRtlCache, createLtrCache } from '../src/utils/rtlUtils'
+import { createIpsTheme } from '../src/theme/createIpsTheme'
 
 // Pre-create both caches — avoids recreating on every render.
 const rtlCache = createRtlCache()
 const ltrCache = createLtrCache()
 
-function buildTheme(direction: 'rtl' | 'ltr') {
-  return createTheme({
-    direction,
-    palette: {
-      primary:   { main: '#1565C0', light: '#42A5F5', dark: '#0D47A1' },
-      secondary: { main: '#616161' },
-      error:     { main: '#D32F2F' },
-      success:   { main: '#2E7D32' },
-      warning:   { main: '#ED6C02' },
-    },
-    shape:      { borderRadius: 4 },
-    typography: { fontFamily: 'Heebo, Roboto, Arial, sans-serif' },
-  })
-}
-
-/** Toolbar toggle — lets you switch RTL/LTR in every story */
+/** Toolbar toggles — switch RTL/LTR direction and Light/Dark colour scheme per story */
 export const globalTypes = {
   direction: {
     name: 'Direction',
@@ -38,20 +24,38 @@ export const globalTypes = {
       dynamicTitle: true,
     },
   },
+  colorScheme: {
+    name: 'Color scheme',
+    description: 'Light or dark theme',
+    defaultValue: 'light',
+    toolbar: {
+      icon: 'sun',
+      items: [
+        { value: 'light', title: '☀ Light' },
+        { value: 'dark',  title: '🌙 Dark'  },
+      ],
+      dynamicTitle: true,
+    },
+  },
 }
 
 const preview: Preview = {
   decorators: [
     (Story, context) => {
-      const dir = (context.globals.direction ?? 'rtl') as 'rtl' | 'ltr'
+      const dir         = (context.globals.direction   ?? 'rtl')   as 'rtl' | 'ltr'
+      const colorScheme = (context.globals.colorScheme ?? 'light') as 'light' | 'dark'
       const isRtl = dir === 'rtl'
       const cache = isRtl ? rtlCache : ltrCache
-      const muiTheme = buildTheme(dir)
+
+      // Build the IPS theme for the selected mode, then layer in the RTL direction.
+      const ipsBase   = createIpsTheme(colorScheme)
+      const muiTheme  = createTheme(ipsBase, { direction: dir })
+
       return (
         <CacheProvider value={cache}>
           <ThemeProvider theme={muiTheme}>
             <CssBaseline />
-            <div dir={dir} style={{ fontFamily: 'Heebo, Roboto, Arial, sans-serif' }}>
+            <div dir={dir} style={{ fontFamily: '"Inter", "Heebo", sans-serif' }}>
               <Story />
             </div>
           </ThemeProvider>

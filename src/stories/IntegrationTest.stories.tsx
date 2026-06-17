@@ -1,12 +1,9 @@
 import React, { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
-import CssBaseline from '@mui/material/CssBaseline'
 import Box from '@mui/material/Box'
 import Paper from '@mui/material/Paper'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
-import type { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid'
 import type { Moment } from 'moment'
 import 'moment/locale/he'
 
@@ -23,8 +20,9 @@ import { IpsPillSelect }     from '../components/IpsPillSelect/IpsPillSelect'
 import { IpsRichTextEditor } from '../components/IpsRichTextEditor/IpsRichTextEditor'
 import { IpsSelect }         from '../components/IpsSelect/IpsSelect'
 import { IpsSwitch }         from '../components/IpsSwitch/IpsSwitch'
+import { IpsDataTable }      from '../components/IpsDataTable/IpsDataTable'
+import type { ColumnDef }    from '../components/IpsDataTable/IpsDataTable.types'
 import { IpsTable }          from '../components/IpsTable/IpsTable'
-import { IpsTableLight }     from '../components/IpsTableLight/IpsTableLight'
 import { IpsTextArea }       from '../components/IpsTextArea/IpsTextArea'
 import { IpsTextField }      from '../components/IpsTextField/IpsTextField'
 import { IpsTimePicker }     from '../components/IpsTimePicker/IpsTimePicker'
@@ -33,34 +31,17 @@ import { useToast }          from '../components/IpsToast/useToast'
 import { TOAST_TYPES }       from '../components/IpsToast/IpsToast.types'
 import { IpsToolTips }       from '../components/IpsToolTips/IpsToolTips'
 
-// ─── MUI theme aligned with ipsTheme design tokens ───────────────────────────
-// (ipsTheme is a plain context object; a proper MUI theme is required here so
-//  all MUI-based components receive colours, shape and typography correctly.)
-const muiTheme = createTheme({
-  palette: {
-    primary:   { main: '#1565C0', light: '#42A5F5', dark: '#0D47A1' },
-    secondary: { main: '#616161' },
-    error:     { main: '#D32F2F' },
-    success:   { main: '#2E7D32' },
-    warning:   { main: '#ED6C02' },
-  },
-  shape:      { borderRadius: 4 },
-  typography: { fontFamily: 'Roboto, sans-serif' },
-})
-
 // ─── Shared story wrapper ─────────────────────────────────────────────────────
-// IpsToastProvider  → outermost so every inner component can call useToast().
-// MUI ThemeProvider → provides palette/shape/typography to all MUI components.
-// CssBaseline       → normalises browser default styles.
+// IpsToastProvider → outermost so every inner component can call useToast().
+// ThemeProvider + CssBaseline are supplied by the Storybook preview.tsx decorator,
+// which creates the IPS theme via createIpsTheme(colorScheme). Use the toolbar's
+// "Color scheme" toggle (☀ Light / 🌙 Dark) to verify both modes visually.
 function StoryWrapper({ children }: { children: React.ReactNode }) {
   return (
     <IpsToastProvider>
-      <ThemeProvider theme={muiTheme}>
-        <CssBaseline />
-        <Box sx={{ p: 3, maxWidth: 900, mx: 'auto' }}>
-          {children}
-        </Box>
-      </ThemeProvider>
+      <Box sx={{ p: 3, maxWidth: 900, mx: 'auto' }}>
+        {children}
+      </Box>
     </IpsToastProvider>
   )
 }
@@ -233,12 +214,12 @@ const INITIAL_ROWS: TableRow[] = [
   { id: 3, name: 'Carol Shapiro', role: 'Manager',    status: 'Inactive', joined: '2022-11-05' },
 ]
 
-const TABLE_COLUMNS: GridColDef[] = [
-  { field: 'id',     headerName: 'ID',     width: 65  },
-  { field: 'name',   headerName: 'Name',   flex: 1    },
-  { field: 'role',   headerName: 'Role',   width: 120 },
-  { field: 'status', headerName: 'Status', width: 100 },
-  { field: 'joined', headerName: 'Joined', width: 110 },
+const TABLE_COLUMNS: ColumnDef<TableRow>[] = [
+  { accessorKey: 'id',     header: 'ID',     size: 65  },
+  { accessorKey: 'name',   header: 'Name'              },
+  { accessorKey: 'role',   header: 'Role',   size: 120 },
+  { accessorKey: 'status', header: 'Status', size: 100 },
+  { accessorKey: 'joined', header: 'Joined', size: 110 },
 ]
 
 const NAMES = ['Dan', 'Eve', 'Frank', 'Grace', 'Hila', 'Ido']
@@ -248,7 +229,7 @@ let rowCounter = INITIAL_ROWS.length
 function TableWithToastContent() {
   const addToast                = useToast()
   const [rows, setRows]         = useState<TableRow[]>(INITIAL_ROWS)
-  const [selected, setSelected] = useState<(string | number)[]>([])
+  const [selected, setSelected] = useState<TableRow[]>([])
   const [deleting, setDeleting] = useState(false)
 
   function handleAdd() {
@@ -267,7 +248,8 @@ function TableWithToastContent() {
     }
     setDeleting(true)
     await new Promise(r => setTimeout(r, 600))
-    setRows(r => r.filter(row => !selected.includes(row.id)))
+    const selectedIds = new Set(selected.map(r => r.id))
+    setRows(r => r.filter(row => !selectedIds.has(row.id)))
     addToast(TOAST_TYPES.DANGER, `Deleted ${selected.length} row(s)`)
     setSelected([])
     setDeleting(false)
@@ -279,7 +261,7 @@ function TableWithToastContent() {
         📊 Users Table
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        IpsTable (DataGrid) · IpsButton · useToast — add rows, select &amp; delete
+        IpsDataTable · IpsButton · useToast — add rows, select &amp; delete
       </Typography>
 
       <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
@@ -294,17 +276,13 @@ function TableWithToastContent() {
         </IpsButton>
       </Stack>
 
-      <IpsTable
-        rows={rows}
+      <IpsDataTable<TableRow>
+        data={rows}
         columns={TABLE_COLUMNS}
         checkboxSelection
-        onRowSelectionModelChange={(model: GridRowSelectionModel) => {
-          // DataGrid v8: model is { type, ids: Set<GridRowId> }
-           
-          setSelected(Array.from((model as any).ids ?? []) as (string | number)[])
-        }}
-        pageSize={10}
-        sx={{ height: 320 }}
+        getRowId={(row) => String(row.id)}
+        onSelectionChange={setSelected}
+        sorting
       />
     </Box>
   )
@@ -490,11 +468,6 @@ function AllComponentsContent() {
     { id: 2, name: 'Beta',  value: 200 },
     { id: 3, name: 'Gamma', value: 300 },
   ]
-  const tableColumns: GridColDef[] = [
-    { field: 'id',    headerName: 'ID',    width: 60 },
-    { field: 'name',  headerName: 'Name',  flex: 1   },
-    { field: 'value', headerName: 'Value', width: 80 },
-  ]
   const lightColumns = [
     { key: 'name',  label: 'Name'  },
     { key: 'value', label: 'Value' },
@@ -657,17 +630,21 @@ function AllComponentsContent() {
           </Stack>
         </Section>
 
-        {/* ── 8 · IpsTableLight ── */}
-        <Section title="IpsTableLight">
-          <IpsTableLight rows={tableRows} columns={lightColumns} />
+        {/* ── 8 · IpsTable ── */}
+        <Section title="IpsTable">
+          <IpsTable rows={tableRows} columns={lightColumns} />
         </Section>
 
-        {/* ── 9 · IpsTable (DataGrid) ── */}
-        <Section title="IpsTable (DataGrid)">
-          <IpsTable
-            rows={tableRows}
-            columns={tableColumns}
-            sx={{ height: 220 }}
+        {/* ── 9 · IpsDataTable ── */}
+        <Section title="IpsDataTable">
+          <IpsDataTable
+            data={tableRows}
+            columns={[
+              { accessorKey: 'id',    header: 'ID'    },
+              { accessorKey: 'name',  header: 'Name'  },
+              { accessorKey: 'value', header: 'Value' },
+            ]}
+            sorting
           />
         </Section>
 

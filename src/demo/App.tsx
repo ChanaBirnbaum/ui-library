@@ -33,7 +33,6 @@ import { IpsPillSelect } from '../components/IpsPillSelect/IpsPillSelect'
 import { IpsTimePicker } from '../components/IpsTimePicker/IpsTimePicker'
 import { IpsDatePicker } from '../components/IpsDatePicker/IpsDatePicker'
 import { IpsDateTimePicker } from '../components/IpsDateTimePicker/IpsDateTimePicker'
-import { IpsTableLight } from '../components/IpsTableLight/IpsTableLight'
 import { IpsTable } from '../components/IpsTable/IpsTable'
 import { IpsDataTable } from '../components/IpsDataTable/IpsDataTable'
 import { ExpandedRow } from '../components/IpsDataTable/components/ExpandedRow'
@@ -54,7 +53,6 @@ import type { IpsDialogCloseReason } from '../components/IpsDialog/IpsDialog.typ
 import { IpsDrawer } from '../components/IpsDrawer/IpsDrawer'
 import type { IpsDrawerCloseReason } from '../components/IpsDrawer/IpsDrawer.types'
 import { IpsCarousel } from '../components/IpsCarousel/IpsCarousel'
-import type { GridColDef } from '@mui/x-data-grid'
 import type { Moment } from 'moment'
 import moment from 'moment'
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -126,6 +124,12 @@ const PlusIcon = () => (
   </svg>
 )
 
+const ArrowBackIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2Z"/>
+  </svg>
+)
+
 function ButtonPanel() {
   const [loading, setLoading] = useState(false)
   const [disabled, setDisabled] = useState(false)
@@ -167,6 +171,13 @@ function ButtonPanel() {
         <IpsButton buttonType="clean" loading={loading} disabled={disabled}>Clean</IpsButton>
         <IpsButton buttonType="primary" loading={loading} disabled={disabled}>Primary</IpsButton>
         <IpsButton buttonType="secondary" loading={loading} disabled={disabled}>Secondary</IpsButton>
+      </Stack>
+
+      <SectionTitle>Link button</SectionTitle>
+      <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+        <IpsButton buttonType="link" startIcon={<ArrowBackIcon />} loading={loading} disabled={disabled}>כפתור טקסט</IpsButton>
+        <IpsButton buttonType="link" startIcon={<PlusIcon />} loading={loading} disabled={disabled}>כפתור טקסט</IpsButton>
+        <IpsButton buttonType="link" loading={loading} disabled={disabled}>כפתור טקסט</IpsButton>
       </Stack>
     </Box>
   )
@@ -840,7 +851,7 @@ function DateTimePickerPanel() {
   )
 }
 
-function TableLightPanel() {
+function IpsTablePanel() {
   type EmpRow = {
     id: number; name: string; role: string; dept: string
     status: string; avatar: string; profile: string
@@ -876,7 +887,7 @@ function TableLightPanel() {
   return (
     <Box>
       <PropsTable props={[
-        { name: 'columns',          value: 'IpsTableLightColumn<Row>[]',  description: 'הגדרות עמודות — generic על Row (חובה)' },
+        { name: 'columns',          value: 'IpsTableColumn<Row>[]',  description: 'הגדרות עמודות — generic על Row (חובה)' },
         { name: 'rows',             value: 'Row[]',                        description: 'מערך שורות (חובה)' },
         { name: 'maxHeight',        value: 'number | string',              description: 'גובה מקסימלי + overflow:auto לגלילה אנכית' },
         { name: 'stickyHeader',     value: 'boolean',                      description: 'כותרת קבועה בגלילה (דורש maxHeight)' },
@@ -905,7 +916,7 @@ function TableLightPanel() {
           label="onRowClick"
         />
       </Box>
-      <IpsTableLight
+      <IpsTable
         columns={BASIC_COLS}
         rows={showEmpty ? [] : ROWS}
         striped={striped}
@@ -923,7 +934,7 @@ function TableLightPanel() {
 
       {/* ── Section 2: Rich column types ── */}
       <SectionTitle>סוגי עמודות — תמונה · קישור · Chip מותאם</SectionTitle>
-      <IpsTableLight
+      <IpsTable
         rows={ROWS}
         columns={[
           {
@@ -965,7 +976,7 @@ function TableLightPanel() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontFamily: 'monospace' }}>
             wrap="{mode}"
           </Typography>
-          <IpsTableLight
+          <IpsTable
             columns={[
               { key: 'label', label: 'מצב', width: 90 },
               { key: 'text',  label: 'טקסט לדוגמה', width: 260, wrap: mode },
@@ -1118,62 +1129,6 @@ function DataTablePanel() {
         variant={variant}
         size={size}
       />
-    </Box>
-  )
-}
-
-function TablePanel() {
-  const COLUMNS: GridColDef[] = [
-    { field: 'id',         headerName: 'ID',      width: 70  },
-    { field: 'name',       headerName: 'שם',      flex: 1    },
-    { field: 'role',       headerName: 'תפקיד',   flex: 1    },
-    { field: 'department', headerName: 'מחלקה',   flex: 1    },
-    { field: 'status',     headerName: 'סטטוס',   width: 120 },
-  ]
-  const ROWS = [
-    { id: 1, name: 'Alice Cohen',  role: 'Developer', department: 'R&D',     status: 'פעיל' },
-    { id: 2, name: 'Bob Levi',     role: 'Designer',  department: 'Product', status: 'פעיל' },
-    { id: 3, name: 'Carol Shapir', role: 'PM',        department: 'Product', status: 'חופשה' },
-    { id: 4, name: 'Dan Mizrahi',  role: 'QA',        department: 'R&D',     status: 'פעיל' },
-    { id: 5, name: 'Eve Katz',     role: 'DevOps',    department: 'Infra',   status: 'פעיל' },
-  ]
-
-  const [loading, setLoading] = useState(false)
-  const [checkbox, setCheckbox] = useState(false)
-  const [showEmpty, setShowEmpty] = useState(false)
-  const [lastClick, setLastClick] = useState<string | null>(null)
-
-  return (
-    <Box>
-      <PropsTable props={[
-        { name: 'rows', value: 'GridRowsProp', description: 'שורות נתונים — כל שורה חייבת id (חובה)' },
-        { name: 'columns', value: 'GridColDef[]', description: 'הגדרות עמודות (חובה)' },
-        { name: 'loading', value: 'boolean', description: 'הצג skeleton טעינה' },
-        { name: 'pageSize', value: 'number', description: 'שורות לעמוד (ברירת מחדל: 25)' },
-        { name: 'checkboxSelection', value: 'boolean', description: 'בחירת שורות' },
-        { name: 'onRowClick', value: '(params) => void', description: 'Callback לחיצה על שורה' },
-        { name: 'sx', value: 'SxProps', description: 'עיצוב על wrapper Box' },
-      ]} />
-      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-        <FormControlLabel control={<Switch checked={loading} onChange={e => setLoading(e.target.checked)} />} label="loading" />
-        <FormControlLabel control={<Switch checked={checkbox} onChange={e => setCheckbox(e.target.checked)} />} label="checkboxSelection" />
-        <FormControlLabel control={<Switch checked={showEmpty} onChange={e => setShowEmpty(e.target.checked)} />} label="empty state" />
-      </Box>
-      <Box sx={{ height: 400 }}>
-        <IpsTable
-          columns={COLUMNS}
-          rows={showEmpty ? [] : ROWS}
-          loading={loading}
-          pageSize={5}
-          checkboxSelection={checkbox}
-          onRowClick={p => setLastClick(String(p.row.name))}
-        />
-      </Box>
-      {lastClick && (
-        <Typography variant="caption" sx={{ mt: 1, display: 'block', color: 'text.secondary' }}>
-          לחץ על: {lastClick}
-        </Typography>
-      )}
     </Box>
   )
 }
@@ -1979,8 +1934,7 @@ const TABS = [
   { label: 'TimePicker', component: <TimePickerPanel /> },
   { label: 'DatePicker', component: <DatePickerPanel /> },
   { label: 'DateTimePicker', component: <DateTimePickerPanel /> },
-  { label: 'TableLight', component: <TableLightPanel /> },
-  { label: 'Table', component: <TablePanel /> },
+  { label: 'Table', component: <IpsTablePanel /> },
   { label: 'DataTable', component: <DataTablePanel /> },
   { label: 'Toast', component: <ToastPanel /> },
   { label: 'RichTextEditor', component: <RichTextEditorPanel /> },

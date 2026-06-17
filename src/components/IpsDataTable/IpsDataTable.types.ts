@@ -1,5 +1,5 @@
 import type { ColumnDef, RowData, SortingState, Row, Table } from '@tanstack/react-table'
-import type { ReactNode } from 'react'
+import type { ReactNode, MouseEvent } from 'react'
 import type { SxProps, Theme } from '@mui/material/styles'
 
 // ---------------------------------------------------------------------------
@@ -87,6 +87,18 @@ export interface IpsDataTableProps<T extends RowData> {
   variant?: 'default' | 'bordered' | 'striped'
   size?: 'sm' | 'md' | 'lg'
   sx?: SxProps<Theme>
+  /** Callback fired when a row is clicked */
+  onRowClick?: (row: T, event: MouseEvent<HTMLTableRowElement>) => void
+  /** Show a checkbox column for multi-row selection */
+  checkboxSelection?: boolean
+  /** Called with the current array of selected row objects whenever selection changes */
+  onSelectionChange?: (selectedRows: T[]) => void
+  /** Derive a stable string ID from a row — required when checkboxSelection is true and rows lack an `id` field */
+  getRowId?: (row: T) => string
+  /** Constrain the table container height and enable vertical scroll (also required for virtualScroll) */
+  maxHeight?: number | string
+  /** Render only visible rows using @tanstack/react-virtual — set maxHeight too */
+  virtualScroll?: boolean
 }
 
 // ---------------------------------------------------------------------------

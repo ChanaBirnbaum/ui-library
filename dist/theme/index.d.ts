@@ -6,6 +6,8 @@ export declare const ThemeProvider: React.FC<{
     children?: React.ReactNode;
 }>;
 export { ipsTheme };
+export { createIpsTheme } from './ipsTheme';
+export type { IpsThemeCustom } from './theme.augmentation';
 export { IpsTextField } from '../components/IpsTextField/IpsTextField';
 export type { IpsTextFieldProps } from '../components/IpsTextField/IpsTextField.types';
 export { IpsCheckBox } from '../components/IpsCheckBox/IpsCheckBox';
