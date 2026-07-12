@@ -19,4 +19,10 @@ export interface IpsChipSelectProps
   placeholder?: string;
   /** CSS class on root element */
   className?: string;
+  /** Adds a "Select All" option at the top of the dropdown */
+  enableSelectAll?: boolean;
+  /** Label for the "Select All" dropdown option */
+  selectAllLabel?: string;
+  /** Label for the merged chip shown when every option is selected */
+  allSelectedChipLabel?: string;
 }

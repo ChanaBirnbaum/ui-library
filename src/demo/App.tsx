@@ -499,6 +499,9 @@ function ChipSelectPanel() {
   const [value, setValue] = useState<(string | number)[]>([])
   const [disabled, setDisabled] = useState(false)
 
+  const [valueNoSelectAll, setValueNoSelectAll] = useState<(string | number)[]>(['a', 'c'])
+  const [valueWithSelectAll, setValueWithSelectAll] = useState<(string | number)[]>(['a', 'c'])
+
   return (
     <Box>
       <PropsTable props={[
@@ -506,6 +509,9 @@ function ChipSelectPanel() {
         { name: 'value', value: '(string | number)[]', description: 'ערכים נבחרים' },
         { name: 'disabled', value: 'boolean', description: 'מנטרל (כולל מחיקת chips)' },
         { name: 'placeholder', value: 'string', description: 'placeholder כשריק' },
+        { name: 'enableSelectAll', value: 'boolean', description: 'מוסיף אפשרות "בחר הכל" בראש הרשימה (ברירת מחדל: false)' },
+        { name: 'selectAllLabel', value: 'string', description: 'טקסט אפשרות "בחר הכל" (ברירת מחדל: "בחר הכל")' },
+        { name: 'allSelectedChipLabel', value: 'string', description: 'טקסט ה-Chip המאוחד כשהכל נבחר (ברירת מחדל: "הכל נבחר")' },
       ]} />
       <Box sx={{ mb: 2 }}>
         <FormControlLabel control={<Switch checked={disabled} onChange={e => setDisabled(e.target.checked)} />} label="disabled" />
@@ -525,6 +531,37 @@ function ChipSelectPanel() {
           נבחר: {value.join(', ')}
         </Typography>
       )}
+
+      <SectionTitle>ללא Select All</SectionTitle>
+      <Box sx={{ maxWidth: 400 }}>
+        <IpsChipSelect
+          label="בחר פריטים (ללא בחר הכל)"
+          options={options}
+          value={valueNoSelectAll}
+          onChange={vals => setValueNoSelectAll(vals)}
+          placeholder="בחר אחד או יותר..."
+        />
+      </Box>
+      <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
+        נבחר: {valueNoSelectAll.length > 0 ? valueNoSelectAll.join(', ') : '(לא נבחר)'}
+      </Typography>
+
+      <SectionTitle>עם Select All</SectionTitle>
+      <Box sx={{ maxWidth: 400 }}>
+        <IpsChipSelect
+          label="בחר פריטים (עם בחר הכל)"
+          options={options}
+          value={valueWithSelectAll}
+          onChange={vals => setValueWithSelectAll(vals)}
+          enableSelectAll
+          selectAllLabel="בחר הכל"
+          allSelectedChipLabel="הכל נבחר"
+          placeholder="בחר אחד או יותר..."
+        />
+      </Box>
+      <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
+        נבחר: {valueWithSelectAll.length > 0 ? valueWithSelectAll.join(', ') : '(לא נבחר)'}
+      </Typography>
     </Box>
   )
 }

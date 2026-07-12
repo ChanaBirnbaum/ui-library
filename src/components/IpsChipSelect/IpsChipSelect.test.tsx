@@ -193,6 +193,84 @@ describe('IpsChipSelect', () => {
     expect(root).toBeInTheDocument();
   });
 
+  it('should render a checkbox for each option reflecting selection state', async () => {
+    renderComponent({ value: ['apple'] });
+    const input = screen.getByRole('combobox');
+    await userEvent.click(input);
+
+    const options = screen.getAllByRole('option');
+    const appleOption = options.find((opt) => opt.textContent?.includes('Apple'));
+    const bananaOption = options.find((opt) => opt.textContent?.includes('Banana'));
+
+    expect(appleOption?.querySelector('input[type="checkbox"]')).toBeChecked();
+    expect(bananaOption?.querySelector('input[type="checkbox"]')).not.toBeChecked();
+  });
+
+  it('should not show a Select All option by default', async () => {
+    renderComponent();
+    const input = screen.getByRole('combobox');
+    await userEvent.click(input);
+
+    expect(screen.queryByText('בחר הכל')).not.toBeInTheDocument();
+  });
+
+  it('should show a Select All option when enableSelectAll is true', async () => {
+    renderComponent({ enableSelectAll: true });
+    const input = screen.getByRole('combobox');
+    await userEvent.click(input);
+
+    expect(screen.getByText('בחר הכל')).toBeInTheDocument();
+  });
+
+  it('should select all options when Select All is clicked', async () => {
+    const onChange = jest.fn();
+    renderComponent({ enableSelectAll: true, onChange });
+    const input = screen.getByRole('combobox');
+    await userEvent.click(input);
+    await userEvent.click(screen.getByText('בחר הכל'));
+
+    expect(onChange).toHaveBeenCalledWith(['apple', 'banana', 'cherry']);
+  });
+
+  it('should clear all options when Select All is clicked while everything is selected', async () => {
+    const onChange = jest.fn();
+    renderComponent({
+      enableSelectAll: true,
+      value: ['apple', 'banana', 'cherry'],
+      onChange,
+    });
+    const input = screen.getByRole('combobox');
+    await userEvent.click(input);
+    await userEvent.click(screen.getByText('בחר הכל'));
+
+    expect(onChange).toHaveBeenCalledWith([]);
+  });
+
+  it('should show the merged chip label when all options are selected', () => {
+    renderComponent({
+      enableSelectAll: true,
+      value: ['apple', 'banana', 'cherry'],
+      allSelectedChipLabel: 'הכל נבחר',
+    });
+
+    expect(screen.getByText('הכל נבחר')).toBeInTheDocument();
+    expect(screen.queryByText('Apple')).not.toBeInTheDocument();
+  });
+
+  it('should clear the selection when the merged chip delete icon is clicked', async () => {
+    const onChange = jest.fn();
+    renderComponent({
+      enableSelectAll: true,
+      value: ['apple', 'banana', 'cherry'],
+      onChange,
+    });
+
+    const deleteButtons = screen.getAllByTestId('CancelIcon');
+    await userEvent.click(deleteButtons[0]);
+
+    expect(onChange).toHaveBeenCalledWith([]);
+  });
+
   it('should display chips with correct size', () => {
     renderComponent({ value: ['apple', 'banana'] });
     const chipButtons = screen.getAllByRole('button');

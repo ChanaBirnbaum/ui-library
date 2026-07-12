@@ -137,3 +137,42 @@ export const CustomPlaceholder: Story = {
     placeholder: 'Pick one or more...',
   },
 };
+
+// --- Select All feature demo ---------------------------------------------
+
+export const WithoutSelectAll: Story = {
+  name: 'Without Select All',
+  args: {
+    label: 'Select fruits (no Select All)',
+    options: OPTIONS,
+    value: ['apple', 'cherry'],
+    enableSelectAll: false,
+    placeholder: 'Choose items...',
+  },
+};
+
+export const WithSelectAll: Story = {
+  name: 'With Select All',
+  args: {
+    label: 'Select fruits (Select All enabled)',
+    options: OPTIONS,
+    value: ['apple', 'cherry'],
+    enableSelectAll: true,
+    selectAllLabel: 'בחר הכל',
+    allSelectedChipLabel: 'הכל נבחר',
+    placeholder: 'Choose items...',
+  },
+};
+
+export const WithSelectAllFullySelected: Story = {
+  name: 'With Select All (all selected)',
+  args: {
+    label: 'Select fruits (all selected)',
+    options: OPTIONS,
+    value: OPTIONS.map((option) => option.value),
+    enableSelectAll: true,
+    selectAllLabel: 'בחר הכל',
+    allSelectedChipLabel: 'הכל נבחר',
+    placeholder: 'Choose items...',
+  },
+};
