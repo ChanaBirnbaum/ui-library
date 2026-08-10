@@ -23,6 +23,7 @@ export const IpsCarousel = forwardRef<HTMLDivElement, IpsCarouselProps>((props, 
     defaultIndex = 0,
     onIndexChange,
     autoPlay = true,
+    respectReducedMotion = false,
     interval = 5000,
     loop = true,
     pauseOnHover = true,
@@ -59,7 +60,7 @@ export const IpsCarousel = forwardRef<HTMLDivElement, IpsCarouselProps>((props, 
   const [hoverPaused, setHoverPaused] = useState(false)
   const [manualPaused, setManualPaused] = useState(false)
 
-  const canAutoPlay = autoPlay && !prefersReducedMotion && count > 1
+  const canAutoPlay = autoPlay && (!respectReducedMotion || !prefersReducedMotion) && count > 1
   const playing = canAutoPlay && !hoverPaused && !manualPaused
 
   // Ref so the auto-play interval always reads the latest index without being
@@ -151,8 +152,9 @@ export const IpsCarousel = forwardRef<HTMLDivElement, IpsCarouselProps>((props, 
         size="small"
         aria-label={ctx.direction === 'prev' ? 'Previous slide' : 'Next slide'}
         sx={{
-          bgcolor: 'rgba(255,255,255,0.85)',
-          '&:hover': { bgcolor: 'white' },
+          bgcolor: 'transparent',
+          border: 'none',
+          '&:hover': { bgcolor: 'transparent' },
           '&.Mui-disabled': { opacity: 0.3 },
         }}
       >
@@ -186,7 +188,8 @@ export const IpsCarousel = forwardRef<HTMLDivElement, IpsCarouselProps>((props, 
       />
     )
 
-  const animMs = prefersReducedMotion ? 0 : 350
+  // Always transition — never jump straight to the next slide.
+  const animMs = 500
 
   // Viewport size constraints
   const viewportSx: Record<string, unknown> = { overflow: 'hidden', position: 'relative' }
@@ -208,7 +211,12 @@ export const IpsCarousel = forwardRef<HTMLDivElement, IpsCarouselProps>((props, 
       onBlur={pauseOnHover && canAutoPlay ? () => setHoverPaused(false) : undefined}
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
-      sx={{ position: 'relative', userSelect: 'none', ...sx }}
+      sx={{
+        position: 'relative',
+        userSelect: 'none',
+        '&:hover .ips-carousel-arrow-wrap, &:focus-within .ips-carousel-arrow-wrap': { opacity: 1 },
+        ...sx,
+      }}
     >
       {/* Viewport */}
       <Box className="ips-carousel-viewport" sx={viewportSx}>
@@ -266,14 +274,36 @@ export const IpsCarousel = forwardRef<HTMLDivElement, IpsCarouselProps>((props, 
 
       {/* Prev arrow */}
       {showArrows && count > 1 && (
-        <Box sx={{ position: 'absolute', top: '50%', left: 8, transform: 'translateY(-50%)', zIndex: 1 }}>
+        <Box
+          className="ips-carousel-arrow-wrap"
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: 0,
+            transform: 'translate(-100%, -50%)',
+            zIndex: 1,
+            opacity: 0,
+            transition: 'opacity 0.2s ease',
+          }}
+        >
           {buildArrow({ direction: 'prev', disabled: prevDisabled, onClick: goPrev })}
         </Box>
       )}
 
       {/* Next arrow */}
       {showArrows && count > 1 && (
-        <Box sx={{ position: 'absolute', top: '50%', right: 8, transform: 'translateY(-50%)', zIndex: 1 }}>
+        <Box
+          className="ips-carousel-arrow-wrap"
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            right: 0,
+            transform: 'translate(100%, -50%)',
+            zIndex: 1,
+            opacity: 0,
+            transition: 'opacity 0.2s ease',
+          }}
+        >
           {buildArrow({ direction: 'next', disabled: nextDisabled, onClick: goNext })}
         </Box>
       )}

@@ -38,8 +38,18 @@ export function DataCell<T extends RowData>({
   const interactionProps =
     isEditable && !isEditing && onActivateEdit
       ? editMode === 'dblclick'
-        ? { onDoubleClick: onActivateEdit }
-        : { onClick: onActivateEdit }
+        ? {
+            onDoubleClick: (e: React.MouseEvent) => {
+              e.stopPropagation()
+              onActivateEdit()
+            },
+          }
+        : {
+            onClick: (e: React.MouseEvent) => {
+              e.stopPropagation()
+              onActivateEdit()
+            },
+          }
       : {}
 
   const content =
@@ -71,6 +81,7 @@ export function DataCell<T extends RowData>({
           isEditable && !isEditing ? { backgroundColor: 'action.hover' } : {},
         ...cellSx,
       }}
+      onClick={isEditing ? (e) => e.stopPropagation() : undefined}
       {...interactionProps}
     >
       {content}

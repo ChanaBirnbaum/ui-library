@@ -40,7 +40,11 @@ export function ActionCell<T>({
   const visibleActions = customActions.filter((a) => !a.isVisible || a.isVisible(row))
 
   return (
-    <MuiTableCell align="right" sx={{ whiteSpace: 'nowrap', ...cellSx }}>
+    <MuiTableCell
+      align="right"
+      sx={{ whiteSpace: 'nowrap', ...cellSx }}
+      onClick={(e) => e.stopPropagation()}
+    >
       <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
         {isEditing ? (
           <>

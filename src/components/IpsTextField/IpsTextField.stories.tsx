@@ -42,3 +42,19 @@ export const ErrorState: Story = {
     helperText: 'Required',
   },
 };
+
+export const Search: Story = {
+  args: {
+    label: 'Search',
+    type: 'search',
+    placeholder: 'Search...',
+  },
+};
+
+export const SearchWithValue: Story = {
+  args: {
+    label: 'Search',
+    type: 'search',
+    defaultValue: 'query text',
+  },
+};

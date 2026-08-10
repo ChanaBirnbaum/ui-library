@@ -140,6 +140,27 @@ export function createIpsTheme(mode: 'light' | 'dark'): Theme {
         },
       },
 
+      // MUI's Autocomplete bakes its own padding onto the outlined input
+      // (root: 9px + input: 7.5px 4px 7.5px 5px) which stacks with the
+      // MuiOutlinedInput override above and makes IpsAutocomplete render
+      // ~17px taller than IpsTextField. Reset both to zero and give the
+      // input the same 8px 14px padding as IpsTextField; MuiOutlinedInput's
+      // own endAdornment variants (unchanged) then take care of the
+      // dropdown/clear icon clearance, exactly as they already do for an
+      // IpsTextField with an end adornment.
+      MuiAutocomplete: {
+        styleOverrides: {
+          root: {
+            '& .MuiOutlinedInput-root': {
+              padding: 0,
+              '& .MuiAutocomplete-input': {
+                padding: '8px 14px',
+              },
+            },
+          },
+        },
+      },
+
       MuiButton: {
         defaultProps: {
           disableElevation: true,

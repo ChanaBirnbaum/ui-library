@@ -1,6 +1,7 @@
-import React, { forwardRef, useId } from 'react';
+import React, { forwardRef, useId, useRef, useState } from 'react';
 import TextField from '@mui/material/TextField';
 import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 import FormLabel from '@mui/material/FormLabel';
 import Box from '@mui/material/Box';
 import type { IpsTextFieldProps } from './IpsTextField.types';
@@ -36,6 +37,19 @@ const SearchIcon = () => (
   </svg>
 );
 
+const ClearIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path d="M6 6L18 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M18 6L6 18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 export const IpsTextField = forwardRef<HTMLInputElement, IpsTextFieldProps>(
   (props, ref) => {
     const {
@@ -51,6 +65,9 @@ export const IpsTextField = forwardRef<HTMLInputElement, IpsTextFieldProps>(
       required,
       id: idProp,
       type,
+      value: valueProp,
+      defaultValue,
+      onChange: onChangeProp,
       ...rest
     } = props as any;
 
@@ -58,15 +75,76 @@ export const IpsTextField = forwardRef<HTMLInputElement, IpsTextFieldProps>(
     const inputId = idProp ?? generatedId;
     const isSearch = type === 'search';
 
+    const isControlled = valueProp !== undefined;
+    const [internalValue, setInternalValue] = useState<string>(defaultValue ?? '');
+    const currentValue = isControlled ? valueProp : internalValue;
+    const hasValue = currentValue != null && String(currentValue).length > 0;
+
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    const setInputRef = (node: HTMLInputElement | null) => {
+      inputRef.current = node;
+      if (typeof ref === 'function') {
+        ref(node);
+      } else if (ref && typeof ref === 'object') {
+        (ref as React.MutableRefObject<HTMLInputElement | null>).current = node;
+      }
+      if (typeof nativeInputProps?.ref === 'function') {
+        nativeInputProps.ref(node);
+      } else if (nativeInputProps?.ref && typeof nativeInputProps.ref === 'object') {
+        (nativeInputProps.ref as React.MutableRefObject<HTMLInputElement | null>).current = node;
+      }
+    };
+
     const mergedNativeInputProps = {
       ...nativeInputProps,
+      ref: setInputRef,
       readOnly: readOnly ? true : nativeInputProps?.readOnly,
     } as typeof nativeInputProps | undefined;
 
-    const resolvedEndAdornment = endAdornment ?? (isSearch ? <SearchIcon /> : undefined);
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (!isControlled) setInternalValue(event.target.value);
+      onChangeProp?.(event);
+    };
+
+    const handleClear = () => {
+      if (isControlled) {
+        onChangeProp?.({
+          target: { value: '' },
+          currentTarget: { value: '' },
+        } as React.ChangeEvent<HTMLInputElement>);
+      } else {
+        setInternalValue('');
+        const nativeSetter = Object.getOwnPropertyDescriptor(
+          window.HTMLInputElement.prototype,
+          'value'
+        )?.set;
+        if (inputRef.current && nativeSetter) {
+          nativeSetter.call(inputRef.current, '');
+          inputRef.current.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+      inputRef.current?.focus();
+    };
+
+    const searchAdornment = isSearch
+      ? hasValue
+        ? (
+          <IconButton
+            size="small"
+            aria-label="Clear search"
+            onClick={handleClear}
+            edge="end"
+            tabIndex={-1}
+          >
+            <ClearIcon />
+          </IconButton>
+        )
+        : <SearchIcon />
+      : undefined;
+
+    const resolvedEndAdornment = endAdornment ?? searchAdornment;
 
     const slotPropsInput = {
-      ref: ref as any,
       startAdornment: startAdornment
         ? <InputAdornment position="start">{startAdornment}</InputAdornment>
         : inputProps?.startAdornment,
@@ -102,6 +180,9 @@ export const IpsTextField = forwardRef<HTMLInputElement, IpsTextFieldProps>(
           required={required}
           error={error}
           helperText={resolvedHelperText}
+          value={valueProp}
+          defaultValue={defaultValue}
+          onChange={handleChange}
           slotProps={{ input: slotPropsInput, htmlInput: mergedNativeInputProps }}
           className="ips-text-field"
         />

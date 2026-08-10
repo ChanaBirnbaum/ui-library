@@ -45,15 +45,24 @@ const SIZE_CELL_SX: Record<string, object> = {
 // Row height estimates for the virtualizer (cell height + 1px border)
 const SIZE_ROW_HEIGHT: Record<string, number> = { sm: 33, md: 49, lg: 65 }
 
+// Thin horizontal rule between body rows, independent of the `bordered` variant
+// (which additionally draws vertical/outer grid lines).
+const ROW_DIVIDER_SX: object = {
+  '& .MuiTableBody-root .MuiTableCell-root': {
+    borderBottom: '1px solid',
+    borderColor: 'grey.100',
+  },
+}
+
 const VARIANT_SX: Record<string, object> = {
-  default: {},
+  default: ROW_DIVIDER_SX,
   bordered: {
     '& .MuiTableCell-root': {
       border: '1px solid',
       borderColor: 'divider',
     },
   },
-  striped: {},
+  striped: ROW_DIVIDER_SX,
 }
 
 export function IpsDataTable<T extends RowData>(props: IpsDataTableProps<T>) {
