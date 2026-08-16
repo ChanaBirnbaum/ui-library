@@ -132,6 +132,33 @@ export const MultipleWithValue: Story = {
   },
 };
 
+const MANY_OPTIONS: OptionType[] = Array.from({ length: 12 }, (_, index) => ({
+  label: `תוצאה מספר ${index + 1}`,
+  value: `opt${index + 1}`,
+}));
+
+export const MultipleChipOverflow: Story = {
+  name: 'Multiple (chip overflow past 3)',
+  args: {
+    options: MANY_OPTIONS,
+    label: 'תוצאות נבחרות',
+    placeholder: 'בחר תוצאות...',
+    multiple: true,
+    showCheckboxes: true,
+    value: MANY_OPTIONS.slice(0, 6),
+    getOptionLabel: (option: any) => option.label || option,
+  },
+};
+
+export const MultipleChipOverflowCustomLimit: Story = {
+  name: 'Multiple (custom maxVisibleChips)',
+  args: {
+    ...MultipleChipOverflow.args,
+    label: 'תוצאות נבחרות - צ׳יפ אחד גלוי',
+    maxVisibleChips: 1,
+  },
+};
+
 export const CustomRender: Story = {
   args: {
     options: OPTIONS,

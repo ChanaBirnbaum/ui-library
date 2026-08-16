@@ -164,6 +164,82 @@ export const WithSelectAll: Story = {
   },
 };
 
+export const CollapsedChips: Story = {
+  name: 'Chip overflow (more than 3 selected)',
+  args: {
+    label: 'תוצאות נבחרות',
+    options: OPTIONS,
+    value: ['apple', 'banana', 'cherry', 'date', 'elderberry', 'fig'],
+    placeholder: 'בחר תוצאות...',
+  },
+};
+
+export const CollapsedChipsCustomLimit: Story = {
+  name: 'Chip overflow (custom maxVisibleChips)',
+  args: {
+    ...CollapsedChips.args,
+    label: 'תוצאות נבחרות - צ׳יפ אחד גלוי',
+    maxVisibleChips: 1,
+  },
+};
+
+export const CollapsedChipsDisabled: Story = {
+  name: 'Chip overflow (all chips visible)',
+  args: {
+    ...CollapsedChips.args,
+    label: 'תוצאות נבחרות - ללא כיווץ',
+    maxVisibleChips: 0,
+  },
+};
+
+const LONG_OPTIONS: IpsChipSelectOption[] = Array.from(
+  { length: 80 },
+  (_, index) => ({ label: `תוצאה מספר ${index + 1}`, value: index + 1 })
+);
+
+export const LongOptionList: Story = {
+  name: 'Long option list (scrolling menu)',
+  args: {
+    label: 'רשימה ארוכה',
+    options: LONG_OPTIONS,
+    value: [2, 5],
+    enableSelectAll: true,
+    placeholder: 'בחר תוצאות...',
+  },
+};
+
+export const LongOptionListCustomHeight: Story = {
+  name: 'Long option list (custom maxMenuHeight)',
+  args: {
+    ...LongOptionList.args,
+    label: 'רשימה ארוכה - גובה מותאם',
+    maxMenuHeight: 200,
+  },
+};
+
+export const LongOptionListAtPageBottom: Story = {
+  name: 'Long option list (field at page bottom)',
+  args: {
+    ...LongOptionList.args,
+    label: 'רשימה ארוכה בתחתית העמוד',
+  },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          height: 'calc(100vh - 40px)',
+          display: 'flex',
+          alignItems: 'flex-end',
+        }}
+      >
+        <div style={{ width: '100%' }}>
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
+};
+
 export const WithSelectAllFullySelected: Story = {
   name: 'With Select All (all selected)',
   args: {
