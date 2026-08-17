@@ -1,5 +1,6 @@
 import { default as React } from 'react';
 import { Table, RowData } from '@tanstack/react-table';
+import { VirtualItem } from '@tanstack/react-virtual';
 import { ActionDef, EditingState } from '../IpsDataTable.types';
 
 export interface TableBodyProps<T extends RowData> {
@@ -19,5 +20,9 @@ export interface TableBodyProps<T extends RowData> {
     cellSx?: object;
     renderEmptyState: () => React.ReactNode;
     isLoading: boolean;
+    onRowClick?: (row: T, event: React.MouseEvent<HTMLTableRowElement>) => void;
+    virtualItems?: VirtualItem[];
+    paddingTop?: number;
+    paddingBottom?: number;
 }
-export declare function TableBody<T extends RowData>({ table, editingState, onEditValueChange, onStartInlineEdit, onSaveInline, onCancelEdit, onEdit, onDeleteRequest, expandedContent, customActions, hasInlineEdit, hasActionColumn, variant, cellSx, renderEmptyState, isLoading, }: TableBodyProps<T>): React.JSX.Element;
+export declare function TableBody<T extends RowData>({ table, editingState, onEditValueChange, onStartInlineEdit, onSaveInline, onCancelEdit, onEdit, onDeleteRequest, expandedContent, customActions, hasInlineEdit, hasActionColumn, variant, cellSx, renderEmptyState, isLoading, onRowClick, virtualItems, paddingTop, paddingBottom, }: TableBodyProps<T>): React.JSX.Element;

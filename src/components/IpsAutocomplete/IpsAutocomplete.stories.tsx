@@ -1,6 +1,10 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import { IpsAutocomplete } from './IpsAutocomplete';
 import type { IpsAutocompleteProps } from './IpsAutocomplete.types';
 
@@ -187,6 +191,81 @@ export const FreeSolo: Story = {
     freeSolo: true,
     multiple: false,
   },
+};
+
+const LONG_OPTIONS = Array.from({ length: 40 }, (_, index) => ({
+  label: `תוצאה מספר ${index + 1}`,
+  value: `long${index + 1}`,
+}));
+
+export const LongList: Story = {
+  name: 'Long list (capped height + thin scrollbar)',
+  args: {
+    options: LONG_OPTIONS,
+    label: 'רשימה ארוכה',
+    placeholder: 'הקלד לחיפוש...',
+    multiple: true,
+    showCheckboxes: true,
+    getOptionLabel: (option: any) => option.label || option,
+  },
+};
+
+// The field inside a dialog is the case the popup styling has to survive: the
+// list has to escape the dialog instead of being clipped by it, and still open
+// straight out of the input.
+const InsideDialogDemo = () => {
+  const [open, setOpen] = React.useState(true);
+
+  return (
+    <>
+      <Button variant="outlined" onClick={() => setOpen(true)}>
+        פתח חלונית
+      </Button>
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>סינון תוצאות</DialogTitle>
+        <DialogContent>
+          <IpsAutocomplete
+            options={LONG_OPTIONS}
+            label="בחר תוצאות"
+            placeholder="הקלד לחיפוש..."
+            multiple
+            showCheckboxes
+            getOptionLabel={(option: any) => option.label || option}
+          />
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
+export const InsideDialog: Story = {
+  name: 'Inside a popup (dialog)',
+  render: () => <InsideDialogDemo />,
+};
+
+// Same field pushed to the bottom of the viewport: too little room below, so
+// the list opens upwards and the squared edge moves to the top of the input.
+const NearViewportBottomDemo = () => (
+  <div
+    style={{
+      display: 'flex',
+      alignItems: 'flex-end',
+      height: '90vh',
+      padding: 16,
+    }}
+  >
+    <IpsAutocomplete
+      options={LONG_OPTIONS}
+      label="שדה בתחתית המסך"
+      placeholder="הקלד לחיפוש..."
+      getOptionLabel={(option: any) => option.label || option}
+    />
+  </div>
+);
+
+export const NearViewportBottom: Story = {
+  name: 'Near the viewport bottom (opens upwards)',
+  render: () => <NearViewportBottomDemo />,
 };
 
 export const Clearable: Story = {

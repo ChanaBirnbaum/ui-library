@@ -1,2 +1,2 @@
 export { IpsTable } from './IpsTable';
-export type { IpsTableProps } from './IpsTable.types';
+export type { IpsTableProps, IpsTableColumn, IpsTableRow, IpsTableWrap, } from './IpsTable.types';

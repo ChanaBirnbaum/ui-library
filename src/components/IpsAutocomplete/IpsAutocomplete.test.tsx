@@ -2,7 +2,10 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ThemeProvider, createTheme } from '@mui/material'
-import { IpsAutocomplete } from './IpsAutocomplete'
+import {
+  IpsAutocomplete,
+  IPS_AUTOCOMPLETE_POPUP_CLASS,
+} from './IpsAutocomplete'
 
 const muiTheme = createTheme()
 
@@ -119,6 +122,151 @@ describe('IpsAutocomplete', () => {
       .querySelector('input[type="checkbox"]')
       ?.closest('.MuiCheckbox-root')
     expect(checkbox).toHaveStyle({ padding: '2px' })
+  })
+
+  describe('popup', () => {
+    const openPopup = async () => {
+      await userEvent.click(screen.getByRole('combobox'))
+    }
+
+    test('caps the list height so it cannot overflow its container', async () => {
+      renderComponent()
+      await openPopup()
+      expect(document.querySelector('.MuiAutocomplete-listbox')).toHaveStyle({
+        maxHeight: '320px',
+      })
+    })
+
+    test('honours a custom maxListHeight', async () => {
+      renderComponent({ maxListHeight: 200 })
+      await openPopup()
+      expect(document.querySelector('.MuiAutocomplete-listbox')).toHaveStyle({
+        maxHeight: '200px',
+      })
+    })
+
+    // jsdom's computed style drops scrollbar properties, so the emitted rules
+    // are read straight off the stylesheet instead.
+    const rulesFor = (element: Element) => {
+      const own = Array.from(element.classList).filter((c) =>
+        c.startsWith('css-')
+      )
+      return Array.from(document.styleSheets)
+        .flatMap((sheet) => Array.from(sheet.cssRules))
+        .map((rule) => rule.cssText)
+        .filter((text) => own.some((c) => text.startsWith(`.${c}`)))
+        .join('\n')
+    }
+
+    test('gives the list a thin, light-grey scrollbar', async () => {
+      renderComponent()
+      await openPopup()
+      const css = rulesFor(document.querySelector('.MuiAutocomplete-listbox')!)
+      // Firefox understands the standard pair, Chrome/Safari the pseudos.
+      expect(css).toMatch(/scrollbar-width:\s*thin/)
+      expect(css).toMatch(/::-webkit-scrollbar\s*\{[^}]*width:\s*6px/)
+      expect(css).toMatch(
+        new RegExp(
+          `::-webkit-scrollbar-thumb\\s*\\{[^}]*${muiTheme.palette.grey[300]}`,
+          'i'
+        )
+      )
+    })
+
+    // The popup is portalled to the body, so nothing around the field reaches
+    // it - the font has to be carried over deliberately.
+    test('renders the list in the same font as the field', async () => {
+      renderComponent({
+        sx: { '& .MuiInputBase-root': { fontFamily: '"Rubik", sans-serif' } },
+      })
+      await openPopup()
+      expect(document.querySelector('.MuiAutocomplete-paper')).toHaveStyle({
+        fontFamily: '"Rubik", sans-serif',
+      })
+    })
+
+    test('lifts the popup above modal-level containers', async () => {
+      renderComponent()
+      await openPopup()
+      expect(document.querySelector('.MuiAutocomplete-popper')).toHaveStyle({
+        zIndex: String(muiTheme.zIndex.tooltip),
+      })
+      expect(muiTheme.zIndex.tooltip).toBeGreaterThan(muiTheme.zIndex.modal)
+    })
+
+    test('marks the popup so an outside-click handler can spot it', async () => {
+      renderComponent()
+      await openPopup()
+      const option = screen.getByText('Apple')
+      expect(option.closest(`.${IPS_AUTOCOMPLETE_POPUP_CLASS}`)).not.toBeNull()
+      // MUI's own class has to survive alongside it.
+      expect(
+        document.querySelector(
+          `.MuiAutocomplete-popper.${IPS_AUTOCOMPLETE_POPUP_CLASS}`
+        )
+      ).toBeInTheDocument()
+    })
+
+    test('clears a popup that stacks above the modal level', async () => {
+      const overlay = document.createElement('div')
+      overlay.style.zIndex = '9999'
+      overlay.style.position = 'fixed'
+      document.body.appendChild(overlay)
+      containers.push(overlay)
+
+      render(
+        <ThemeProvider theme={muiTheme}>
+          <IpsAutocomplete options={OPTIONS} />
+        </ThemeProvider>,
+        { container: overlay }
+      )
+      await openPopup()
+      expect(document.querySelector('.MuiAutocomplete-popper')).toHaveStyle({
+        zIndex: '10000',
+      })
+    })
+
+    test('squares the edge the field and the list share while open', async () => {
+      renderComponent()
+      const inputRoot = document.querySelector('.MuiOutlinedInput-root')
+      expect(inputRoot).not.toHaveStyle({ borderBottomLeftRadius: '0px' })
+
+      await openPopup()
+      expect(inputRoot).toHaveStyle({
+        borderBottomLeftRadius: '0px',
+        borderBottomRightRadius: '0px',
+      })
+      expect(document.querySelector('.MuiAutocomplete-paper')).toHaveStyle({
+        borderTopLeftRadius: '0px',
+        borderTopRightRadius: '0px',
+      })
+    })
+
+    test('restores the field radius once the list closes', async () => {
+      renderComponent()
+      await openPopup()
+      await userEvent.keyboard('{Escape}')
+      expect(document.querySelector('.MuiOutlinedInput-root')).not.toHaveStyle({
+        borderBottomLeftRadius: '0px',
+      })
+    })
+
+    test('still reports open/close to a consumer', async () => {
+      const onOpen = jest.fn()
+      const onClose = jest.fn()
+      renderComponent({ onOpen, onClose })
+      await openPopup()
+      expect(onOpen).toHaveBeenCalled()
+      await userEvent.keyboard('{Escape}')
+      expect(onClose).toHaveBeenCalled()
+    })
+
+    test('squares the field for a consumer-controlled open state', () => {
+      renderComponent({ open: true })
+      expect(document.querySelector('.MuiOutlinedInput-root')).toHaveStyle({
+        borderBottomLeftRadius: '0px',
+      })
+    })
   })
 
   test('renders tags as small chips', () => {

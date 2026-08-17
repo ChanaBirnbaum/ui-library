@@ -22,6 +22,12 @@ export interface IpsCarouselProps {
     /** Fired whenever the active slide changes (auto or manual). */
     onIndexChange?: (index: number) => void;
     autoPlay?: boolean;
+    /**
+     * Respect the OS/browser `prefers-reduced-motion: reduce` setting by disabling
+     * auto-play when it's active. Default false — auto-play ignores that preference
+     * unless explicitly opted in. Set to true to have auto-play defer to it.
+     */
+    respectReducedMotion?: boolean;
     /** Auto-advance interval in ms. */
     interval?: number;
     /** Wrap around past the first/last slide. */
