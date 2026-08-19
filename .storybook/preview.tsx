@@ -55,7 +55,7 @@ const preview: Preview = {
         <CacheProvider value={cache}>
           <ThemeProvider theme={muiTheme}>
             <CssBaseline />
-            <div dir={dir} style={{ fontFamily: '"Inter", "Heebo", sans-serif' }}>
+            <div dir={dir} style={{ fontFamily: '"Rubik", "Heebo", "Inter", sans-serif' }}>
               <Story />
             </div>
           </ThemeProvider>

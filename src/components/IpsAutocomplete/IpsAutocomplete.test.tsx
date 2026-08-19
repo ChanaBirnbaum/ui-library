@@ -185,6 +185,19 @@ describe('IpsAutocomplete', () => {
       })
     })
 
+    // MUI stamps theme.typography.fontFamily onto every Chip, so a selected
+    // value does not follow the field on its own.
+    test('renders the selected values in the same font as the field', () => {
+      renderComponent({
+        multiple: true,
+        value: ['Apple'],
+        sx: { '& .MuiInputBase-root': { fontFamily: '"Rubik", sans-serif' } },
+      })
+      expect(document.querySelector('.MuiChip-root')).toHaveStyle({
+        fontFamily: 'inherit',
+      })
+    })
+
     test('lifts the popup above modal-level containers', async () => {
       renderComponent()
       await openPopup()

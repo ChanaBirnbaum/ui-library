@@ -1,230 +1,215 @@
-import { jsx as b, jsxs as $, Fragment as ft } from "react/jsx-runtime";
-import { forwardRef as xt, useState as R, useRef as bt, useCallback as G, useEffect as ht } from "react";
+import { jsx as x, jsxs as j, Fragment as ft } from "react/jsx-runtime";
+import { forwardRef as ht, useState as S, useRef as xt, useCallback as B, useEffect as bt } from "react";
 import gt from "@mui/material/Autocomplete";
 import wt from "@mui/material/Checkbox";
 import yt from "@mui/material/Chip";
 import { useTheme as It } from "@mui/material/styles";
-import { IpsTextField as Rt } from "../IpsTextField/IpsTextField.js";
-import { mergeSlotProps as S, toSxArray as T } from "../../utils/slotUtils.js";
-import { listDensity as d } from "../../utils/listDensity.js";
-import { thinScrollbarSx as St } from "../../utils/scrollbarSx.js";
-import { ChipOverflowToggle as Tt } from "../internal/ChipOverflowToggle.js";
-const Lt = 3, Ct = 320, _ = 16, U = 160, Ot = (i) => typeof i == "string" ? i : (i == null ? void 0 : i.label) || String(i), At = {
-  py: d.listPaddingY,
+import { IpsTextField as St } from "../IpsTextField/IpsTextField.js";
+import { mergeSlotProps as C, toSxArray as L } from "../../utils/slotUtils.js";
+import { listDensity as u } from "../../utils/listDensity.js";
+import { thinScrollbarSx as Ct } from "../../utils/scrollbarSx.js";
+import { popupSurfaceSx as Lt, joinedFieldSx as Tt } from "../../utils/popupSurface.js";
+import { ChipOverflowToggle as Ot } from "../internal/ChipOverflowToggle.js";
+const At = 3, Et = 320, F = 16, G = 160, Mt = (i) => typeof i == "string" ? i : (i == null ? void 0 : i.label) || String(i), Rt = {
+  py: u.listPaddingY,
   "& .MuiAutocomplete-option": {
-    minHeight: d.optionMinHeight,
-    py: d.optionPaddingY,
-    px: d.optionPaddingX
+    minHeight: u.optionMinHeight,
+    py: u.optionPaddingY,
+    px: u.optionPaddingX
   }
-}, Et = [
+}, Ft = [
   {
     name: "preventOverflow",
-    options: { boundary: "viewport", padding: _ }
+    options: { boundary: "viewport", padding: F }
   },
   { name: "flip", enabled: !1 }
-], Mt = (i) => {
+], _t = (i) => {
   let s = 0;
-  for (let u = i; u; u = u.parentElement) {
-    const h = Number.parseInt(
-      window.getComputedStyle(u).zIndex ?? "",
+  for (let d = i; d; d = d.parentElement) {
+    const b = Number.parseInt(
+      window.getComputedStyle(d).zIndex ?? "",
       10
     );
-    Number.isFinite(h) && (s = Math.max(s, h));
+    Number.isFinite(b) && (s = Math.max(s, b));
   }
   return s;
-}, _t = "ips-autocomplete-popup", kt = _t, Ft = { p: d.checkboxPadding }, Pt = xt((i, s) => {
+}, kt = "ips-autocomplete-popup", Pt = kt, Ht = { p: u.checkboxPadding }, zt = { fontFamily: "inherit" }, Nt = ht((i, s) => {
   const {
-    showCheckboxes: u = !0,
-    className: h,
-    multiple: L = !1,
-    renderOption: k,
-    renderInput: F,
-    disabled: C = !1,
-    loading: j = !1,
+    showCheckboxes: d = !0,
+    className: b,
+    multiple: T = !1,
+    renderOption: _,
+    renderInput: k,
+    disabled: O = !1,
+    loading: U = !1,
     label: D,
     slotProps: n,
     renderTags: P,
-    getOptionLabel: g = Ot,
+    getOptionLabel: g = Mt,
     // A multi-select that closes after every pick makes selecting several items
     // needlessly slow; single-select still closes as usual.
-    disableCloseOnSelect: V = L,
-    maxVisibleChips: w = Lt,
-    maxListHeight: y = Ct,
+    disableCloseOnSelect: V = T,
+    maxVisibleChips: w = At,
+    maxListHeight: y = Et,
     collapseChipsTooltip: X = "הצג פחות",
     moreItemsTooltipLabel: Y = (t) => `ועוד ${t}`,
     sx: Z,
     open: H,
-    onOpen: O,
-    onClose: A,
+    onOpen: A,
+    onClose: E,
     ...q
-  } = i, B = It(), W = B.direction === "rtl", [z, J] = R(!1), I = bt(null), K = G(
+  } = i, z = It(), W = z.direction === "rtl", [N, J] = S(!1), I = xt(null), K = B(
     (t) => {
       I.current = t, typeof s == "function" ? s(t) : s && (s.current = t);
     },
     [s]
-  ), [Q, N] = R(!1), E = H ?? Q, [e, v] = R(null), l = G(() => {
+  ), [Q, $] = S(!1), M = H ?? Q, [o, v] = S(null), p = B(() => {
     const t = I.current;
     if (!t || typeof window > "u") return;
-    const o = t.querySelector(".MuiInputBase-root") ?? t, r = o.getBoundingClientRect(), a = window.innerHeight - r.bottom - _, c = r.top - _, m = a < U && c > a, f = Math.max(
-      m ? c : a,
-      U
-    ), x = window.getComputedStyle(o).fontFamily;
+    const e = t.querySelector(".MuiInputBase-root") ?? t, a = e.getBoundingClientRect(), r = window.innerHeight - a.bottom - F, c = a.top - F, m = r < G && c > r, f = Math.max(
+      m ? c : r,
+      G
+    ), h = window.getComputedStyle(e).fontFamily;
     v(
-      (p) => p && p.el === o && p.above === m && p.fontFamily === x && Math.abs(p.width - r.width) < 1 && Math.abs(p.available - f) < 1 ? p : { el: o, width: r.width, above: m, available: f, fontFamily: x }
+      (l) => l && l.el === e && l.above === m && l.fontFamily === h && Math.abs(l.width - a.width) < 1 && Math.abs(l.available - f) < 1 ? l : { el: e, width: a.width, above: m, available: f, fontFamily: h }
     );
-  }, []), [tt, et] = R(null);
-  ht(() => {
-    if (!(!E || typeof window > "u"))
-      return l(), I.current && et(Mt(I.current) + 1), window.addEventListener("resize", l), window.addEventListener("scroll", l, !0), () => {
-        window.removeEventListener("resize", l), window.removeEventListener("scroll", l, !0);
+  }, []), [tt, et] = S(null);
+  bt(() => {
+    if (!(!M || typeof window > "u"))
+      return p(), I.current && et(_t(I.current) + 1), window.addEventListener("resize", p), window.addEventListener("scroll", p, !0), () => {
+        window.removeEventListener("resize", p), window.removeEventListener("scroll", p, !0);
       };
-  }, [E, l]);
-  const ot = (t) => {
-    l(), N(!0), O == null || O(t);
-  }, nt = (t, o) => {
-    N(!1), A == null || A(t, o);
-  }, it = (t, o, { selected: r }) => {
-    const { key: a, ...c } = t;
-    if (typeof k == "function")
-      return k(c, o, { selected: r });
-    const m = L && u, f = g(o);
-    return /* @__PURE__ */ $("li", { ...c, children: [
-      m && /* @__PURE__ */ b(
+  }, [M, p]);
+  const nt = (t) => {
+    p(), $(!0), A == null || A(t);
+  }, ot = (t, e) => {
+    $(!1), E == null || E(t, e);
+  }, it = (t, e, { selected: a }) => {
+    const { key: r, ...c } = t;
+    if (typeof _ == "function")
+      return _(c, e, { selected: a });
+    const m = T && d, f = g(e);
+    return /* @__PURE__ */ j("li", { ...c, children: [
+      m && /* @__PURE__ */ x(
         wt,
         {
-          checked: r,
+          checked: a,
           disableRipple: !0,
           sx: [
-            Ft,
-            W ? { ml: d.checkboxGap } : { mr: d.checkboxGap }
+            Ht,
+            W ? { ml: u.checkboxGap } : { mr: u.checkboxGap }
           ]
         }
       ),
       f
-    ] }, a);
+    ] }, r);
   }, st = (t) => {
-    t.stopPropagation(), t.preventDefault(), !C && J((o) => !o);
-  }, rt = (t, o, r) => {
+    t.stopPropagation(), t.preventDefault(), !O && J((e) => !e);
+  }, at = (t, e, a) => {
     if (typeof P == "function")
-      return P(t, o, r);
-    const a = w > 0 && t.length > w, c = a && !z ? t.slice(0, w) : t, m = a ? t.slice(w) : [];
-    return /* @__PURE__ */ $(ft, { children: [
-      c.map((f, x) => {
-        const { key: p, ...ut } = o({ index: x });
-        return /* @__PURE__ */ b(
+      return P(t, e, a);
+    const r = w > 0 && t.length > w, c = r && !N ? t.slice(0, w) : t, m = r ? t.slice(w) : [];
+    return /* @__PURE__ */ j(ft, { children: [
+      c.map((f, h) => {
+        const { key: l, ...dt } = e({ index: h });
+        return /* @__PURE__ */ x(
           yt,
           {
             size: "small",
             label: g(f),
-            ...ut
+            sx: zt,
+            ...dt
           },
-          p
+          l
         );
       }),
-      a && /* @__PURE__ */ b(
-        Tt,
+      r && /* @__PURE__ */ x(
+        Ot,
         {
           hiddenLabels: m.map(g),
-          expanded: z,
-          disabled: C,
+          expanded: N,
+          disabled: O,
           collapseTooltip: X,
           moreItemsLabel: Y,
           onToggle: st
         }
       )
     ] });
-  }, at = (t) => F ? F(t) : /* @__PURE__ */ b(Rt, { ...t, label: D }), pt = ["ips-autocomplete", h].filter(Boolean).join(" "), lt = e == null ? y : typeof y == "number" ? Math.min(y, e.available) : `min(${y}, ${e.available}px)`, M = (e == null ? void 0 : e.above) === !0, ct = {
-    // The notched outline inherits its radius from the input root, so squaring
-    // the root squares the border the user actually sees.
-    "& .MuiOutlinedInput-root": M ? { borderTopLeftRadius: "0px", borderTopRightRadius: "0px" } : { borderBottomLeftRadius: "0px", borderBottomRightRadius: "0px" }
-  }, mt = (t) => ({
-    typography: "body2",
-    border: `1px solid ${t.palette.grey[300]}`,
-    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-    ...M ? {
-      borderBottom: "none",
-      borderBottomLeftRadius: "0px",
-      borderBottomRightRadius: "0px"
-    } : {
-      borderTop: "none",
-      borderTopLeftRadius: "0px",
-      borderTopRightRadius: "0px"
-    }
-  }), dt = {
+  }, rt = (t) => k ? k(t) : /* @__PURE__ */ x(St, { ...t, label: D }), lt = ["ips-autocomplete", b].filter(Boolean).join(" "), pt = o == null ? y : typeof y == "number" ? Math.min(y, o.available) : `min(${y}, ${o.available}px)`, R = (o == null ? void 0 : o.above) === !0, ct = Tt(R), mt = Lt({
+    joinsAtTop: R,
+    fontFamily: o == null ? void 0 : o.fontFamily
+  }), ut = {
     ...n,
-    popper: S(n == null ? void 0 : n.popper, (t) => ({
-      placement: M ? "top-start" : "bottom-start",
-      modifiers: Et,
-      ...e ? { anchorEl: e.el } : null,
+    popper: C(n == null ? void 0 : n.popper, (t) => ({
+      placement: R ? "top-start" : "bottom-start",
+      modifiers: Ft,
+      ...o ? { anchorEl: o.el } : null,
       // Portalled to the body, the list is outside the DOM of whatever popup
       // holds the field, so a click on an option looks like an outside click
       // and closes that popup. This class is the hook such a handler needs to
       // recognise the list as part of the field: `target.closest(...)`.
-      className: kt,
+      className: Pt,
       ...t,
       // MUI sizes the popup from the Autocomplete root, which is wider than the
       // input whenever the field does not fill it. Inline, because that is what
       // MUI sets and an sx class cannot outrank it.
-      style: { ...e ? { width: e.width } : null, ...t == null ? void 0 : t.style },
+      style: { ...o ? { width: o.width } : null, ...t == null ? void 0 : t.style },
       sx: [
-        { zIndex: Math.max(B.zIndex.tooltip, tt ?? 0) },
-        ...T(t == null ? void 0 : t.sx)
+        { zIndex: Math.max(z.zIndex.tooltip, tt ?? 0) },
+        ...L(t == null ? void 0 : t.sx)
       ]
     })),
-    paper: S(n == null ? void 0 : n.paper, (t) => ({
+    paper: C(n == null ? void 0 : n.paper, (t) => ({
       ...t,
-      // The font follows the field in its own array entry: `typography: body2`
-      // above carries the theme family with it, and a later entry is the one
-      // way to be sure the field's family is what survives the merge.
-      sx: [
-        mt,
-        ...e != null && e.fontFamily ? [{ fontFamily: e.fontFamily }] : [],
-        ...T(t == null ? void 0 : t.sx)
-      ]
+      // MUI puts body1 (16px) on the autocomplete paper, while every other Ips
+      // list - IpsChipSelect's options included - reads at body2 (14px). The
+      // surface comes after it: `typography` carries the theme font family with
+      // it, and the field's own family has to be the one that survives.
+      sx: [{ typography: "body2" }, mt, ...L(t == null ? void 0 : t.sx)]
     })),
-    listbox: S(n == null ? void 0 : n.listbox, (t) => ({
+    listbox: C(n == null ? void 0 : n.listbox, (t) => ({
       ...t,
       sx: [
-        At,
-        { maxHeight: lt },
-        St,
-        ...T(t == null ? void 0 : t.sx)
+        Rt,
+        { maxHeight: pt },
+        Ct,
+        ...L(t == null ? void 0 : t.sx)
       ]
     })),
     // Tags default to the medium chip (13px); small (12px) matches the chips
     // IpsChipSelect renders. This only touches the chip, not the input height.
-    chip: S(n == null ? void 0 : n.chip, (t) => ({
+    chip: C(n == null ? void 0 : n.chip, (t) => ({
       size: "small",
       ...t
     }))
   };
-  return /* @__PURE__ */ b(
+  return /* @__PURE__ */ x(
     gt,
     {
       ref: K,
-      multiple: L,
-      disabled: C,
-      loading: j,
+      multiple: T,
+      disabled: O,
+      loading: U,
       renderOption: it,
-      renderInput: at,
-      renderTags: rt,
+      renderInput: rt,
+      renderTags: at,
       getOptionLabel: g,
       disableCloseOnSelect: V,
       open: H,
-      onOpen: ot,
-      onClose: nt,
-      className: pt,
-      slotProps: dt,
+      onOpen: nt,
+      onClose: ot,
+      className: lt,
+      slotProps: ut,
       sx: [
-        ...E ? [ct] : [],
-        ...T(Z)
+        ...M ? [ct] : [],
+        ...L(Z)
       ],
       ...q
     }
   );
 });
-Pt.displayName = "IpsAutocomplete";
+Nt.displayName = "IpsAutocomplete";
 export {
-  _t as IPS_AUTOCOMPLETE_POPUP_CLASS,
-  Pt as IpsAutocomplete
+  kt as IPS_AUTOCOMPLETE_POPUP_CLASS,
+  Nt as IpsAutocomplete
 };

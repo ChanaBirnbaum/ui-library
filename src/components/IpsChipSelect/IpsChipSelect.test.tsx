@@ -438,4 +438,96 @@ describe('IpsChipSelect', () => {
     const paper = document.querySelector('.MuiMenu-paper') as HTMLElement;
     expect(paper).toHaveStyle({ maxHeight: '200px' });
   });
+
+  // The same surface IpsAutocomplete's list opens onto - see its popup tests.
+  describe('open dropdown surface', () => {
+    const paper = () => document.querySelector('.MuiMenu-paper') as HTMLElement;
+
+    // jsdom's computed style drops scrollbar properties, so the emitted rules
+    // are read straight off the stylesheet instead.
+    const rulesFor = (element: Element) => {
+      const own = Array.from(element.classList).filter((c) =>
+        c.startsWith('css-')
+      );
+      return Array.from(document.styleSheets)
+        .flatMap((sheet) => Array.from(sheet.cssRules))
+        .map((rule) => rule.cssText)
+        .filter((text) => own.some((c) => text.startsWith(`.${c}`)))
+        .join('\n');
+    };
+
+    it('should square the edge the field and the menu share while open', async () => {
+      const { container } = renderComponent();
+      const field = container.querySelector('.MuiInputBase-root');
+      expect(field).not.toHaveStyle({ borderBottomLeftRadius: '0px' });
+
+      await userEvent.click(screen.getByRole('combobox'));
+
+      expect(field).toHaveStyle({
+        borderBottomLeftRadius: '0px',
+        borderBottomRightRadius: '0px',
+      });
+      expect(paper()).toHaveStyle({
+        borderTopLeftRadius: '0px',
+        borderTopRightRadius: '0px',
+      });
+    });
+
+    it('should move the squared edge to the top when the menu opens upwards', async () => {
+      const originalHeight = window.innerHeight;
+      Object.defineProperty(window, 'innerHeight', {
+        value: 300,
+        configurable: true,
+      });
+
+      try {
+        const { container } = renderComponent();
+        const field = container.querySelector('.MuiInputBase-root') as HTMLElement;
+        field.getBoundingClientRect = () =>
+          ({ top: 200, bottom: 240, height: 40 }) as DOMRect;
+
+        await userEvent.click(screen.getByRole('combobox'));
+
+        expect(field).toHaveStyle({
+          borderTopLeftRadius: '0px',
+          borderTopRightRadius: '0px',
+        });
+        expect(paper()).toHaveStyle({
+          borderBottomLeftRadius: '0px',
+          borderBottomRightRadius: '0px',
+        });
+      } finally {
+        Object.defineProperty(window, 'innerHeight', {
+          value: originalHeight,
+          configurable: true,
+        });
+      }
+    });
+
+    it('should render the menu in the same font as the field', async () => {
+      renderComponent({ sx: { fontFamily: '"Rubik", sans-serif' } });
+      await userEvent.click(screen.getByRole('combobox'));
+
+      expect(paper()).toHaveStyle({ fontFamily: '"Rubik", sans-serif' });
+      // The option rows are Typography, which carries a family of its own.
+      expect(rulesFor(paper())).toMatch(
+        /\.MuiTypography-root\s*\{[^}]*font-family:\s*inherit/
+      );
+    });
+
+    it('should give the menu a thin, light-grey scrollbar', async () => {
+      renderComponent();
+      await userEvent.click(screen.getByRole('combobox'));
+
+      const css = rulesFor(paper());
+      expect(css).toMatch(/scrollbar-width:\s*thin/);
+      expect(css).toMatch(/::-webkit-scrollbar\s*\{[^}]*width:\s*6px/);
+      expect(css).toMatch(
+        new RegExp(
+          `::-webkit-scrollbar-thumb\\s*\\{[^}]*${theme.palette.grey[300]}`,
+          'i'
+        )
+      );
+    });
+  });
 });

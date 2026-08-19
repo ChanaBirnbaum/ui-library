@@ -14,6 +14,7 @@ import { IpsTextField } from '../IpsTextField';
 import { mergeSlotProps, toSxArray } from '../../utils/slotUtils';
 import { listDensity } from '../../utils/listDensity';
 import { thinScrollbarSx } from '../../utils/scrollbarSx';
+import { joinedFieldSx, popupSurfaceSx } from '../../utils/popupSurface';
 import { ChipOverflowToggle } from '../internal/ChipOverflowToggle';
 import type { IpsAutocompleteProps } from './IpsAutocomplete.types';
 
@@ -85,6 +86,10 @@ export const IPS_AUTOCOMPLETE_POPUP_CLASS = 'ips-autocomplete-popup';
 const POPUP_CLASS = IPS_AUTOCOMPLETE_POPUP_CLASS;
 
 const optionCheckboxSx = { p: listDensity.checkboxPadding } as const;
+
+// MUI stamps theme.typography.fontFamily onto every Chip, so a selected value
+// would keep the theme font even where the field itself carries another one.
+const tagChipSx = { fontFamily: 'inherit' } as const;
 
 export const IpsAutocomplete = forwardRef<
   HTMLDivElement,
@@ -278,6 +283,7 @@ export const IpsAutocomplete = forwardRef<
               key={key}
               size="small"
               label={getOptionLabel(option)}
+              sx={tagChipSx}
               {...tagProps}
             />
           );
@@ -319,34 +325,13 @@ export const IpsAutocomplete = forwardRef<
 
   // Open, the field and the list read as one control: the edge they share loses
   // its radius and the list carries the field's outline on round to its own
-  // bottom (or top, when it opens upwards).
+  // bottom (or top, when it opens upwards). Shared with IpsChipSelect so both
+  // controls open the same way.
   const joinsAtTop = anchor?.above === true;
-
-  const openFieldSx: SxProps<Theme> = {
-    // The notched outline inherits its radius from the input root, so squaring
-    // the root squares the border the user actually sees.
-    '& .MuiOutlinedInput-root': joinsAtTop
-      ? { borderTopLeftRadius: '0px', borderTopRightRadius: '0px' }
-      : { borderBottomLeftRadius: '0px', borderBottomRightRadius: '0px' },
-  };
-
-  // MUI puts body1 (16px) on the autocomplete paper, while every other Ips list
-  // - IpsChipSelect's options included - reads at body2 (14px).
-  const paperSx: SxProps<Theme> = (muiTheme: Theme) => ({
-    typography: 'body2',
-    border: `1px solid ${muiTheme.palette.grey[300]}`,
-    boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
-    ...(joinsAtTop
-      ? {
-          borderBottom: 'none',
-          borderBottomLeftRadius: '0px',
-          borderBottomRightRadius: '0px',
-        }
-      : {
-          borderTop: 'none',
-          borderTopLeftRadius: '0px',
-          borderTopRightRadius: '0px',
-        }),
+  const openFieldSx = joinedFieldSx(joinsAtTop);
+  const surfaceSx = popupSurfaceSx({
+    joinsAtTop,
+    fontFamily: anchor?.fontFamily,
   });
 
   const mergedSlotProps = {
@@ -372,14 +357,11 @@ export const IpsAutocomplete = forwardRef<
     })),
     paper: mergeSlotProps(slotProps?.paper, (resolved) => ({
       ...resolved,
-      // The font follows the field in its own array entry: `typography: body2`
-      // above carries the theme family with it, and a later entry is the one
-      // way to be sure the field's family is what survives the merge.
-      sx: [
-        paperSx,
-        ...(anchor?.fontFamily ? [{ fontFamily: anchor.fontFamily }] : []),
-        ...toSxArray(resolved?.sx),
-      ],
+      // MUI puts body1 (16px) on the autocomplete paper, while every other Ips
+      // list - IpsChipSelect's options included - reads at body2 (14px). The
+      // surface comes after it: `typography` carries the theme font family with
+      // it, and the field's own family has to be the one that survives.
+      sx: [{ typography: 'body2' }, surfaceSx, ...toSxArray(resolved?.sx)],
     })),
     listbox: mergeSlotProps(slotProps?.listbox, (resolved) => ({
       ...resolved,

@@ -21,6 +21,8 @@ import type { MenuProps } from '@mui/material/Menu';
 import type { SxProps, Theme } from '@mui/material/styles';
 import { mergeSlotProps, toSxArray } from '../../utils/slotUtils';
 import { listDensity } from '../../utils/listDensity';
+import { thinScrollbarSx } from '../../utils/scrollbarSx';
+import { joinedFieldSx, popupSurfaceSx } from '../../utils/popupSurface';
 import { ChipOverflowToggle } from '../internal/ChipOverflowToggle';
 import type { IpsChipSelectProps } from './IpsChipSelect.types';
 
@@ -111,6 +113,8 @@ export const IpsChipSelect = forwardRef<HTMLSelectElement, IpsChipSelectProps>(
     const [placement, setPlacement] = useState<{
       above: boolean;
       available: number;
+      width: number;
+      fontFamily: string;
     } | null>(null);
 
     const updatePlacement = useCallback(() => {
@@ -127,6 +131,12 @@ export const IpsChipSelect = forwardRef<HTMLSelectElement, IpsChipSelectProps>(
       setPlacement({
         above,
         available: Math.max(above ? spaceAbove : spaceBelow, MIN_MENU_HEIGHT),
+        // Select only gives the paper a minWidth, so a long option would make
+        // the menu wider than the field and break the edge they share.
+        width: rect.width,
+        // The menu is portalled out of the app shell and MUI stamps the theme
+        // font onto it, so the field's own family has to be carried over.
+        fontFamily: window.getComputedStyle(field).fontFamily,
       });
     }, []);
 
@@ -158,6 +168,15 @@ export const IpsChipSelect = forwardRef<HTMLSelectElement, IpsChipSelectProps>(
           ? Math.min(maxMenuHeight, placement.available)
           : `min(${maxMenuHeight}, ${placement.available}px)`;
 
+    // Open, the field and the menu read as one control - the same surface
+    // IpsAutocomplete's list opens onto.
+    const joinsAtTop = placement?.above === true;
+    const surfaceSx = popupSurfaceSx({
+      joinsAtTop,
+      fontFamily: placement?.fontFamily,
+      width: placement?.width,
+    });
+
     // Only the vertical side is ours - Select aligns horizontally on 'center',
     // which stays correct in both LTR and RTL.
     const menuProps: Partial<MenuProps> = {
@@ -174,7 +193,14 @@ export const IpsChipSelect = forwardRef<HTMLSelectElement, IpsChipSelectProps>(
         ...menuPropsProp?.slotProps,
         paper: mergeSlotProps(menuPropsProp?.slotProps?.paper, (resolved) => ({
           ...resolved,
-          sx: [{ maxHeight: menuMaxHeight }, ...toSxArray(resolved?.sx)],
+          // The paper is what scrolls here (the cap sits on it, not on the
+          // list), so the thin scrollbar belongs on it too.
+          sx: [
+            { maxHeight: menuMaxHeight },
+            surfaceSx,
+            thinScrollbarSx,
+            ...toSxArray(resolved?.sx),
+          ],
         })),
         list: mergeSlotProps(menuPropsProp?.slotProps?.list, (resolved) => ({
           dense: true,
@@ -200,6 +226,9 @@ export const IpsChipSelect = forwardRef<HTMLSelectElement, IpsChipSelectProps>(
 
     const chipSx: SxProps<Theme> = {
       height: 24,
+      // MUI stamps theme.typography.fontFamily onto every Chip, so a selected
+      // value would keep the theme font even where the field carries another.
+      fontFamily: 'inherit',
       '& .MuiChip-deleteIcon': {
         opacity: disabled ? 0.5 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
@@ -316,6 +345,7 @@ export const IpsChipSelect = forwardRef<HTMLSelectElement, IpsChipSelectProps>(
         disabled={disabled}
         className={rootClass}
         ref={anchorRef}
+        sx={isOpen ? joinedFieldSx(joinsAtTop) : undefined}
       >
         {label != null && (
           <FormLabel
