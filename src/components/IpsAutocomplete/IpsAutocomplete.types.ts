@@ -33,4 +33,10 @@ export interface IpsAutocompleteProps<
   collapseChipsTooltip?: string;
   /** Tooltip suffix when more hidden chips exist than the tooltip lists */
   moreItemsTooltipLabel?: (count: number) => string;
+  /**
+   * Stretch the field to its container. Defaults to false, i.e. the 288px
+   * design width - which is a cap and not a floor, so the field still shrinks
+   * on its own inside anything narrower than that.
+   */
+  fullWidth?: boolean;
 }

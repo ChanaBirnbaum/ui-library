@@ -118,6 +118,12 @@ export const IpsAutocomplete = forwardRef<
     open: openProp,
     onOpen: onOpenProp,
     onClose: onCloseProp,
+    // MUI hands renderInput `props.fullWidth ?? true`, reading the raw prop
+    // rather than its own default - so leaving this undefined would stretch
+    // every field to 100% and put IpsAutocomplete out of step with the 288px
+    // IpsTextField next to it. Defaulted here so the value passed down is
+    // always explicit, and `fullWidth` stays the caller's decision either way.
+    fullWidth = false,
     ...rest
   } = props;
 
@@ -384,6 +390,7 @@ export const IpsAutocomplete = forwardRef<
     <Autocomplete
       ref={setRootRef}
       multiple={multiple}
+      fullWidth={fullWidth}
       disabled={disabled}
       loading={loading}
       renderOption={customRenderOption}

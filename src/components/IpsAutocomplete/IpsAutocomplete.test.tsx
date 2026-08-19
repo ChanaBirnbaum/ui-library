@@ -374,6 +374,30 @@ describe('IpsAutocomplete', () => {
     })
   })
 
+  // MUI hands renderInput `props.fullWidth ?? true`, so without an explicit
+  // value the field would stretch to 100% and ignore the 288px design width
+  // that every other Ips field keeps.
+  describe('fullWidth', () => {
+    const formControl = () =>
+      document.querySelector('.ips-text-field')?.closest('.MuiFormControl-root')
+
+    test('keeps the design width by default', () => {
+      renderComponent()
+      expect(document.querySelector('.ips-autocomplete')).not.toHaveClass(
+        'MuiAutocomplete-fullWidth'
+      )
+      expect(formControl()).not.toHaveClass('MuiFormControl-fullWidth')
+    })
+
+    test('stretches the field when asked to', () => {
+      renderComponent({ fullWidth: true })
+      expect(document.querySelector('.ips-autocomplete')).toHaveClass(
+        'MuiAutocomplete-fullWidth'
+      )
+      expect(formControl()).toHaveClass('MuiFormControl-fullWidth')
+    })
+  })
+
   test('has displayName IpsAutocomplete', () => {
     expect(IpsAutocomplete.displayName).toBe('IpsAutocomplete')
   })

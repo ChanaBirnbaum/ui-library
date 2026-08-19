@@ -145,7 +145,19 @@ export function createIpsTheme(mode: 'light' | 'dark'): Theme {
 
       MuiTextField: {
         styleOverrides: {
-          root: { width: '288px' },
+          // 288px is the design width, but it is a preferred width and not a
+          // floor: without the cap the field keeps its 288px inside a narrower
+          // container and overflows it instead of shrinking with it.
+          //
+          // Emotion folds FormControl's own `fullWidth` variant and these
+          // overrides into a single class, and the overrides are serialised
+          // last - so plain `width` here silently beats `fullWidth`. The
+          // two-class selector is what lets an explicit `fullWidth` win back.
+          root: {
+            width: '288px',
+            maxWidth: '100%',
+            '&.MuiFormControl-fullWidth': { width: '100%' },
+          },
         },
       },
 

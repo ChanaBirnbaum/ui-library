@@ -37,4 +37,22 @@ describe('createIpsTheme', () => {
 
     expect(divergent).toEqual([])
   })
+
+  // The 288px design width is a preferred width, not a floor - pinned without a
+  // cap it makes every field (IpsAutocomplete included, since its input is an
+  // IpsTextField) overflow any container narrower than that instead of
+  // shrinking with it.
+  it('caps the text field width to its container', () => {
+    const theme = createIpsTheme('light')
+    const root = (theme.components?.MuiTextField?.styleOverrides as any)?.root
+
+    expect(root).toMatchObject({
+      width: '288px',
+      maxWidth: '100%',
+      // Emotion serialises these overrides after FormControl's own fullWidth
+      // variant and folds both into one class, so a plain `width` here would
+      // quietly win over an explicitly requested fullWidth.
+      '&.MuiFormControl-fullWidth': { width: '100%' },
+    })
+  })
 })
