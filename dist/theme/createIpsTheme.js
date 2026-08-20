@@ -1,18 +1,18 @@
-import { createTheme as u } from "@mui/material/styles";
-import { radiusTokens as t, lightPalette as c, typographyStyles as i, lightCharts as l, spacingTokens as s, darkPalette as p, darkCharts as b } from "./tokens/generated/index.js";
-function a(e, r) {
-  const n = parseInt(e.slice(1, 3), 16), o = parseInt(e.slice(3, 5), 16), d = parseInt(e.slice(5, 7), 16);
-  return `rgba(${n}, ${o}, ${d}, ${r})`;
+import { createTheme as s } from "@mui/material/styles";
+import { lightPalette as c, radiusTokens as a, typographyStyles as o, lightCharts as l, spacingTokens as u, darkPalette as p, darkCharts as b } from "./tokens/generated/index.js";
+function e(t, r) {
+  const n = parseInt(t.slice(1, 3), 16), i = parseInt(t.slice(3, 5), 16), d = parseInt(t.slice(5, 7), 16);
+  return `rgba(${n}, ${i}, ${d}, ${r})`;
 }
-function y(e) {
-  const r = e === "light" ? c : p, n = e === "light" ? l : b, o = r.actionBase, d = {
-    spacing: s,
-    radius: t,
+function h(t) {
+  const r = t === "light" ? c : p, n = t === "light" ? l : b, i = r.actionBase, d = {
+    spacing: u,
+    radius: a,
     charts: { mono: [...n.mono], categorical: [...n.categorical] }
   };
-  return u({
+  return s({
     palette: {
-      mode: e,
+      mode: t,
       primary: { ...r.primary },
       secondary: { ...r.secondary },
       error: { main: r.error.main },
@@ -35,35 +35,44 @@ function y(e) {
         900: r.grey[900]
       },
       action: {
-        hover: a(o, 0.08),
-        selected: a(o, 0.12),
-        focus: a(o, 0.12),
+        hover: e(i, 0.08),
+        selected: e(i, 0.12),
+        focus: e(i, 0.12),
         disabled: r.text.disabled,
-        disabledBackground: a(o, 0.12)
+        disabledBackground: e(i, 0.12)
       }
     },
     /** spacing-base = 8; theme.spacing(1) === 8px */
-    spacing: s.base,
+    spacing: u.base,
     shape: {
       /** radius-base token */
-      borderRadius: t.base
+      borderRadius: a.base
     },
     typography: {
-      /** fontFamily is NOT in the Figma tokens; set explicitly: Inter (Latin) + Heebo (Hebrew fallback) */
-      fontFamily: '"Inter", "Heebo", sans-serif',
+      /**
+       * fontFamily is NOT in the Figma tokens; set explicitly. Rubik carries
+       * both Latin and Hebrew, so it leads, with Heebo/Inter behind it for
+       * hosts that have not loaded it. The library ships no font file - the
+       * host page is what loads Rubik.
+       *
+       * This single value governs every component: the typography tokens carry
+       * no family of their own, and MUI stamps `theme.typography.fontFamily`
+       * onto the parts that do not inherit (Chip labels above all).
+       */
+      fontFamily: '"Rubik", "Heebo", "Inter", sans-serif',
       fontSize: 14,
-      display: { ...i.display },
-      h1: { ...i.h1 },
-      h2: { ...i.h2 },
-      h3: { ...i.h3 },
-      h4: { ...i.h4 },
-      subtitle1: { ...i.subtitle1 },
-      subtitle2: { ...i.subtitle2 },
-      body1: { ...i.body1 },
-      body2: { ...i.body2 },
-      button: { ...i.button },
-      caption: { ...i.caption },
-      overline: { ...i.overline }
+      display: { ...o.display },
+      h1: { ...o.h1 },
+      h2: { ...o.h2 },
+      h3: { ...o.h3 },
+      h4: { ...o.h4 },
+      subtitle1: { ...o.subtitle1 },
+      subtitle2: { ...o.subtitle2 },
+      body1: { ...o.body1 },
+      body2: { ...o.body2 },
+      button: { ...o.button },
+      caption: { ...o.caption },
+      overline: { ...o.overline }
     },
     custom: d,
     components: {
@@ -71,7 +80,7 @@ function y(e) {
         styleOverrides: {
           root: {
             backgroundColor: r.background.paper,
-            borderRadius: t.input,
+            borderRadius: a.input,
             // radius-input token
             "&:hover:not(.Mui-disabled):not(.Mui-error):not(.Mui-focused) .MuiOutlinedInput-notchedOutline": {
               borderColor: r.text.primary
@@ -84,7 +93,7 @@ function y(e) {
               borderColor: r.grey[200]
             },
             "&.Mui-disabled": {
-              backgroundColor: e === "light" ? r.grey[50] : r.background.default
+              backgroundColor: t === "light" ? r.grey[50] : r.background.default
             }
           },
           input: {
@@ -100,20 +109,40 @@ function y(e) {
           root: { width: "288px" }
         }
       },
+      // MUI's Autocomplete bakes its own padding onto the outlined input
+      // (root: 9px + input: 7.5px 4px 7.5px 5px) which stacks with the
+      // MuiOutlinedInput override above and makes IpsAutocomplete render
+      // ~17px taller than IpsTextField. Reset both to zero and give the
+      // input the same 8px 14px padding as IpsTextField; MuiOutlinedInput's
+      // own endAdornment variants (unchanged) then take care of the
+      // dropdown/clear icon clearance, exactly as they already do for an
+      // IpsTextField with an end adornment.
+      MuiAutocomplete: {
+        styleOverrides: {
+          root: {
+            "& .MuiOutlinedInput-root": {
+              padding: 0,
+              "& .MuiAutocomplete-input": {
+                padding: "8px 14px"
+              }
+            }
+          }
+        }
+      },
       MuiButton: {
         defaultProps: {
           disableElevation: !0
         },
         styleOverrides: {
           root: {
-            borderRadius: t.button,
+            borderRadius: a.button,
             // radius-button token
             textTransform: "none",
             // not in tokens; design preference
-            fontWeight: i.button.fontWeight,
-            fontSize: i.button.fontSize,
-            lineHeight: i.button.lineHeight,
-            letterSpacing: i.button.letterSpacing
+            fontWeight: o.button.fontWeight,
+            fontSize: o.button.fontSize,
+            lineHeight: o.button.lineHeight,
+            letterSpacing: o.button.letterSpacing
           },
           sizeSmall: { padding: "6px 16px" },
           sizeMedium: { padding: "10px 20px" },
@@ -125,7 +154,7 @@ function y(e) {
             borderColor: r.primary.main,
             color: r.primary.main,
             "&:hover": {
-              backgroundColor: a(r.primary.main, 0.08),
+              backgroundColor: e(r.primary.main, 0.08),
               borderColor: r.primary.main
             }
           },
@@ -183,17 +212,65 @@ function y(e) {
       // The same values are also available under theme.custom.radius for direct access.
       MuiCard: {
         styleOverrides: {
-          root: { borderRadius: t.card }
+          root: { borderRadius: a.card }
         }
       },
       MuiChip: {
         styleOverrides: {
-          root: { borderRadius: t.chip }
+          root: { borderRadius: a.chip }
+        }
+      },
+      MuiCheckbox: {
+        styleOverrides: {
+          root: {
+            color: r.grey[400],
+            "&:hover": { backgroundColor: e(i, 0.08) },
+            "&.Mui-checked": { color: r.primary.main },
+            "&.Mui-disabled": { color: r.grey[300] }
+          }
+        }
+      },
+      MuiRadio: {
+        styleOverrides: {
+          root: {
+            color: r.grey[400],
+            "&:hover": { backgroundColor: e(i, 0.08) },
+            "&.Mui-checked": { color: r.primary.main },
+            "&.Mui-disabled": { color: r.grey[300] }
+          }
+        }
+      },
+      MuiMenu: {
+        styleOverrides: {
+          paper: {
+            backgroundColor: r.background.paper,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            borderRadius: a.base
+          }
+        }
+      },
+      MuiMenuItem: {
+        styleOverrides: {
+          root: {
+            "&:hover": { backgroundColor: e(i, 0.08) },
+            "&.Mui-selected": {
+              backgroundColor: e(r.primary.main, 0.12),
+              "&:hover": { backgroundColor: e(r.primary.main, 0.16) }
+            }
+          }
+        }
+      },
+      MuiFormHelperText: {
+        styleOverrides: {
+          root: {
+            color: r.text.secondary,
+            "&.Mui-error": { color: r.error.main }
+          }
         }
       }
     }
   });
 }
 export {
-  y as createIpsTheme
+  h as createIpsTheme
 };

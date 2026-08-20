@@ -62,12 +62,9 @@ import SvgIcon from '@mui/material/SvgIcon'
 
 const rtlCache = createRtlCache()
 
-const theme = createTheme(ipsTheme, {
-  direction: 'rtl',
-  typography: {
-    fontFamily: 'Heebo, Roboto, Arial, sans-serif',
-  },
-})
+// No typography override: the demo has to show the font the library's own theme
+// ships with (Rubik), not one of its own.
+const theme = createTheme(ipsTheme, { direction: 'rtl' })
 
 const StarIcon = () => (
   <SvgIcon><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" /></SvgIcon>

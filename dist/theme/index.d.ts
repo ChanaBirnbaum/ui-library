@@ -36,8 +36,6 @@ export { IpsDatePicker } from '../components/IpsDatePicker/IpsDatePicker';
 export type { IpsDatePickerProps } from '../components/IpsDatePicker/IpsDatePicker.types';
 export { IpsDateTimePicker } from '../components/IpsDateTimePicker';
 export type { IpsDateTimePickerProps } from '../components/IpsDateTimePicker/IpsDateTimePicker.types';
-export { IpsTable } from '../components/IpsTable/IpsTable';
-export type { IpsTableProps } from '../components/IpsTable/IpsTable.types';
 export { IpsFileUpload } from '../components/IpsFileUpload';
 export type { IpsFileUploadProps, UploadResult } from '../components/IpsFileUpload';
 export type { IpsTheme } from './ipsTheme';

@@ -1,45 +1,54 @@
-import { jsx as f } from "react/jsx-runtime";
+import { jsx as a } from "react/jsx-runtime";
 import k from "@mui/material/TableCell";
 import { flexRender as x } from "../../../node_modules/@tanstack/react-table/build/lib/index.js";
 import { EditableCell as D } from "./EditableCell.js";
-function y({
-  cell: n,
-  isEditing: r,
+function j({
+  cell: r,
+  isEditing: e,
   editValue: d,
-  onEditValueChange: u,
-  onActivateEdit: t,
-  onCommit: C,
-  onCancel: b,
-  cellSx: p
+  onEditValueChange: p,
+  onActivateEdit: c,
+  onCommit: u,
+  onCancel: f,
+  cellSx: C
 }) {
-  const o = n.column.columnDef.meta, s = (o == null ? void 0 : o.align) ?? "start", a = o == null ? void 0 : o.width, c = o == null ? void 0 : o.editable, e = !!c, l = typeof c == "object" ? c : void 0, m = (l == null ? void 0 : l.mode) ?? "click", h = e && !r && t ? m === "dblclick" ? { onDoubleClick: t } : { onClick: t } : {}, g = r && e ? o != null && o.renderEditCell ? o.renderEditCell(
+  const o = r.column.columnDef.meta, s = (o == null ? void 0 : o.align) ?? "start", b = o == null ? void 0 : o.width, i = o == null ? void 0 : o.editable, l = !!i, t = typeof i == "object" ? i : void 0, g = (t == null ? void 0 : t.mode) ?? "click", m = l && !e && c ? g === "dblclick" ? {
+    onDoubleClick: (n) => {
+      n.stopPropagation(), c();
+    }
+  } : {
+    onClick: (n) => {
+      n.stopPropagation(), c();
+    }
+  } : {}, h = e && l ? o != null && o.renderEditCell ? o.renderEditCell(
     d,
-    (i) => u(n.column.id, i)
-  ) : /* @__PURE__ */ f(
+    (n) => p(r.column.id, n)
+  ) : /* @__PURE__ */ a(
     D,
     {
-      config: l,
+      config: t,
       value: d,
-      onChange: (i) => u(n.column.id, i),
-      onCommit: C,
-      onCancel: b
+      onChange: (n) => p(r.column.id, n),
+      onCommit: u,
+      onCancel: f
     }
-  ) : o != null && o.renderCell ? o.renderCell(n.getValue(), n.row.original) : x(n.column.columnDef.cell, n.getContext());
-  return /* @__PURE__ */ f(
+  ) : o != null && o.renderCell ? o.renderCell(r.getValue(), r.row.original) : x(r.column.columnDef.cell, r.getContext());
+  return /* @__PURE__ */ a(
     k,
     {
       align: s === "end" ? "right" : s === "center" ? "center" : "left",
       sx: {
-        width: a,
-        cursor: e && !r ? "pointer" : "default",
-        "&:hover": e && !r ? { backgroundColor: "action.hover" } : {},
-        ...p
+        width: b,
+        cursor: l && !e ? "pointer" : "default",
+        "&:hover": l && !e ? { backgroundColor: "action.hover" } : {},
+        ...C
       },
-      ...h,
-      children: g
+      onClick: e ? (n) => n.stopPropagation() : void 0,
+      ...m,
+      children: h
     }
   );
 }
 export {
-  y as DataCell
+  j as DataCell
 };

@@ -86,8 +86,17 @@ export function createIpsTheme(mode: 'light' | 'dark'): Theme {
     },
 
     typography: {
-      /** fontFamily is NOT in the Figma tokens; set explicitly: Inter (Latin) + Heebo (Hebrew fallback) */
-      fontFamily: '"Inter", "Heebo", sans-serif',
+      /**
+       * fontFamily is NOT in the Figma tokens; set explicitly. Rubik carries
+       * both Latin and Hebrew, so it leads, with Heebo/Inter behind it for
+       * hosts that have not loaded it. The library ships no font file - the
+       * host page is what loads Rubik.
+       *
+       * This single value governs every component: the typography tokens carry
+       * no family of their own, and MUI stamps `theme.typography.fontFamily`
+       * onto the parts that do not inherit (Chip labels above all).
+       */
+      fontFamily: '"Rubik", "Heebo", "Inter", sans-serif',
       fontSize:   14,
       display:    { ...typographyStyles.display },
       h1:         { ...typographyStyles.h1 },
@@ -136,7 +145,19 @@ export function createIpsTheme(mode: 'light' | 'dark'): Theme {
 
       MuiTextField: {
         styleOverrides: {
-          root: { width: '288px' },
+          // 288px is the design width, but it is a preferred width and not a
+          // floor: without the cap the field keeps its 288px inside a narrower
+          // container and overflows it instead of shrinking with it.
+          //
+          // Emotion folds FormControl's own `fullWidth` variant and these
+          // overrides into a single class, and the overrides are serialised
+          // last - so plain `width` here silently beats `fullWidth`. The
+          // two-class selector is what lets an explicit `fullWidth` win back.
+          root: {
+            width: '288px',
+            maxWidth: '100%',
+            '&.MuiFormControl-fullWidth': { width: '100%' },
+          },
         },
       },
 

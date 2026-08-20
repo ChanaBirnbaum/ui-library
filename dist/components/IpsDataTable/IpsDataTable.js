@@ -1,203 +1,258 @@
-import { jsx as o, jsxs as L } from "react/jsx-runtime";
-import { useState as i, useMemo as se } from "react";
-import G from "@mui/material/Box";
-import de from "@mui/material/Paper";
-import ce from "@mui/material/Table";
-import me from "@mui/material/TableContainer";
-import ue from "@mui/material/TextField";
-import ge from "@mui/material/Typography";
-import pe from "@mui/material/InputAdornment";
-import fe from "@mui/icons-material/Search";
-import { useReactTable as he } from "../../node_modules/@tanstack/react-table/build/lib/index.js";
-import { flexRender as Ye } from "../../node_modules/@tanstack/react-table/build/lib/index.js";
-import { TableHeader as Se } from "./components/TableHeader.js";
-import { TableBody as Ce } from "./components/TableBody.js";
-import { TableFooter as be } from "./components/TableFooter.js";
-import { SkeletonRows as we } from "./components/SkeletonRows.js";
-import { ExpandCell as xe } from "./components/ExpandCell.js";
-import { DeleteConfirmDialog as ve } from "./components/DeleteConfirmDialog.js";
-import { getExpandedRowModel as Re, getPaginationRowModel as Ee, getFilteredRowModel as ye, getSortedRowModel as Fe, getCoreRowModel as Ie } from "../../node_modules/@tanstack/table-core/build/lib/index.js";
-const Me = {
+import { jsx as t, jsxs as N } from "react/jsx-runtime";
+import { useState as r, useRef as ze, useMemo as ye, useEffect as Me } from "react";
+import J from "@mui/material/Box";
+import Fe from "@mui/material/Paper";
+import De from "@mui/material/Table";
+import Ae from "@mui/material/TableContainer";
+import Pe from "@mui/material/TextField";
+import Ve from "@mui/material/Typography";
+import _e from "@mui/material/InputAdornment";
+import K from "@mui/material/Checkbox";
+import ke from "@mui/icons-material/Search";
+import { useReactTable as He } from "../../node_modules/@tanstack/react-table/build/lib/index.js";
+import { flexRender as Eo } from "../../node_modules/@tanstack/react-table/build/lib/index.js";
+import { useVirtualizer as je } from "../../node_modules/@tanstack/react-virtual/dist/esm/index.js";
+import { TableHeader as Be } from "./components/TableHeader.js";
+import { TableBody as Oe } from "./components/TableBody.js";
+import { TableFooter as Ge } from "./components/TableFooter.js";
+import { SkeletonRows as Le } from "./components/SkeletonRows.js";
+import { ExpandCell as We } from "./components/ExpandCell.js";
+import { DeleteConfirmDialog as Xe } from "./components/DeleteConfirmDialog.js";
+import { getExpandedRowModel as qe, getPaginationRowModel as Ze, getFilteredRowModel as Ne, getSortedRowModel as Je, getCoreRowModel as Ke } from "../../node_modules/@tanstack/table-core/build/lib/index.js";
+const Qe = {
   sm: { py: 0.5, px: 1, fontSize: "0.75rem", height: 32 },
   md: { py: 1, px: 2, fontSize: "0.875rem", height: 48 },
   lg: { py: 1.5, px: 2, fontSize: "1rem", height: 64 }
-}, Te = {
-  default: {},
+}, Ue = { sm: 33, md: 49, lg: 65 }, Q = {
+  "& .MuiTableBody-root .MuiTableCell-root": {
+    borderBottom: "1px solid",
+    borderColor: "grey.100"
+  }
+}, Ye = {
+  default: Q,
   bordered: {
     "& .MuiTableCell-root": {
       border: "1px solid",
       borderColor: "divider"
     }
   },
-  striped: {}
+  striped: Q
 };
-function Ke(O) {
+function Ro(U) {
+  var Z;
   const {
-    data: k,
-    columns: v,
-    expandedContent: R,
-    onEdit: E,
-    onDelete: d,
-    onSave: g,
-    customActions: y = [],
-    pagination: p = !1,
-    sorting: f = !1,
-    filtering: a = !1,
-    isLoading: h = !1,
-    emptyState: q,
-    stickyHeader: B = !1,
+    data: Y,
+    columns: T,
+    expandedContent: z,
+    onEdit: y,
+    onDelete: c,
+    onSave: f,
+    customActions: M = [],
+    pagination: h = !1,
+    sorting: S = !1,
+    filtering: s = !1,
+    isLoading: C = !1,
+    emptyState: $,
+    stickyHeader: ee = !1,
     variant: F = "default",
-    size: I = "md",
-    sx: H
-  } = O, X = f !== !1, S = Array.isArray(f), M = a === !0 || typeof a == "object" && a !== null && a.global !== !1, T = typeof a == "object" && a !== null && a.perColumn === !0, z = p !== !1, n = p === !1 ? null : p ?? {}, c = !!R, D = !!g, C = !!E || !!d || D || y.length > 0, [N, W] = i([]), [Z, J] = i([]), [P, A] = i(""), [{ pageIndex: K, pageSize: j }, Q] = i({
+    size: w = "md",
+    sx: oe,
+    onRowClick: te,
+    checkboxSelection: b = !1,
+    onSelectionChange: D,
+    getRowId: A,
+    maxHeight: P,
+    virtualScroll: g = !1
+  } = U, le = S !== !1, R = Array.isArray(S), V = s === !0 || typeof s == "object" && s !== null && s.global !== !1, _ = typeof s == "object" && s !== null && s.perColumn === !0, k = h !== !1, a = h === !1 ? null : h ?? {}, m = !!z, H = !!f, x = !!y || !!c || H || M.length > 0, [ne, ae] = r([]), [ie, re] = r([]), [j, B] = r(""), [{ pageIndex: se, pageSize: O }, de] = r({
     pageIndex: 0,
-    pageSize: (n == null ? void 0 : n.pageSize) ?? 10
-  }), [U, Y] = i({}), [V, m] = i({
-    rowId: null,
-    values: {}
-  }), [b, w] = i(null), $ = se(() => {
-    const e = [...v];
-    return c && e.unshift({
+    pageSize: (a == null ? void 0 : a.pageSize) ?? 10
+  }), [ce, ge] = r({}), [G, me] = r({}), [L, u] = r({ rowId: null, values: {} }), [v, E] = r(null), W = ze(null), ue = ye(() => {
+    const e = [...T];
+    return m && e.unshift({
       id: "_expand",
       header: () => null,
-      cell: ({ row: t }) => /* @__PURE__ */ o(xe, { row: t }),
+      cell: ({ row: o }) => /* @__PURE__ */ t(We, { row: o }),
       enableSorting: !1,
       enableColumnFilter: !1,
       size: 48
-    }), C && e.push({
+    }), b && e.unshift({
+      id: "_select",
+      header: ({ table: o }) => /* @__PURE__ */ t(
+        K,
+        {
+          checked: o.getIsAllRowsSelected(),
+          indeterminate: o.getIsSomeRowsSelected(),
+          onChange: o.getToggleAllRowsSelectedHandler(),
+          size: "small",
+          sx: { p: 0.5 }
+        }
+      ),
+      cell: ({ row: o }) => /* @__PURE__ */ t(
+        K,
+        {
+          checked: o.getIsSelected(),
+          disabled: !o.getCanSelect(),
+          onChange: o.getToggleSelectedHandler(),
+          size: "small",
+          sx: { p: 0.5 },
+          onClick: (i) => i.stopPropagation()
+        }
+      ),
+      enableSorting: !1,
+      enableColumnFilter: !1,
+      size: 40
+    }), x && e.push({
       id: "_actions",
       header: () => null,
       cell: () => null,
-      // actual rendering done in TableBody
       enableSorting: !1,
       enableColumnFilter: !1
     }), e;
-  }, [v, c, C]), l = he({
-    data: k,
-    columns: $,
+  }, [T, m, x, b]), l = He({
+    data: Y,
+    columns: ue,
     state: {
-      sorting: S ? f : N,
-      columnFilters: Z,
-      globalFilter: P,
-      pagination: { pageIndex: K, pageSize: j },
-      expanded: U
+      sorting: R ? S : ne,
+      columnFilters: ie,
+      globalFilter: j,
+      pagination: { pageIndex: se, pageSize: O },
+      expanded: ce,
+      rowSelection: G
     },
-    onSortingChange: S ? void 0 : W,
-    onColumnFiltersChange: J,
-    onGlobalFilterChange: A,
-    onPaginationChange: Q,
-    onExpandedChange: Y,
-    getCoreRowModel: Ie(),
-    getSortedRowModel: X ? Fe() : void 0,
-    getFilteredRowModel: M || T ? ye() : void 0,
-    getPaginationRowModel: z ? Ee() : void 0,
-    getExpandedRowModel: c ? Re() : void 0,
-    getRowCanExpand: c ? () => !0 : void 0,
+    onSortingChange: R ? void 0 : ae,
+    onColumnFiltersChange: re,
+    onGlobalFilterChange: B,
+    onPaginationChange: de,
+    onExpandedChange: ge,
+    onRowSelectionChange: me,
+    enableRowSelection: b,
+    getCoreRowModel: Ke(),
+    getSortedRowModel: le ? Je() : void 0,
+    getFilteredRowModel: V || _ ? Ne() : void 0,
+    getPaginationRowModel: k ? Ze() : void 0,
+    getExpandedRowModel: m ? qe() : void 0,
+    getRowCanExpand: m ? () => !0 : void 0,
     manualPagination: !1,
-    manualSorting: S
-  }), ee = (e) => {
-    var u;
-    const t = l.getRowModel().rows.find((s) => s.id === e);
-    if (!t) return;
-    const r = {};
-    for (const s of l.getAllColumns())
-      (u = s.columnDef.meta) != null && u.editable && (r[s.id] = t.getValue(s.id));
-    m({ rowId: e, values: r });
-  }, oe = (e, t) => {
-    m((r) => ({
-      ...r,
-      values: { ...r.values, [e]: t }
-    }));
-  }, te = async (e) => {
-    const t = l.getRowModel().rows.find((u) => u.id === e);
-    if (!t || !g) return;
-    const r = Object.assign({}, t.original, V.values);
-    await g(t.original, r), m({ rowId: null, values: {} });
-  }, ne = () => {
-    m({ rowId: null, values: {} });
-  }, le = (e) => w(e), ae = () => {
-    b && d && d(b), w(null);
-  }, re = () => w(null), ie = () => q ?? /* @__PURE__ */ o(ge, { variant: "body2", color: "text.secondary", children: "אין נתונים להצגה" }), x = Me[I], _ = l.getVisibleLeafColumns().length;
-  return /* @__PURE__ */ L(G, { sx: H, children: [
-    M && /* @__PURE__ */ o(G, { sx: { mb: 1.5 }, children: /* @__PURE__ */ o(
-      ue,
+    manualSorting: R,
+    getRowId: A ? (e) => A(e) : void 0
+  });
+  Me(() => {
+    D && D(l.getSelectedRowModel().rows.map((e) => e.original));
+  }, [G]);
+  const pe = l.getRowModel().rows, X = je({
+    count: g ? pe.length : 0,
+    getScrollElement: () => W.current,
+    estimateSize: () => Ue[w] ?? 49,
+    overscan: 10
+  }), n = g ? X.getVirtualItems() : void 0, fe = X.getTotalSize(), he = n != null && n.length ? n[0].start : 0, Se = n != null && n.length ? fe - (((Z = n[n.length - 1]) == null ? void 0 : Z.end) ?? 0) : 0, Ce = (e) => {
+    var p;
+    const o = l.getRowModel().rows.find((d) => d.id === e);
+    if (!o) return;
+    const i = {};
+    for (const d of l.getAllColumns())
+      (p = d.columnDef.meta) != null && p.editable && (i[d.id] = o.getValue(d.id));
+    u({ rowId: e, values: i });
+  }, we = (e, o) => {
+    u((i) => ({ ...i, values: { ...i.values, [e]: o } }));
+  }, be = async (e) => {
+    const o = l.getRowModel().rows.find((p) => p.id === e);
+    if (!o || !f) return;
+    const i = Object.assign({}, o.original, L.values);
+    await f(o.original, i), u({ rowId: null, values: {} });
+  }, Re = () => u({ rowId: null, values: {} }), xe = (e) => E(e), ve = () => {
+    v && c && c(v), E(null);
+  }, Ee = () => E(null), Ie = () => $ ?? /* @__PURE__ */ t(Ve, { variant: "body2", color: "text.secondary", children: "אין נתונים להצגה" }), I = Qe[w], q = l.getVisibleLeafColumns().length, Te = P != null || g;
+  return /* @__PURE__ */ N(J, { sx: oe, children: [
+    V && /* @__PURE__ */ t(J, { sx: { mb: 1.5 }, children: /* @__PURE__ */ t(
+      Pe,
       {
-        value: P,
-        onChange: (e) => A(e.target.value),
+        value: j,
+        onChange: (e) => B(e.target.value),
         placeholder: "חיפוש...",
         size: "small",
         InputProps: {
-          startAdornment: /* @__PURE__ */ o(pe, { position: "start", children: /* @__PURE__ */ o(fe, { fontSize: "small", color: "action" }) })
+          startAdornment: /* @__PURE__ */ t(_e, { position: "start", children: /* @__PURE__ */ t(ke, { fontSize: "small", color: "action" }) })
         },
         sx: { minWidth: 240 }
       }
     ) }),
-    /* @__PURE__ */ o(
-      de,
+    /* @__PURE__ */ t(
+      Fe,
       {
         variant: "outlined",
-        sx: { borderRadius: 1, overflow: "hidden", ...Te[F] },
-        children: /* @__PURE__ */ o(me, { children: /* @__PURE__ */ L(ce, { stickyHeader: B, size: I === "sm" ? "small" : "medium", children: [
-          /* @__PURE__ */ o(
-            Se,
-            {
-              table: l,
-              showPerColumnFilter: T,
-              cellSx: x
-            }
-          ),
-          h ? /* @__PURE__ */ o("tbody", { children: /* @__PURE__ */ o(
-            we,
-            {
-              rowCount: j,
-              columnCount: _,
-              cellSx: x
-            }
-          ) }) : /* @__PURE__ */ o(
-            Ce,
-            {
-              table: l,
-              editingState: V,
-              onEditValueChange: oe,
-              onStartInlineEdit: ee,
-              onSaveInline: te,
-              onCancelEdit: ne,
-              onEdit: E,
-              onDeleteRequest: d ? le : void 0,
-              expandedContent: R,
-              customActions: y,
-              hasInlineEdit: D,
-              hasActionColumn: C,
-              variant: F,
-              cellSx: x,
-              renderEmptyState: ie,
-              isLoading: h
-            }
-          ),
-          z && !h && /* @__PURE__ */ o(
-            be,
-            {
-              table: l,
-              totalRows: l.getFilteredRowModel().rows.length,
-              pageSizeOptions: n == null ? void 0 : n.pageSizeOptions,
-              showTotal: n == null ? void 0 : n.showTotal,
-              colSpan: _
-            }
-          )
-        ] }) })
+        sx: { borderRadius: 1, overflow: "hidden", ...Ye[F] },
+        children: /* @__PURE__ */ t(
+          Ae,
+          {
+            ref: W,
+            sx: Te ? { maxHeight: P ?? 400, overflow: "auto" } : void 0,
+            children: /* @__PURE__ */ N(
+              De,
+              {
+                stickyHeader: ee || g,
+                size: w === "sm" ? "small" : "medium",
+                children: [
+                  /* @__PURE__ */ t(
+                    Be,
+                    {
+                      table: l,
+                      showPerColumnFilter: _,
+                      cellSx: I
+                    }
+                  ),
+                  C ? /* @__PURE__ */ t("tbody", { children: /* @__PURE__ */ t(Le, { rowCount: O, columnCount: q, cellSx: I }) }) : /* @__PURE__ */ t(
+                    Oe,
+                    {
+                      table: l,
+                      editingState: L,
+                      onEditValueChange: we,
+                      onStartInlineEdit: Ce,
+                      onSaveInline: be,
+                      onCancelEdit: Re,
+                      onEdit: y,
+                      onDeleteRequest: c ? xe : void 0,
+                      expandedContent: z,
+                      customActions: M,
+                      hasInlineEdit: H,
+                      hasActionColumn: x,
+                      variant: F,
+                      cellSx: I,
+                      renderEmptyState: Ie,
+                      isLoading: C,
+                      onRowClick: te,
+                      virtualItems: n,
+                      paddingTop: he,
+                      paddingBottom: Se
+                    }
+                  ),
+                  k && !C && /* @__PURE__ */ t(
+                    Ge,
+                    {
+                      table: l,
+                      totalRows: l.getFilteredRowModel().rows.length,
+                      pageSizeOptions: a == null ? void 0 : a.pageSizeOptions,
+                      showTotal: a == null ? void 0 : a.showTotal,
+                      colSpan: q
+                    }
+                  )
+                ]
+              }
+            )
+          }
+        )
       }
     ),
-    /* @__PURE__ */ o(
-      ve,
+    /* @__PURE__ */ t(
+      Xe,
       {
-        open: b !== null,
-        onConfirm: ae,
-        onCancel: re
+        open: v !== null,
+        onConfirm: ve,
+        onCancel: Ee
       }
     )
   ] });
 }
 export {
-  Ke as IpsDataTable,
-  Ye as flexRender
+  Ro as IpsDataTable,
+  Eo as flexRender
 };

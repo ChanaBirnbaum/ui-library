@@ -17,4 +17,26 @@ export interface IpsAutocompleteProps<
   label?: React.ReactNode;
   /** Placeholder text for the input field */
   placeholder?: string;
+  /**
+   * How many tag chips stay visible in multiple mode before the rest collapse
+   * behind a "+" toggle that lists them in a tooltip and expands them on click.
+   * Defaults to 3; set to 0 to always show every chip.
+   */
+  maxVisibleChips?: number;
+  /**
+   * Cap for the option list height. Defaults to 320px (~9 dense rows), and is
+   * further clamped to the room left around the field so the list never
+   * overflows the viewport or the popup it opens from.
+   */
+  maxListHeight?: number | string;
+  /** Tooltip on the overflow toggle while the chips are expanded */
+  collapseChipsTooltip?: string;
+  /** Tooltip suffix when more hidden chips exist than the tooltip lists */
+  moreItemsTooltipLabel?: (count: number) => string;
+  /**
+   * Stretch the field to its container. Defaults to false, i.e. the 288px
+   * design width - which is a cap and not a floor, so the field still shrinks
+   * on its own inside anything narrower than that.
+   */
+  fullWidth?: boolean;
 }

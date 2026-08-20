@@ -1,93 +1,120 @@
-import { jsx as i, jsxs as A } from "react/jsx-runtime";
-import V from "react";
-import C from "@mui/material/TableBody";
-import t from "@mui/material/TableRow";
-import d from "@mui/material/TableCell";
-import { flexRender as j } from "../../../node_modules/@tanstack/react-table/build/lib/index.js";
-import { DataCell as B } from "./DataCell.js";
-import { ActionCell as D } from "./ActionCell.js";
-function K({
-  table: l,
-  editingState: s,
-  onEditValueChange: b,
-  onStartInlineEdit: a,
-  onSaveInline: c,
-  onCancelEdit: m,
-  onEdit: v,
-  onDeleteRequest: y,
-  expandedContent: u,
-  customActions: F = [],
-  hasInlineEdit: p,
-  hasActionColumn: I,
-  variant: E,
-  cellSx: f,
-  renderEmptyState: M,
-  isLoading: R
+import { jsx as n, jsxs as F } from "react/jsx-runtime";
+import O from "react";
+import E from "@mui/material/TableBody";
+import r from "@mui/material/TableRow";
+import t from "@mui/material/TableCell";
+import { flexRender as q } from "../../../node_modules/@tanstack/react-table/build/lib/index.js";
+import { DataCell as z } from "./DataCell.js";
+import { ActionCell as G } from "./ActionCell.js";
+function Y({
+  table: m,
+  editingState: p,
+  onEditValueChange: M,
+  onStartInlineEdit: u,
+  onSaveInline: f,
+  onCancelEdit: h,
+  onEdit: R,
+  onDeleteRequest: A,
+  expandedContent: x,
+  customActions: S = [],
+  hasInlineEdit: g,
+  hasActionColumn: H,
+  variant: T,
+  cellSx: b,
+  renderEmptyState: V,
+  isLoading: j,
+  onRowClick: c,
+  virtualItems: l,
+  paddingTop: C = 0,
+  paddingBottom: y = 0
 }) {
-  const g = l.getRowModel().rows, h = l.getVisibleLeafColumns().length;
-  return !R && g.length === 0 ? /* @__PURE__ */ i(C, { children: /* @__PURE__ */ i(t, { children: /* @__PURE__ */ i(
-    d,
-    {
-      colSpan: h,
-      align: "center",
-      sx: { py: 6, color: "text.secondary", border: "none" },
-      children: M()
-    }
-  ) }) }) : /* @__PURE__ */ i(C, { children: g.map((o, T) => {
-    const r = s.rowId === o.id, x = o.getIsExpanded(), _ = T % 2 === 0, k = {
-      backgroundColor: E === "striped" && !_ ? "grey.50" : void 0,
-      "&:hover": { backgroundColor: "action.hover" },
-      ...x ? { backgroundColor: "#EFF6FF" } : {},
-      ...r ? {
-        outline: "2px solid",
-        outlineColor: "primary.main",
-        outlineOffset: "-2px"
-      } : {}
-    };
-    return /* @__PURE__ */ A(V.Fragment, { children: [
-      /* @__PURE__ */ i(t, { sx: k, children: o.getVisibleCells().map((n) => {
-        const e = n.column.id;
-        return e === "_expand" ? /* @__PURE__ */ i(d, { sx: { width: 48, p: 0.5 }, children: j(n.column.columnDef.cell, n.getContext()) }, n.id) : e === "_actions" ? /* @__PURE__ */ i(
-          D,
+  const s = m.getRowModel().rows, d = m.getVisibleLeafColumns().length;
+  if (!j && s.length === 0)
+    return /* @__PURE__ */ n(E, { children: /* @__PURE__ */ n(r, { children: /* @__PURE__ */ n(
+      t,
+      {
+        colSpan: d,
+        align: "center",
+        sx: { py: 6, color: "text.secondary", border: "none" },
+        children: V()
+      }
+    ) }) });
+  const k = l ? l.map((o) => s[o.index]).filter((o) => !!o) : s;
+  return /* @__PURE__ */ F(E, { children: [
+    C > 0 && /* @__PURE__ */ n(r, { children: /* @__PURE__ */ n(
+      t,
+      {
+        colSpan: d,
+        sx: { p: 0, border: "none", height: C }
+      }
+    ) }),
+    k.map((o, _) => {
+      const D = l ? l[_].index : _, a = p.rowId === o.id, v = o.getIsExpanded(), B = D % 2 === 0, L = {
+        backgroundColor: T === "striped" && !B ? "grey.50" : void 0,
+        "&:hover": { backgroundColor: "grey.100" },
+        cursor: c ? "pointer" : void 0,
+        ...v ? { backgroundColor: "#EFF6FF" } : {},
+        ...a ? { outline: "2px solid", outlineColor: "primary.main", outlineOffset: "-2px" } : {}
+      };
+      return /* @__PURE__ */ F(O.Fragment, { children: [
+        /* @__PURE__ */ n(
+          r,
           {
-            row: o.original,
-            onEdit: v,
-            onStartInlineEdit: () => a(o.id),
-            onDeleteRequest: y,
-            onSaveInline: () => c(o.id),
-            onCancelEdit: m,
-            isEditing: r,
-            hasInlineEdit: p,
-            customActions: F,
-            cellSx: f
-          },
-          n.id
-        ) : /* @__PURE__ */ i(
-          B,
-          {
-            cell: n,
-            isEditing: r,
-            editValue: s.values[e],
-            onEditValueChange: b,
-            onActivateEdit: p ? () => a(o.id) : void 0,
-            onCommit: () => c(o.id),
-            onCancel: m,
-            cellSx: f
-          },
-          n.id
-        );
-      }) }),
-      x && u && /* @__PURE__ */ i(t, { children: /* @__PURE__ */ i(
-        d,
-        {
-          colSpan: h,
-          sx: { p: 0 },
-          children: u(o.original)
-        }
-      ) })
-    ] }, o.id);
-  }) });
+            sx: L,
+            onClick: c ? (e) => c(o.original, e) : void 0,
+            children: o.getVisibleCells().map((e) => {
+              const i = e.column.id;
+              return i === "_select" || i === "_expand" ? /* @__PURE__ */ n(
+                t,
+                {
+                  sx: { width: i === "_select" ? 40 : 48, p: 0.5 },
+                  children: q(e.column.columnDef.cell, e.getContext())
+                },
+                e.id
+              ) : i === "_actions" ? /* @__PURE__ */ n(
+                G,
+                {
+                  row: o.original,
+                  onEdit: R,
+                  onStartInlineEdit: () => u(o.id),
+                  onDeleteRequest: A,
+                  onSaveInline: () => f(o.id),
+                  onCancelEdit: h,
+                  isEditing: a,
+                  hasInlineEdit: g,
+                  customActions: S,
+                  cellSx: b
+                },
+                e.id
+              ) : /* @__PURE__ */ n(
+                z,
+                {
+                  cell: e,
+                  isEditing: a,
+                  editValue: p.values[i],
+                  onEditValueChange: M,
+                  onActivateEdit: g ? () => u(o.id) : void 0,
+                  onCommit: () => f(o.id),
+                  onCancel: h,
+                  cellSx: b
+                },
+                e.id
+              );
+            })
+          }
+        ),
+        v && x && /* @__PURE__ */ n(r, { children: /* @__PURE__ */ n(t, { colSpan: d, sx: { p: 0 }, children: x(o.original) }) })
+      ] }, o.id);
+    }),
+    y > 0 && /* @__PURE__ */ n(r, { children: /* @__PURE__ */ n(
+      t,
+      {
+        colSpan: d,
+        sx: { p: 0, border: "none", height: y }
+      }
+    ) })
+  ] });
 }
 export {
-  K as TableBody
+  Y as TableBody
 };

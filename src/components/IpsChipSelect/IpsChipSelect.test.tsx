@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { IpsChipSelect } from './IpsChipSelect';
@@ -283,5 +283,251 @@ describe('IpsChipSelect', () => {
     );
     expect(appleChip).toBeInTheDocument();
     expect(bananaChip).toBeInTheDocument();
+  });
+
+  describe('chip overflow', () => {
+    const MANY_OPTIONS: IpsChipSelectOption[] = [
+      ...OPTIONS,
+      { label: 'Date', value: 'date' },
+      { label: 'Elderberry', value: 'elderberry' },
+    ];
+    const ALL_BUT_ONE = ['apple', 'banana', 'cherry', 'date'];
+
+    const renderOverflow = (props = {}) =>
+      renderComponent({ options: MANY_OPTIONS, value: ALL_BUT_ONE, ...props });
+
+    // Chips live inside the select display; the overflow tooltip renders in a
+    // portal and repeats the same labels, so queries have to be scoped.
+    const field = () => within(screen.getByRole('combobox'));
+    // Queried by role: Tooltip mirrors its title onto the wrapper span too, so
+    // a plain label query matches twice.
+    const expandToggle = () => field().getByRole('button', { name: /^\+\d+$/ });
+    const collapseToggle = () =>
+      field().getByRole('button', { name: 'הצג פחות' });
+    const queryToggle = () =>
+      field().queryByRole('button', { name: /^\+\d+$|^הצג פחות$/ });
+
+    it('should show every chip while at most 3 values are selected', () => {
+      renderOverflow({ value: ['apple', 'banana', 'cherry'] });
+      expect(field().getByText('Cherry')).toBeInTheDocument();
+      expect(queryToggle()).not.toBeInTheDocument();
+    });
+
+    it('should collapse chips past the third behind a plus toggle', () => {
+      renderOverflow();
+      expect(field().getByText('Apple')).toBeInTheDocument();
+      expect(field().getByText('Banana')).toBeInTheDocument();
+      expect(field().getByText('Cherry')).toBeInTheDocument();
+      expect(field().queryByText('Date')).not.toBeInTheDocument();
+      // One value is hidden, so the toggle is labelled "+1".
+      expect(expandToggle()).toBeInTheDocument();
+    });
+
+    it('should list the hidden values in the overflow tooltip', async () => {
+      renderOverflow({ value: [...ALL_BUT_ONE, 'elderberry'] });
+      await userEvent.hover(expandToggle());
+
+      const tooltip = await screen.findByRole('tooltip');
+      expect(tooltip).toHaveTextContent('Date');
+      expect(tooltip).toHaveTextContent('Elderberry');
+    });
+
+    it('should expand all chips when the plus toggle is clicked', async () => {
+      renderOverflow();
+      await userEvent.click(expandToggle());
+
+      expect(field().getByText('Date')).toBeInTheDocument();
+      // The toggle flips to minus.
+      expect(collapseToggle()).toBeInTheDocument();
+      // Expanding must not open the drop-down.
+      expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    });
+
+    it('should collapse again on the minus toggle', async () => {
+      renderOverflow();
+      await userEvent.click(expandToggle());
+      await userEvent.click(collapseToggle());
+
+      expect(field().queryByText('Date')).not.toBeInTheDocument();
+      expect(expandToggle()).toBeInTheDocument();
+    });
+
+    it('should not expand when disabled', async () => {
+      renderOverflow({ disabled: true });
+      await userEvent.click(expandToggle(), { pointerEventsCheck: 0 });
+
+      expect(field().queryByText('Date')).not.toBeInTheDocument();
+    });
+
+    it('should show every chip when maxVisibleChips is 0', () => {
+      renderOverflow({ maxVisibleChips: 0 });
+      expect(field().getByText('Date')).toBeInTheDocument();
+      expect(queryToggle()).not.toBeInTheDocument();
+    });
+
+    it('should respect a custom maxVisibleChips', () => {
+      renderOverflow({ maxVisibleChips: 1 });
+      expect(field().getByText('Apple')).toBeInTheDocument();
+      expect(field().queryByText('Banana')).not.toBeInTheDocument();
+      expect(expandToggle()).toBeInTheDocument();
+    });
+
+    it('should keep the merged chip when everything is selected', () => {
+      renderOverflow({
+        enableSelectAll: true,
+        value: MANY_OPTIONS.map((option) => option.value),
+      });
+      expect(field().getByText('הכל נבחר')).toBeInTheDocument();
+      expect(queryToggle()).not.toBeInTheDocument();
+    });
+  });
+
+  it('should render option rows at the shared dense height', async () => {
+    renderComponent();
+    await userEvent.click(screen.getByRole('combobox'));
+
+    // Same listDensity values IpsAutocomplete's listbox is asserted against.
+    expect(screen.getAllByRole('option')[0]).toHaveStyle({
+      minHeight: '32px',
+      paddingTop: '2px',
+      paddingBottom: '2px',
+      paddingLeft: '8px',
+      paddingRight: '8px',
+    });
+  });
+
+  it('should cap the dropdown height so long lists scroll', async () => {
+    renderComponent();
+    await userEvent.click(screen.getByRole('combobox'));
+
+    const paper = document.querySelector('.MuiMenu-paper') as HTMLElement;
+    expect(paper).toBeInTheDocument();
+    expect(paper).toHaveStyle({ maxHeight: '320px' });
+  });
+
+  it('should shrink the dropdown to the room left when the field sits low on the page', async () => {
+    const originalHeight = window.innerHeight;
+    Object.defineProperty(window, 'innerHeight', {
+      value: 300,
+      configurable: true,
+    });
+
+    try {
+      const { container } = renderComponent();
+      const field = container.querySelector('.MuiInputBase-root') as HTMLElement;
+      // 60px below the field, 200px above it - the menu has to flip and fit.
+      field.getBoundingClientRect = () =>
+        ({ top: 200, bottom: 240, height: 40 }) as DOMRect;
+
+      await userEvent.click(screen.getByRole('combobox'));
+
+      const paper = document.querySelector('.MuiMenu-paper') as HTMLElement;
+      expect(paper).toHaveStyle({ maxHeight: '184px' });
+    } finally {
+      Object.defineProperty(window, 'innerHeight', {
+        value: originalHeight,
+        configurable: true,
+      });
+    }
+  });
+
+  it('should honour a custom maxMenuHeight', async () => {
+    renderComponent({ maxMenuHeight: 200 });
+    await userEvent.click(screen.getByRole('combobox'));
+
+    const paper = document.querySelector('.MuiMenu-paper') as HTMLElement;
+    expect(paper).toHaveStyle({ maxHeight: '200px' });
+  });
+
+  // The same surface IpsAutocomplete's list opens onto - see its popup tests.
+  describe('open dropdown surface', () => {
+    const paper = () => document.querySelector('.MuiMenu-paper') as HTMLElement;
+
+    // jsdom's computed style drops scrollbar properties, so the emitted rules
+    // are read straight off the stylesheet instead.
+    const rulesFor = (element: Element) => {
+      const own = Array.from(element.classList).filter((c) =>
+        c.startsWith('css-')
+      );
+      return Array.from(document.styleSheets)
+        .flatMap((sheet) => Array.from(sheet.cssRules))
+        .map((rule) => rule.cssText)
+        .filter((text) => own.some((c) => text.startsWith(`.${c}`)))
+        .join('\n');
+    };
+
+    it('should square the edge the field and the menu share while open', async () => {
+      const { container } = renderComponent();
+      const field = container.querySelector('.MuiInputBase-root');
+      expect(field).not.toHaveStyle({ borderBottomLeftRadius: '0px' });
+
+      await userEvent.click(screen.getByRole('combobox'));
+
+      expect(field).toHaveStyle({
+        borderBottomLeftRadius: '0px',
+        borderBottomRightRadius: '0px',
+      });
+      expect(paper()).toHaveStyle({
+        borderTopLeftRadius: '0px',
+        borderTopRightRadius: '0px',
+      });
+    });
+
+    it('should move the squared edge to the top when the menu opens upwards', async () => {
+      const originalHeight = window.innerHeight;
+      Object.defineProperty(window, 'innerHeight', {
+        value: 300,
+        configurable: true,
+      });
+
+      try {
+        const { container } = renderComponent();
+        const field = container.querySelector('.MuiInputBase-root') as HTMLElement;
+        field.getBoundingClientRect = () =>
+          ({ top: 200, bottom: 240, height: 40 }) as DOMRect;
+
+        await userEvent.click(screen.getByRole('combobox'));
+
+        expect(field).toHaveStyle({
+          borderTopLeftRadius: '0px',
+          borderTopRightRadius: '0px',
+        });
+        expect(paper()).toHaveStyle({
+          borderBottomLeftRadius: '0px',
+          borderBottomRightRadius: '0px',
+        });
+      } finally {
+        Object.defineProperty(window, 'innerHeight', {
+          value: originalHeight,
+          configurable: true,
+        });
+      }
+    });
+
+    it('should render the menu in the same font as the field', async () => {
+      renderComponent({ sx: { fontFamily: '"Rubik", sans-serif' } });
+      await userEvent.click(screen.getByRole('combobox'));
+
+      expect(paper()).toHaveStyle({ fontFamily: '"Rubik", sans-serif' });
+      // The option rows are Typography, which carries a family of its own.
+      expect(rulesFor(paper())).toMatch(
+        /\.MuiTypography-root\s*\{[^}]*font-family:\s*inherit/
+      );
+    });
+
+    it('should give the menu a thin, light-grey scrollbar', async () => {
+      renderComponent();
+      await userEvent.click(screen.getByRole('combobox'));
+
+      const css = rulesFor(paper());
+      expect(css).toMatch(/scrollbar-width:\s*thin/);
+      expect(css).toMatch(/::-webkit-scrollbar\s*\{[^}]*width:\s*6px/);
+      expect(css).toMatch(
+        new RegExp(
+          `::-webkit-scrollbar-thumb\\s*\\{[^}]*${theme.palette.grey[300]}`,
+          'i'
+        )
+      );
+    });
   });
 });
