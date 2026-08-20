@@ -16,6 +16,9 @@
     }
   },
   "scripts": {
+    "postinstall": "node scripts/vendor-stylis-rtl.mjs",
+    "vendor:stylis-rtl": "node scripts/vendor-stylis-rtl.mjs",
+    "prebuild": "node scripts/vendor-stylis-rtl.mjs",
     "dev": "vite",
     "build": "vite build",
     "build:demo": "vite build --config vite.config.demo.ts",
@@ -33,8 +36,7 @@
     "@tanstack/react-table": "^8.21.3",
     "@tanstack/react-virtual": "^3.14.3",
     "html2canvas": "^1.4.1",
-    "moment": "^2.30.1",
-    "stylis-plugin-rtl": "^2.1.1"
+    "moment": "^2.30.1"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
@@ -93,6 +95,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "storybook": "8.6.18",
+    "stylis-plugin-rtl": "^2.1.1",
     "ts-jest": "^29.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.0.0",

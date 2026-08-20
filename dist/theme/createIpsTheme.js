@@ -1,11 +1,11 @@
 import { createTheme as s } from "@mui/material/styles";
-import { lightPalette as c, radiusTokens as a, typographyStyles as o, lightCharts as l, spacingTokens as u, darkPalette as p, darkCharts as b } from "./tokens/generated/index.js";
+import { lightPalette as l, radiusTokens as a, typographyStyles as o, lightCharts as c, spacingTokens as u, darkPalette as p, darkCharts as b } from "./tokens/generated/index.js";
 function e(t, r) {
   const n = parseInt(t.slice(1, 3), 16), i = parseInt(t.slice(3, 5), 16), d = parseInt(t.slice(5, 7), 16);
   return `rgba(${n}, ${i}, ${d}, ${r})`;
 }
 function h(t) {
-  const r = t === "light" ? c : p, n = t === "light" ? l : b, i = r.actionBase, d = {
+  const r = t === "light" ? l : p, n = t === "light" ? c : b, i = r.actionBase, d = {
     spacing: u,
     radius: a,
     charts: { mono: [...n.mono], categorical: [...n.categorical] }
@@ -106,7 +106,19 @@ function h(t) {
       },
       MuiTextField: {
         styleOverrides: {
-          root: { width: "288px" }
+          // 288px is the design width, but it is a preferred width and not a
+          // floor: without the cap the field keeps its 288px inside a narrower
+          // container and overflows it instead of shrinking with it.
+          //
+          // Emotion folds FormControl's own `fullWidth` variant and these
+          // overrides into a single class, and the overrides are serialised
+          // last - so plain `width` here silently beats `fullWidth`. The
+          // two-class selector is what lets an explicit `fullWidth` win back.
+          root: {
+            width: "288px",
+            maxWidth: "100%",
+            "&.MuiFormControl-fullWidth": { width: "100%" }
+          }
         }
       },
       // MUI's Autocomplete bakes its own padding onto the outlined input

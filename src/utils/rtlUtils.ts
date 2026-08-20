@@ -1,5 +1,5 @@
 import createCache from '@emotion/cache'
-import rtlPlugin from 'stylis-plugin-rtl'
+import rtlPlugin from '../vendor/stylis-plugin-rtl'
 
 export const isRtl = (locale?: string) => {
   if (!locale) return false
