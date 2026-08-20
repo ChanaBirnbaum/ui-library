@@ -1,10 +1,7 @@
 import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { IpsAutocomplete } from './IpsAutocomplete';
 import type { IpsAutocompleteProps } from './IpsAutocomplete.types';
-
-const theme = createTheme();
 
 interface OptionType {
   label: string;
@@ -14,13 +11,6 @@ interface OptionType {
 const meta: Meta<typeof IpsAutocomplete> = {
   title: 'Form/IpsAutocomplete',
   component: IpsAutocomplete,
-  decorators: [
-    (Story) => (
-      <ThemeProvider theme={theme}>
-        <Story />
-      </ThemeProvider>
-    ),
-  ],
   argTypes: {
     options: {
       control: 'object',
