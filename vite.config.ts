@@ -13,6 +13,10 @@ export default defineConfig({
       entry: 'src/index.ts',
       name: 'UILibrary',
     },
+    // Wipe dist between builds. With preserveModules the output file set
+    // changes as imports change; stale files (e.g. a dropped
+    // dist/node_modules/ mirror) otherwise linger and get published.
+    emptyOutDir: true,
     rollupOptions: {
       external: [
         'react',

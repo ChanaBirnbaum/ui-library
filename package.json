@@ -16,8 +16,7 @@
     }
   },
   "scripts": {
-    "postinstall": "node scripts/vendor-stylis-rtl.mjs",
-    "vendor:stylis-rtl": "node scripts/vendor-stylis-rtl.mjs",
+add    "vendor:stylis-rtl": "node scripts/vendor-stylis-rtl.mjs",
     "prebuild": "node scripts/vendor-stylis-rtl.mjs",
     "dev": "vite",
     "build": "vite build",
