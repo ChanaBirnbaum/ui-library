@@ -4,6 +4,11 @@ import { TimePicker } from '@mui/x-date-pickers/TimePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import type { Moment } from 'moment'
+// Registers the 'he' locale in moment's registry — required by the
+// `adapterLocale="he"` below. This is a side-effect-only import with no
+// bindings, so do NOT add `"sideEffects": false` to package.json: webpack
+// would be free to drop this line and the picker would fall back to English.
+// If that flag is ever wanted, register the locale explicitly first.
 import 'moment/locale/he'
 import type { IpsTimePickerProps } from './IpsTimePicker.types'
 
