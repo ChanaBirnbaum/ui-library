@@ -1,12 +1,12 @@
-import { jsx as e } from "react/jsx-runtime";
-import { useMemo as t } from "react";
-import { CacheProvider as m } from "@emotion/react";
-import { createRtlCache as i } from "../../utils/rtlUtils.js";
-const p = ({ children: r }) => {
-  const o = t(() => i(), []);
-  return /* @__PURE__ */ e(m, { value: o, children: r });
+import { jsx as e, Fragment as m } from "react/jsx-runtime";
+import { useMemo as s } from "react";
+import { __unsafe_useEmotionCache as a, CacheProvider as p } from "@emotion/react";
+import { createRtlCache as i, RTL_CACHE_KEY as n } from "../../utils/rtlUtils.js";
+const c = ({ children: r }) => {
+  const o = a(), t = s(() => i(), []);
+  return (o == null ? void 0 : o.key) === n ? /* @__PURE__ */ e(m, { children: r }) : /* @__PURE__ */ e(p, { value: t, children: r });
 };
-p.displayName = "IpsRtlProvider";
+c.displayName = "IpsRtlProvider";
 export {
-  p as IpsRtlProvider
+  c as IpsRtlProvider
 };
