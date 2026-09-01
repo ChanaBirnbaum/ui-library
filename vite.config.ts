@@ -46,6 +46,12 @@ export default defineConfig({
         {
           format: 'cjs',
           entryFileNames: 'ui-library.cjs.js',
+          // Externals (MUI, emotion, x-pickers) ship as CommonJS with
+          // `exports.default`. Rollup's default interop ('default') would use
+          // the whole `module.exports` object as the default import, so
+          // <Box/> became an object -> "Element type is invalid".
+          // 'auto' emits an __esModule-aware _interopDefault wrapper.
+          interop: 'auto',
           exports: 'named',
           globals: {
             react: 'React',
