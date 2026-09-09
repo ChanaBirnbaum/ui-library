@@ -7,7 +7,7 @@ import type { Table, RowData } from '@tanstack/react-table'
 import type { VirtualItem } from '@tanstack/react-virtual'
 import { DataCell } from './DataCell'
 import { ActionCell } from './ActionCell'
-import type { ActionDef, EditingState } from '../IpsDataTable.types'
+import type { ActionDef, EditingState, CellOverflow } from '../IpsDataTable.types'
 
 export interface TableBodyProps<T extends RowData> {
   table: Table<T>
@@ -30,6 +30,12 @@ export interface TableBodyProps<T extends RowData> {
   virtualItems?: VirtualItem[]
   paddingTop?: number
   paddingBottom?: number
+  /** Virtualizer ref callback — lets rows report their real (wrapped) height */
+  measureElement?: (node: Element | null) => void
+  /** Table-level cell overflow mode, forwarded to every data cell */
+  cellOverflow?: CellOverflow
+  /** Widths measured by the auto-fit pass, keyed by column id */
+  autoWidths?: Record<string, number>
 }
 
 export function TableBody<T extends RowData>({
@@ -53,6 +59,9 @@ export function TableBody<T extends RowData>({
   virtualItems,
   paddingTop = 0,
   paddingBottom = 0,
+  measureElement,
+  cellOverflow = 'wrap',
+  autoWidths,
 }: TableBodyProps<T>) {
   const allRows = table.getRowModel().rows
   const totalColumns = table.getVisibleLeafColumns().length
@@ -110,16 +119,20 @@ export function TableBody<T extends RowData>({
           <React.Fragment key={row.id}>
             <MuiTableRow
               sx={rowSx}
+              data-index={virtualItems ? rowIndex : undefined}
+              ref={virtualItems ? measureElement : undefined}
               onClick={onRowClick ? (e) => onRowClick(row.original, e) : undefined}
             >
               {row.getVisibleCells().map((cell) => {
                 const colId = cell.column.id
 
                 if (colId === '_select' || colId === '_expand') {
+                  const controlWidth = colId === '_select' ? 40 : 48
                   return (
                     <MuiTableCell
                       key={cell.id}
-                      sx={{ width: colId === '_select' ? 40 : 48, p: 0.5 }}
+                      // maxWidth pins the column under a fixed table layout.
+                      sx={{ width: controlWidth, maxWidth: controlWidth, p: 0.5 }}
                     >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </MuiTableCell>
@@ -140,6 +153,7 @@ export function TableBody<T extends RowData>({
                       hasInlineEdit={hasInlineEdit}
                       customActions={customActions}
                       cellSx={cellSx}
+                      width={cell.column.columnDef.meta?.width}
                     />
                   )
                 }
@@ -157,6 +171,8 @@ export function TableBody<T extends RowData>({
                     onCommit={() => onSaveInline(row.id)}
                     onCancel={onCancelEdit}
                     cellSx={cellSx}
+                    cellOverflow={cellOverflow}
+                    autoWidth={autoWidths?.[colId]}
                   />
                 )
               })}

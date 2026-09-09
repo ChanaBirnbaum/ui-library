@@ -296,3 +296,95 @@ export const FullFeatured: Story = {
     )
   },
 }
+
+// ---------------------------------------------------------------------------
+// Fixed-height container: the table fills it exactly, in every state
+// ---------------------------------------------------------------------------
+const HeightBox = ({ children }: { children: React.ReactNode }) => (
+  <div style={{ height: 360, border: '1px dashed #CBD5E0', padding: 8 }}>{children}</div>
+)
+
+const LONG_TEXT =
+  'תיאור ארוך במיוחד של הפרי הכולל פרטי אחסון, טמפרטורה מומלצת, אופן הובלה, ' +
+  'הערות ספק והנחיות טיפול נוספות שנמשכות על פני מספר שורות טקסט.'
+
+const LONG_TEXT_COLUMNS: ColumnDef<Fruit>[] = [
+  ...COLUMNS,
+  {
+    id: 'notes',
+    header: 'הערות',
+    accessorFn: () => LONG_TEXT,
+    meta: { width: 260 },
+  },
+]
+
+export const FixedHeightLoading: Story = {
+  name: 'גובה קבוע — טעינה',
+  render: () => (
+    <HeightBox>
+      <IpsDataTable<Fruit>
+        data={[]}
+        columns={COLUMNS}
+        isLoading
+        pagination={{ pageSize: 25 }}
+      />
+    </HeightBox>
+  ),
+}
+
+export const FixedHeightLongText: Story = {
+  name: 'גובה קבוע — טקסט ארוך',
+  render: () => (
+    <HeightBox>
+      <IpsDataTable<Fruit>
+        data={FRUITS}
+        columns={LONG_TEXT_COLUMNS}
+        pagination={{ pageSize: 10, showTotal: true }}
+        sorting
+      />
+    </HeightBox>
+  ),
+}
+
+export const CellOverflowEllipsis: Story = {
+  name: 'התאמה אוטומטית + חיתוך ב-…',
+  // No column declares a width: the table measures each column's content and
+  // only the notes column ends up clipped.
+  render: () => (
+    <div style={{ width: 620, border: '1px dashed #CBD5E0', padding: 8 }}>
+      <IpsDataTable<Fruit>
+        data={FRUITS}
+        columns={[
+          ...COLUMNS,
+          { id: 'notes', header: 'הערות', accessorFn: () => LONG_TEXT },
+        ]}
+        cellOverflow="ellipsis"
+        sorting
+        maxHeight={320}
+      />
+    </div>
+  ),
+}
+
+export const CellOverflowPerColumn: Story = {
+  name: 'חריגה לעמודה בודדת',
+  // Auto-fit everywhere except the notes column, which opts back into wrapping.
+  render: () => (
+    <div style={{ width: 620, border: '1px dashed #CBD5E0', padding: 8 }}>
+      <IpsDataTable<Fruit>
+        data={FRUITS}
+        columns={[
+          ...COLUMNS,
+          {
+            id: 'notes',
+            header: 'הערות',
+            accessorFn: () => LONG_TEXT,
+            meta: { overflow: 'wrap' as const, width: 240 },
+          },
+        ]}
+        cellOverflow="ellipsis"
+        maxHeight={320}
+      />
+    </div>
+  ),
+}

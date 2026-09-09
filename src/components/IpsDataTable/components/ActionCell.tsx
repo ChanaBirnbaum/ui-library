@@ -23,6 +23,8 @@ export interface ActionCellProps<T> {
   hasInlineEdit: boolean
   customActions?: ActionDef<T>[]
   cellSx?: object
+  /** Fixed column width — needed when the table uses a fixed layout */
+  width?: number | string
 }
 
 export function ActionCell<T>({
@@ -36,13 +38,14 @@ export function ActionCell<T>({
   hasInlineEdit,
   customActions = [],
   cellSx,
+  width,
 }: ActionCellProps<T>) {
   const visibleActions = customActions.filter((a) => !a.isVisible || a.isVisible(row))
 
   return (
     <MuiTableCell
       align="right"
-      sx={{ whiteSpace: 'nowrap', ...cellSx }}
+      sx={{ whiteSpace: 'nowrap', width, maxWidth: width, ...cellSx }}
       onClick={(e) => e.stopPropagation()}
     >
       <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>

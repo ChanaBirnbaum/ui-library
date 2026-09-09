@@ -128,6 +128,122 @@ describe('IpsDataTable', () => {
     expect(skeletons.length).toBeGreaterThan(0)
   })
 
+  it('keeps the pagination bar mounted while loading so the layout does not jump', () => {
+    const { rerender, container } = render(
+      <IpsDataTable data={[]} columns={COLUMNS} pagination={{ pageSize: 2 }} isLoading />
+    )
+    expect(container.querySelector('.MuiTablePagination-root')).toBeInTheDocument()
+    rerender(<IpsDataTable data={DATA} columns={COLUMNS} pagination={{ pageSize: 2 }} />)
+    expect(container.querySelector('.MuiTablePagination-root')).toBeInTheDocument()
+  })
+
+  it('renders the pagination bar outside the scrollable area', () => {
+    const { container } = render(
+      <IpsDataTable data={DATA} columns={COLUMNS} pagination={{ pageSize: 2 }} maxHeight={200} />
+    )
+    const scrollArea = container.querySelector('.MuiTableContainer-root')
+    expect(scrollArea).toBeInTheDocument()
+    expect(scrollArea?.querySelector('.MuiTablePagination-root')).toBeNull()
+    expect(container.querySelector('.MuiTablePagination-root')).toBeInTheDocument()
+  })
+
+  it('never renders more skeleton rows than the page size', () => {
+    const { container } = render(
+      <IpsDataTable data={[]} columns={COLUMNS} pagination={{ pageSize: 3 }} isLoading />
+    )
+    const skeletonRows = container.querySelectorAll('tbody tr')
+    expect(skeletonRows.length).toBeLessThanOrEqual(3)
+    expect(skeletonRows.length).toBeGreaterThan(0)
+  })
+
+  it('never uses a fixed table layout — columns keep their content width', () => {
+    const { container } = render(
+      <IpsDataTable data={DATA} columns={COLUMNS} cellOverflow="ellipsis" />
+    )
+    expect(container.querySelector('table')).not.toHaveStyle({ tableLayout: 'fixed' })
+  })
+
+  it('leaves unmeasured, unconstrained columns at their natural width', () => {
+    // jsdom reports no layout, so auto-fit stays inert: nothing is capped and
+    // no column may collapse.
+    render(<IpsDataTable data={DATA} columns={COLUMNS} cellOverflow="ellipsis" />)
+    const cell = screen.getByText('Alpha').closest('td')
+    expect(cell).not.toHaveStyle({ maxWidth: '0px' })
+    expect(cell).toHaveStyle({ whiteSpace: 'nowrap' })
+  })
+
+  it('clips a column at the width it declared, and only that column', () => {
+    const columns: ColumnDef<Row>[] = [
+      { accessorKey: 'id', header: 'ID' },
+      { accessorKey: 'name', header: 'Name', meta: { width: 120 } },
+    ]
+    render(<IpsDataTable data={DATA} columns={columns} cellOverflow="ellipsis" />)
+    expect(screen.getByText('Alpha').closest('td')).toHaveStyle({
+      maxWidth: '120px',
+      overflow: 'hidden',
+    })
+    expect(screen.getByText('1').closest('td')).not.toHaveStyle({ maxWidth: '120px' })
+  })
+
+  it('never collapses a clipped column to zero width', () => {
+    const columns: ColumnDef<Row>[] = [
+      { accessorKey: 'id', header: 'ID' },
+      { accessorKey: 'name', header: 'Name', meta: { width: 120 } },
+    ]
+    const { container } = render(
+      <IpsDataTable data={DATA} columns={columns} cellOverflow="ellipsis" />
+    )
+    container.querySelectorAll('td, th').forEach((cell) => {
+      expect(cell).not.toHaveStyle({ maxWidth: '0px' })
+    })
+  })
+
+  it('shows a tooltip with the full value when a cell is clipped', async () => {
+    const longName = 'שם ארוך מאוד שאין לו סיכוי להיכנס לרוחב העמודה שהוקצתה לו'
+    const columns: ColumnDef<Row>[] = [
+      { accessorKey: 'id', header: 'ID' },
+      { accessorKey: 'name', header: 'Name', meta: { width: 120 } },
+    ]
+    const { container } = render(
+      <IpsDataTable
+        data={[{ id: 1, name: longName, value: 1 }]}
+        columns={columns}
+        cellOverflow="ellipsis"
+      />
+    )
+    const clip = screen.getByText(longName)
+    // jsdom reports 0 for both, so force a truncated measurement.
+    Object.defineProperty(clip, 'scrollWidth', { value: 500, configurable: true })
+    Object.defineProperty(clip, 'clientWidth', { value: 100, configurable: true })
+
+    fireEvent.mouseEnter(clip)
+    await waitFor(() =>
+      expect(container.ownerDocument.querySelector('.MuiTooltip-tooltip')).toBeInTheDocument()
+    )
+    expect(container.ownerDocument.querySelector('.MuiTooltip-tooltip')).toHaveTextContent(
+      longName
+    )
+  })
+
+  it('does not show a tooltip when the cell is not clipped', () => {
+    const { container } = render(
+      <IpsDataTable data={DATA} columns={COLUMNS} cellOverflow="ellipsis" />
+    )
+    fireEvent.mouseEnter(screen.getByText('Alpha'))
+    expect(container.ownerDocument.querySelector('.MuiTooltip-tooltip')).toBeNull()
+  })
+
+  it('lets a column opt out of the table-level overflow mode', () => {
+    const columns: ColumnDef<Row>[] = [
+      { accessorKey: 'id', header: 'ID' },
+      { accessorKey: 'name', header: 'Name', meta: { overflow: 'wrap' } },
+    ]
+    render(<IpsDataTable data={DATA} columns={columns} cellOverflow="ellipsis" />)
+    // The wrap column renders its value directly, without the clipping wrapper.
+    const cell = screen.getByText('Alpha').closest('td')
+    expect(cell).toHaveStyle({ whiteSpace: 'normal' })
+  })
+
   it('shows edit button when onEdit is provided', () => {
     render(<IpsDataTable data={DATA} columns={COLUMNS} onEdit={jest.fn()} />)
     const editButtons = screen.getAllByRole('button', { name: /עריכה/i })

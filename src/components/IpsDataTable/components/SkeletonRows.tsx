@@ -15,7 +15,10 @@ export function SkeletonRows({ rowCount = 5, columnCount, cellSx }: SkeletonRows
       {Array.from({ length: rowCount }).map((_, rowIdx) => (
         <MuiTableRow key={rowIdx}>
           {Array.from({ length: columnCount }).map((_, colIdx) => (
-            <MuiTableCell key={colIdx} sx={cellSx}>
+            <MuiTableCell
+              key={colIdx}
+              sx={{ ...cellSx, whiteSpace: 'nowrap', overflow: 'hidden' }}
+            >
               <Skeleton
                 variant="text"
                 width={`${60 + Math.floor(Math.sin(rowIdx * 7 + colIdx) * 30)}%`}

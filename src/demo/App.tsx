@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import {
   ThemeProvider,
   createTheme,
   CssBaseline,
   Box,
-  Tabs,
-  Tab,
+  Drawer,
+  IconButton,
   Typography,
   Paper,
   Divider,
@@ -15,6 +15,9 @@ import {
   Chip,
 } from '@mui/material'
 import { CacheProvider } from '@emotion/react'
+import { DemoSidebar } from './DemoSidebar'
+import type { NavItem } from './DemoSidebar'
+import { slugify, useHashRoute } from './useHashRoute'
 import { createRtlCache } from '../utils/rtlUtils'
 import { ipsTheme } from '../theme/ipsTheme'
 
@@ -1116,6 +1119,8 @@ function DataTablePanel() {
         { name: 'variant', value: "'default' | 'bordered' | 'striped'", description: 'גרסת עיצוב' },
         { name: 'size', value: "'sm' | 'md' | 'lg'", description: 'גודל שורה' },
         { name: 'isLoading', value: 'boolean', description: 'מצב טעינה — Skeleton animation' },
+        { name: 'cellOverflow', value: "'wrap' | 'ellipsis'", description: 'טקסט ארוך: עוטף ומגדיל שורה (ברירת מחדל), או התאמה אוטומטית של רוחב העמודות לתוכן + חיתוך ב-… עם טולטיפ' },
+        { name: 'maxHeight', value: 'number | string', description: 'תקרת גובה כוללת; הטבלה גם ממלאת לבד גובה שהוקצה לה' },
       ]} />
 
       {/* Controls */}
@@ -1163,6 +1168,198 @@ function DataTablePanel() {
         variant={variant}
         size={size}
       />
+
+      <SectionTitle>התאמה לגובה קבוע (רספונסיביות מלאה)</SectionTitle>
+      <DataTableFixedHeightDemo />
+
+      <SectionTitle>cellOverflow — חיתוך עם 3 נקודות וטולטיפ</SectionTitle>
+      <DataTableOverflowDemo />
+    </Box>
+  )
+}
+
+// ─── IpsDataTable — fixed-height container demo ─────────────────────────────
+const DT_LONG_NOTE =
+  'הערה ארוכה במיוחד לצורך הדגמה: כוללת פרטי מיקום, טלפון ליצירת קשר, ' +
+  'הערות מנהל ישיר, מגבלות תקציב והנחיות נוספות שנמשכות על פני כמה שורות טקסט.'
+
+const DT_COLUMNS_LONG: ColumnDef<Employee>[] = [
+  ...DT_COLUMNS,
+  {
+    id: 'notes',
+    header: 'הערות',
+    accessorFn: () => DT_LONG_NOTE,
+    meta: { width: 280 },
+  },
+]
+
+const DT_HEIGHTS = [220, 340, 520] as const
+const DT_WIDTHS = [520, 760, 1000] as const
+
+function DataTableFixedHeightDemo() {
+  const [height, setHeight] = useState<number>(340)
+  const [loading, setLoading] = useState(true)
+  const [longText, setLongText] = useState(true)
+  const [withPagination, setWithPagination] = useState(true)
+
+  return (
+    <Box>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+        המסגרת המקווקוות היא ה-<code>div</code> העוטף בגובה קבוע. הטבלה ממלאת אותו
+        בדיוק: הסקלטון מותאם למספר השורות שנכנסות, פס העימוד תמיד גלוי מתחת לאזור
+        הגלילה, וטקסט ארוך עוטף וגולל במקום להיחתך. שנו את הגובה והפעילו את
+        המתגים כדי לראות שאין גלישה בשום מצב.
+      </Typography>
+
+      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Typography variant="body2" sx={{ mr: 1 }}>גובה המכל:</Typography>
+        {DT_HEIGHTS.map((h) => (
+          <IpsButton
+            key={h}
+            size="small"
+            variant={height === h ? 'contained' : 'outlined'}
+            onClick={() => setHeight(h)}
+          >
+            {h}px
+          </IpsButton>
+        ))}
+        <Box sx={{ mx: 1 }} />
+        <FormControlLabel
+          control={<Switch checked={loading} onChange={(e) => setLoading(e.target.checked)} />}
+          label="isLoading"
+        />
+        <FormControlLabel
+          control={<Switch checked={longText} onChange={(e) => setLongText(e.target.checked)} />}
+          label="עמודת טקסט ארוך"
+        />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={withPagination}
+              onChange={(e) => setWithPagination(e.target.checked)}
+            />
+          }
+          label="pagination"
+        />
+      </Box>
+
+      <Box
+        sx={{
+          height,
+          p: 1,
+          border: '2px dashed',
+          borderColor: 'primary.light',
+          borderRadius: 1,
+          backgroundColor: 'grey.50',
+          transition: 'height 200ms ease',
+        }}
+      >
+        <IpsDataTable<Employee>
+          data={DT_DATA}
+          columns={longText ? DT_COLUMNS_LONG : DT_COLUMNS}
+          isLoading={loading}
+          sorting
+          pagination={withPagination ? { pageSize: 5, pageSizeOptions: [5, 10], showTotal: true } : false}
+        />
+      </Box>
+    </Box>
+  )
+}
+
+// ─── IpsDataTable — cellOverflow demo ───────────────────────────────────────
+type NotesMode = 'width' | 'flex' | 'natural'
+
+const NOTES_MODES: { key: NotesMode; label: string; hint: string }[] = [
+  { key: 'natural', label: 'ללא הגדרות (אוטומטי)', hint: 'הטבלה מודדת לבד: מזהה/שם/תפקיד/סטטוס נשארים ברוחב התוכן, וההערות מקבלות את מה שנשאר ונחתכות' },
+  { key: 'width', label: 'meta.width: 280', hint: 'ההערות מקובעות ל-280px ויוצאות מהחלוקה האוטומטית' },
+  { key: 'flex', label: "meta.overflow: 'wrap'", hint: 'חריגה: ההערות ממשיכות לעטוף ולהגדיל את השורה, שאר העמודות עדיין מותאמות אוטומטית' },
+]
+
+function DataTableOverflowDemo() {
+  const [overflow, setOverflow] = useState<'wrap' | 'ellipsis'>('ellipsis')
+  const [width, setWidth] = useState<number>(760)
+  const [notesMode, setNotesMode] = useState<NotesMode>('natural')
+
+  const columns: ColumnDef<Employee>[] = DT_COLUMNS_LONG.map((c) => {
+    if (c.id !== 'notes') return c
+    if (notesMode === 'width') return c
+    if (notesMode === 'flex') return { ...c, meta: { overflow: 'wrap' as const } }
+    return { ...c, meta: {} }
+  })
+
+  return (
+    <Box>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+        <code>cellOverflow=&quot;ellipsis&quot;</code> לבד מספיק — <b>אין צורך להגדיר
+        רוחב לאף עמודה</b>. הטבלה מודדת את רוחב התוכן הטבעי של כל עמודה ומחלקת את
+        המקום מהצרה לרחבה: העמודות הקצרות מקבלות את מלוא הרוחב שלהן, ורק אלה
+        שעדיין לא נכנסות מתחלקות במה שנשאר ונחתכות ב-<b>…</b> עם טולטיפ. החלוקה
+        מחושבת מחדש בכל שינוי רוחב או תוכן.
+      </Typography>
+
+      <Box sx={{ mb: 1, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Typography variant="body2" sx={{ mr: 1 }}>cellOverflow:</Typography>
+        {(['wrap', 'ellipsis'] as const).map((v) => (
+          <IpsButton
+            key={v}
+            size="small"
+            variant={overflow === v ? 'contained' : 'outlined'}
+            onClick={() => setOverflow(v)}
+          >
+            {v}
+          </IpsButton>
+        ))}
+        <Box sx={{ mx: 1 }} />
+        <Typography variant="body2" sx={{ mr: 1 }}>רוחב המכל:</Typography>
+        {DT_WIDTHS.map((w) => (
+          <IpsButton
+            key={w}
+            size="small"
+            variant={width === w ? 'contained' : 'outlined'}
+            onClick={() => setWidth(w)}
+          >
+            {w}px
+          </IpsButton>
+        ))}
+      </Box>
+
+      <Box sx={{ mb: 2, display: 'flex', gap: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Typography variant="body2" sx={{ mr: 1 }}>עמודת ההערות:</Typography>
+        {NOTES_MODES.map((m) => (
+          <IpsButton
+            key={m.key}
+            size="small"
+            variant={notesMode === m.key ? 'contained' : 'outlined'}
+            onClick={() => setNotesMode(m.key)}
+          >
+            {m.label}
+          </IpsButton>
+        ))}
+        <Typography variant="caption" color="text.secondary" sx={{ width: '100%', mt: 0.5 }}>
+          {NOTES_MODES.find((m) => m.key === notesMode)?.hint}
+        </Typography>
+      </Box>
+
+      <Box
+        sx={{
+          width,
+          maxWidth: '100%',
+          p: 1,
+          border: '2px dashed',
+          borderColor: 'primary.light',
+          borderRadius: 1,
+          backgroundColor: 'grey.50',
+          transition: 'width 200ms ease',
+        }}
+      >
+        <IpsDataTable<Employee>
+          data={DT_DATA}
+          columns={columns}
+          cellOverflow={overflow}
+          sorting
+          maxHeight={360}
+        />
+      </Box>
     </Box>
   )
 }
@@ -1952,77 +2149,167 @@ function IpsCarouselPanel() {
   )
 }
 
-const TABS = [
-  { label: 'Button', component: <ButtonPanel /> },
-  { label: 'TextField', component: <TextFieldPanel /> },
-  { label: 'TextArea', component: <TextAreaPanel /> },
-  { label: 'CheckBox', component: <CheckBoxPanel /> },
-  { label: 'Switch', component: <SwitchPanel /> },
-  { label: 'IconButton', component: <IconButtonPanel /> },
-  { label: 'ToolTips', component: <ToolTipsPanel /> },
-  { label: 'Select', component: <SelectPanel /> },
-  { label: 'Autocomplete', component: <AutocompletePanel /> },
-  { label: 'ChipSelect', component: <ChipSelectPanel /> },
-  { label: 'Accordion', component: <AccordionPanel /> },
-  { label: 'PillSelect', component: <PillSelectPanel /> },
-  { label: 'TimePicker', component: <TimePickerPanel /> },
-  { label: 'DatePicker', component: <DatePickerPanel /> },
-  { label: 'DateTimePicker', component: <DateTimePickerPanel /> },
-  { label: 'Table', component: <IpsTablePanel /> },
-  { label: 'DataTable', component: <DataTablePanel /> },
-  { label: 'Toast', component: <ToastPanel /> },
-  { label: 'RichTextEditor', component: <RichTextEditorPanel /> },
-  { label: 'FileUpload', component: <FileUploadPanel /> },
-  { label: 'Stepper', component: <IpsStepperPanel /> },
-  { label: 'Tabs', component: <IpsTabsPanel /> },
-  { label: 'Dialog', component: <IpsDialogPanel /> },
-  { label: 'Drawer', component: <IpsDrawerPanel /> },
-  { label: 'Carousel', component: <IpsCarouselPanel /> },
+// ─── Component registry ─────────────────────────────────────────────────────
+// `group` drives the sidebar tree; the slug derived from `label` is the route.
+
+type DemoEntry = { label: string; group: string; component: React.ReactNode }
+
+const COMPONENTS: DemoEntry[] = [
+  { label: 'Button', group: 'קלט ופעולות', component: <ButtonPanel /> },
+  { label: 'IconButton', group: 'קלט ופעולות', component: <IconButtonPanel /> },
+  { label: 'TextField', group: 'קלט ופעולות', component: <TextFieldPanel /> },
+  { label: 'TextArea', group: 'קלט ופעולות', component: <TextAreaPanel /> },
+  { label: 'RichTextEditor', group: 'קלט ופעולות', component: <RichTextEditorPanel /> },
+  { label: 'FileUpload', group: 'קלט ופעולות', component: <FileUploadPanel /> },
+
+  { label: 'CheckBox', group: 'בחירה', component: <CheckBoxPanel /> },
+  { label: 'Switch', group: 'בחירה', component: <SwitchPanel /> },
+  { label: 'Select', group: 'בחירה', component: <SelectPanel /> },
+  { label: 'Autocomplete', group: 'בחירה', component: <AutocompletePanel /> },
+  { label: 'ChipSelect', group: 'בחירה', component: <ChipSelectPanel /> },
+  { label: 'PillSelect', group: 'בחירה', component: <PillSelectPanel /> },
+
+  { label: 'TimePicker', group: 'תאריך ושעה', component: <TimePickerPanel /> },
+  { label: 'DatePicker', group: 'תאריך ושעה', component: <DatePickerPanel /> },
+  { label: 'DateTimePicker', group: 'תאריך ושעה', component: <DateTimePickerPanel /> },
+
+  { label: 'Table', group: 'הצגת נתונים', component: <IpsTablePanel /> },
+  { label: 'DataTable', group: 'הצגת נתונים', component: <DataTablePanel /> },
+  { label: 'Accordion', group: 'הצגת נתונים', component: <AccordionPanel /> },
+  { label: 'Carousel', group: 'הצגת נתונים', component: <IpsCarouselPanel /> },
+
+  { label: 'Tabs', group: 'ניווט', component: <IpsTabsPanel /> },
+  { label: 'Stepper', group: 'ניווט', component: <IpsStepperPanel /> },
+
+  { label: 'ToolTips', group: 'משוב והודעות', component: <ToolTipsPanel /> },
+  { label: 'Toast', group: 'משוב והודעות', component: <ToastPanel /> },
+  { label: 'Dialog', group: 'משוב והודעות', component: <IpsDialogPanel /> },
+  { label: 'Drawer', group: 'משוב והודעות', component: <IpsDrawerPanel /> },
 ]
 
+const NAV_ITEMS: NavItem[] = COMPONENTS.map(c => ({
+  id: slugify(c.label),
+  label: c.label,
+  group: c.group,
+}))
+
+const ROUTE_IDS = NAV_ITEMS.map(i => i.id)
+
+const MenuIcon = () => (
+  <SvgIcon fontSize="small"><path d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z" /></SvgIcon>
+)
+
 export default function App() {
-  const [tab, setTab] = useState(0)
+  const [route, navigate] = useHashRoute(ROUTE_IDS, ROUTE_IDS[0])
+  const [navOpen, setNavOpen] = useState(false)
+
+  const index = Math.max(0, ROUTE_IDS.indexOf(route))
+  const current = COMPONENTS[index]
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  // A new component starts at the top of the pane, and names itself in the tab title.
+  useEffect(() => {
+    document.title = `Ips${current.label} — IPS UI Library`
+    contentRef.current?.scrollTo({ top: 0 })
+  }, [current.label])
+
+  const select = (id: string) => {
+    navigate(id)
+    setNavOpen(false)
+  }
+
+  const sidebar = <DemoSidebar items={NAV_ITEMS} activeId={route} onSelect={select} />
 
   return (
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={theme}>
         <IpsToastProvider>
           <CssBaseline />
-        <Box sx={{ minHeight: '100vh', bgcolor: '#f5f7fa' }} dir="rtl">
-          {/* Header */}
-          <Box sx={{ background: 'linear-gradient(135deg, #1D4ED8 0%, #00033D 100%)', color: 'white', px: 4, py: 3 }}>
-            <Typography variant="h4" fontWeight={700}>🎨 IPS UI Library</Typography>
-            <Typography variant="subtitle1" sx={{ opacity: 0.85 }}>תצוגת פקדים — React 18 + TypeScript + MUI</Typography>
-          </Box>
-
-          {/* Tabs */}
-          <Paper elevation={0} sx={{ borderBottom: '1px solid #e0e0e0' }}>
-            <Tabs
-              value={tab}
-              onChange={(_, v) => setTab(v)}
-              variant="scrollable"
-              scrollButtons="auto"
-              sx={{ px: 2 }}
+          <Box sx={{ display: 'flex', height: '100vh', overflow: 'hidden', bgcolor: '#f5f7fa' }} dir="rtl">
+            {/* Sidebar — permanent from md up, a drawer below it */}
+            <Box sx={{ display: { xs: 'none', md: 'block' }, height: '100%' }}>{sidebar}</Box>
+            <Drawer
+              anchor="right"
+              open={navOpen}
+              onClose={() => setNavOpen(false)}
+              sx={{ display: { xs: 'block', md: 'none' } }}
+              PaperProps={{ sx: { width: 272, borderInlineEnd: 0 } }}
             >
-              {TABS.map((t, i) => (
-                <Tab key={i} label={`Ips${t.label}`} sx={{ textTransform: 'none', fontWeight: 600 }} />
-              ))}
-            </Tabs>
-          </Paper>
+              {sidebar}
+            </Drawer>
 
-          {/* Content */}
-          <Box sx={{ p: 4, maxWidth: 900, mx: 'auto' }}>
-            <Paper elevation={1} sx={{ p: 4, borderRadius: 2 }}>
-              <Typography variant="h5" fontWeight={700} color="primary.dark" gutterBottom>
-                Ips{TABS[tab].label}
-              </Typography>
-              <Divider sx={{ mb: 3 }} />
-              {TABS[tab].component}
-            </Paper>
+            {/* Content */}
+            <Box sx={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
+              {/* Toolbar */}
+              <Box
+                sx={{
+                  flexShrink: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  px: { xs: 2, md: 3 },
+                  height: 56,
+                  bgcolor: '#fff',
+                  borderBottom: '1px solid #e3e8ef',
+                }}
+              >
+                <IconButton
+                  onClick={() => setNavOpen(true)}
+                  size="small"
+                  aria-label="פתח ניווט"
+                  sx={{ display: { xs: 'inline-flex', md: 'none' } }}
+                >
+                  <MenuIcon />
+                </IconButton>
+
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography sx={{ fontSize: 11, color: '#94a3b8', lineHeight: 1.3 }}>
+                    {current.group}
+                  </Typography>
+                  <Typography sx={{ fontSize: 15, fontWeight: 700, color: '#0f172a', lineHeight: 1.3 }}>
+                    Ips{current.label}
+                  </Typography>
+                </Box>
+
+                <Box sx={{ flex: 1 }} />
+
+                <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 0.5 }}>
+                  <IconButton
+                    size="small"
+                    aria-label="הפקד הקודם"
+                    disabled={index === 0}
+                    onClick={() => navigate(ROUTE_IDS[index - 1])}
+                  >
+                    {/* RTL: "previous" points to the start of the line, i.e. right. */}
+                    <SvgIcon fontSize="small"><path d="m8.6 16.6 1.4 1.4 6-6-6-6-1.4 1.4 4.6 4.6-4.6 4.6Z" /></SvgIcon>
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    aria-label="הפקד הבא"
+                    disabled={index === COMPONENTS.length - 1}
+                    onClick={() => navigate(ROUTE_IDS[index + 1])}
+                  >
+                    <SvgIcon fontSize="small"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6 4.6-4.6Z" /></SvgIcon>
+                  </IconButton>
+                </Box>
+              </Box>
+
+              {/* Panel */}
+              <Box ref={contentRef} sx={{ flex: 1, overflowY: 'auto', px: { xs: 2, md: 4 }, py: { xs: 2, md: 3 } }}>
+                <Box sx={{ maxWidth: 900, mx: 'auto' }}>
+                  <Paper elevation={0} sx={{ p: { xs: 2, md: 4 }, borderRadius: 2, border: '1px solid #e3e8ef' }}>
+                    <Typography variant="h5" fontWeight={700} color="primary.dark" gutterBottom>
+                      Ips{current.label}
+                    </Typography>
+                    <Divider sx={{ mb: 3 }} />
+                    {current.component}
+                  </Paper>
+                </Box>
+              </Box>
+            </Box>
           </Box>
-        </Box>
-      </IpsToastProvider>
-    </ThemeProvider>
+        </IpsToastProvider>
+      </ThemeProvider>
     </CacheProvider>
   )
 }

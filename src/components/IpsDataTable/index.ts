@@ -11,6 +11,7 @@ export { ActionCell } from './components/ActionCell'
 export { ExpandCell } from './components/ExpandCell'
 export { ExpandedRow } from './components/ExpandedRow'
 export { SkeletonRows } from './components/SkeletonRows'
+export { TruncatedText } from './components/TruncatedText'
 export { DeleteConfirmDialog } from './components/DeleteConfirmDialog'
 
 // Types
@@ -23,6 +24,7 @@ export type {
   SelectOption,
   PaginationConfig,
   FilterConfig,
+  CellOverflow,
   EditingState,
   // Re-exported from @tanstack/react-table for consumer convenience
   ColumnDef,
@@ -41,4 +43,5 @@ export type { EditableCellProps } from './components/EditableCell'
 export type { ActionCellProps } from './components/ActionCell'
 export type { ExpandCellProps } from './components/ExpandCell'
 export type { SkeletonRowsProps } from './components/SkeletonRows'
+export type { TruncatedTextProps } from './components/TruncatedText'
 export type { DeleteConfirmDialogProps } from './components/DeleteConfirmDialog'
