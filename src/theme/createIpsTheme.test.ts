@@ -55,4 +55,11 @@ describe('createIpsTheme', () => {
       '&.MuiFormControl-fullWidth': { width: '100%' },
     })
   })
+
+  // Large buttons are the mobile primary actions (sheet / form footers)
+  it('makes large buttons 48px tall', () => {
+    const theme = createIpsTheme('light')
+    const sizeLarge = (theme.components?.MuiButton?.styleOverrides as any)?.sizeLarge
+    expect(sizeLarge).toMatchObject({ minHeight: 48 })
+  })
 })

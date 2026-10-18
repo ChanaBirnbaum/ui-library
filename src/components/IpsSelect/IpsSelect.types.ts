@@ -4,6 +4,12 @@ import type { SelectProps } from '@mui/material/Select';
 export interface IpsSelectOption {
   label: string;
   value: string | number;
+  /**
+   * Optional group heading. Options with the same group are shown together under it
+   * (native: <optgroup>, menu: a list subheader), in order of first appearance;
+   * options without a group come first.
+   */
+  group?: string;
 }
 
 export type IpsSelectProps = Omit<SelectProps, 'children'> & {

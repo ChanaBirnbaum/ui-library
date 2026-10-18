@@ -16,10 +16,17 @@ export interface IpsPillSelectProps {
   onChange?: (value: string | number | (string | number)[]) => void
   /** Allow selecting multiple pills at once */
   multiple?: boolean
+  /**
+   * Single mode only: clicking the selected pill again clears the selection ('').
+   * Set to false when the group must always keep a value (e.g. an "All" option).
+   */
+  allowDeselect?: boolean
+  /** Group title shown above the pills; also names the group for screen readers */
+  label?: string
   /** Disables all pills */
   disabled?: boolean
-  /** Pill size */
-  size?: 'small' | 'medium'
+  /** Pill size. large = 44px touch target for mobile */
+  size?: 'small' | 'medium' | 'large'
   /** MUI sx override on the outer container Box */
   sx?: SxProps<Theme>
   /** CSS class name merged onto container */

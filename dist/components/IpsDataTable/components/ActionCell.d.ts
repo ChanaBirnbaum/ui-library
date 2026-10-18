@@ -15,5 +15,7 @@ export interface ActionCellProps<T> {
     hasInlineEdit: boolean;
     customActions?: ActionDef<T>[];
     cellSx?: object;
+    /** Fixed column width — needed when the table uses a fixed layout */
+    width?: number | string;
 }
-export declare function ActionCell<T>({ row, onEdit, onStartInlineEdit, onDeleteRequest, onSaveInline, onCancelEdit, isEditing, hasInlineEdit, customActions, cellSx, }: ActionCellProps<T>): React.JSX.Element;
+export declare function ActionCell<T>({ row, onEdit, onStartInlineEdit, onDeleteRequest, onSaveInline, onCancelEdit, isEditing, hasInlineEdit, customActions, cellSx, width, }: ActionCellProps<T>): React.JSX.Element;

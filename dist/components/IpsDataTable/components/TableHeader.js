@@ -1,51 +1,62 @@
-import { jsxs as f, jsx as n } from "react/jsx-runtime";
-import x from "@mui/material/TableHead";
-import m from "@mui/material/TableRow";
-import s from "@mui/material/TableCell";
-import C from "@mui/material/TableSortLabel";
-import T from "@mui/material/TextField";
-import { flexRender as u } from "../../../node_modules/@tanstack/react-table/build/lib/index.js";
-function v({
-  table: l,
-  showPerColumnFilter: d,
-  cellSx: r
+import { jsxs as S, jsx as n } from "react/jsx-runtime";
+import w from "@mui/material/TableHead";
+import f from "@mui/material/TableRow";
+import x from "@mui/material/TableCell";
+import F from "@mui/material/TableSortLabel";
+import H from "@mui/material/TextField";
+import { flexRender as v } from "../../../node_modules/@tanstack/react-table/build/lib/index.js";
+import { TruncatedText as D } from "./TruncatedText.js";
+import { shouldClip as M, clipSx as j, clipWidthFor as k } from "./cellOverflow.js";
+function _({
+  table: m,
+  showPerColumnFilter: T,
+  cellSx: s,
+  cellOverflow: b = "wrap",
+  autoWidths: e
 }) {
-  var i;
-  return /* @__PURE__ */ f(x, { children: [
-    l.getHeaderGroups().map((t) => /* @__PURE__ */ n(m, { children: t.headers.map((e) => {
-      const g = e.column.getCanSort(), c = e.column.getIsSorted(), o = e.column.columnDef.meta, a = (o == null ? void 0 : o.align) ?? "start", p = o == null ? void 0 : o.width;
+  var d;
+  return /* @__PURE__ */ S(w, { children: [
+    m.getHeaderGroups().map((t) => /* @__PURE__ */ n(f, { children: t.headers.map((o) => {
+      const C = o.column.getCanSort(), u = o.column.getIsSorted(), l = o.column.columnDef.meta, p = (l == null ? void 0 : l.align) ?? "start", r = l == null ? void 0 : l.width, h = o.column.id.startsWith("_"), g = e == null ? void 0 : e[o.column.id], i = !h && M(l, b, g), c = o.isPlaceholder ? null : v(o.column.columnDef.header, o.getContext()), a = i && c ? /* @__PURE__ */ n(D, { children: c }) : c;
       return /* @__PURE__ */ n(
-        s,
+        x,
         {
-          align: a === "end" ? "right" : a === "center" ? "center" : "left",
+          align: p === "end" ? "right" : p === "center" ? "center" : "left",
+          "data-col-id": o.column.id,
           sx: {
-            width: p,
+            ...i ? j(k(r, g)) : { width: r, maxWidth: r },
             fontWeight: 700,
             fontSize: "0.8rem",
             color: "text.primary",
             backgroundColor: "#F0F6FD",
             userSelect: "none",
+            ...s,
+            // After cellSx: header labels must never wrap.
             whiteSpace: "nowrap",
-            ...r
+            ...i ? {
+              overflow: "hidden",
+              // Keep the sort arrow visible next to a clipped label.
+              "& .MuiTableSortLabel-root": { maxWidth: "100%" }
+            } : {}
           },
-          children: e.isPlaceholder ? null : g ? /* @__PURE__ */ n(
-            C,
+          children: a === null ? null : C ? /* @__PURE__ */ n(
+            F,
             {
-              active: !!c,
-              direction: c === "desc" ? "desc" : "asc",
-              onClick: e.column.getToggleSortingHandler(),
-              children: u(e.column.columnDef.header, e.getContext())
+              active: !!u,
+              direction: u === "desc" ? "desc" : "asc",
+              onClick: o.column.getToggleSortingHandler(),
+              children: a
             }
-          ) : u(e.column.columnDef.header, e.getContext())
+          ) : a
         },
-        e.id
+        o.id
       );
     }) }, t.id)),
-    d && /* @__PURE__ */ n(m, { children: (i = l.getHeaderGroups()[0]) == null ? void 0 : i.headers.map((t) => /* @__PURE__ */ n(s, { sx: { py: 0.5, ...r }, children: t.column.getCanFilter() ? /* @__PURE__ */ n(
-      T,
+    T && /* @__PURE__ */ n(f, { children: (d = m.getHeaderGroups()[0]) == null ? void 0 : d.headers.map((t) => /* @__PURE__ */ n(x, { sx: { py: 0.5, ...s }, children: t.column.getCanFilter() ? /* @__PURE__ */ n(
+      H,
       {
         value: t.column.getFilterValue() ?? "",
-        onChange: (e) => t.column.setFilterValue(e.target.value),
+        onChange: (o) => t.column.setFilterValue(o.target.value),
         size: "small",
         variant: "standard",
         placeholder: "סנן...",
@@ -55,5 +66,5 @@ function v({
   ] });
 }
 export {
-  v as TableHeader
+  _ as TableHeader
 };

@@ -109,4 +109,27 @@ describe('IpsSelect', () => {
     await userEvent.click(screen.getByText('Item 1'));
     expect(onChange).toHaveBeenCalledWith(1);
   });
+
+  test('shows grouped options under a subheader per group', async () => {
+    const groupedOptions = [
+      { label: 'Room 1', value: 11, group: 'Wing A' },
+      { label: 'Room 3', value: 21, group: 'Wing B' },
+      { label: 'Room 2', value: 12, group: 'Wing A' },
+    ];
+    const onChange = jest.fn();
+    renderComponent({ options: groupedOptions, onChange } as any);
+    await userEvent.click(screen.getByRole('combobox'));
+
+    // Items of the same group stay together, in order of first appearance, each group under its header
+    const menuTexts = screen.getAllByRole('option').map((option) => option.textContent);
+    expect(menuTexts).toEqual(['Wing A', 'Room 1', 'Room 2', 'Wing B', 'Room 3']);
+    expect(screen.getByText('Wing A')).toHaveClass('ips-select-group');
+
+    // A header is not a choice
+    await userEvent.click(screen.getByText('Wing B'));
+    expect(onChange).not.toHaveBeenCalled();
+
+    await userEvent.click(screen.getByText('Room 3'));
+    expect(onChange).toHaveBeenCalledWith(21);
+  });
 });

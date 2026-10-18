@@ -1,18 +1,22 @@
-import { jsx as a } from "react/jsx-runtime";
-import k from "@mui/material/TableCell";
-import { flexRender as x } from "../../../node_modules/@tanstack/react-table/build/lib/index.js";
-import { EditableCell as D } from "./EditableCell.js";
-function j({
+import { jsx as p } from "react/jsx-runtime";
+import T from "@mui/material/TableCell";
+import { flexRender as j } from "../../../node_modules/@tanstack/react-table/build/lib/index.js";
+import { EditableCell as y } from "./EditableCell.js";
+import { TruncatedText as M } from "./TruncatedText.js";
+import { shouldClip as F, clipSx as R, flowSx as V, clipWidthFor as q } from "./cellOverflow.js";
+function K({
   cell: r,
-  isEditing: e,
-  editValue: d,
-  onEditValueChange: p,
+  isEditing: t,
+  editValue: s,
+  onEditValueChange: a,
   onActivateEdit: c,
-  onCommit: u,
-  onCancel: f,
-  cellSx: C
+  onCommit: x,
+  onCancel: h,
+  cellSx: w,
+  cellOverflow: u = "wrap",
+  autoWidth: f
 }) {
-  const o = r.column.columnDef.meta, s = (o == null ? void 0 : o.align) ?? "start", b = o == null ? void 0 : o.width, i = o == null ? void 0 : o.editable, l = !!i, t = typeof i == "object" ? i : void 0, g = (t == null ? void 0 : t.mode) ?? "click", m = l && !e && c ? g === "dblclick" ? {
+  const o = r.column.columnDef.meta, C = (o == null ? void 0 : o.align) ?? "start", b = o == null ? void 0 : o.width, v = (o == null ? void 0 : o.overflow) ?? u, i = o == null ? void 0 : o.editable, e = !!i, l = typeof i == "object" ? i : void 0, k = (l == null ? void 0 : l.mode) ?? "click", D = e && !t && c ? k === "dblclick" ? {
     onDoubleClick: (n) => {
       n.stopPropagation(), c();
     }
@@ -20,35 +24,43 @@ function j({
     onClick: (n) => {
       n.stopPropagation(), c();
     }
-  } : {}, h = e && l ? o != null && o.renderEditCell ? o.renderEditCell(
-    d,
-    (n) => p(r.column.id, n)
-  ) : /* @__PURE__ */ a(
-    D,
+  } : {}, m = t && e ? o != null && o.renderEditCell ? o.renderEditCell(
+    s,
+    (n) => a(r.column.id, n)
+  ) : /* @__PURE__ */ p(
+    y,
     {
-      config: t,
-      value: d,
-      onChange: (n) => p(r.column.id, n),
-      onCommit: u,
-      onCancel: f
+      config: l,
+      value: s,
+      onChange: (n) => a(r.column.id, n),
+      onCommit: x,
+      onCancel: h
     }
-  ) : o != null && o.renderCell ? o.renderCell(r.getValue(), r.row.original) : x(r.column.columnDef.cell, r.getContext());
-  return /* @__PURE__ */ a(
-    k,
+  ) : o != null && o.renderCell ? o.renderCell(r.getValue(), r.row.original) : j(r.column.columnDef.cell, r.getContext()), g = F(o, u, f) && !(t && e), d = r.getValue(), P = g ? /* @__PURE__ */ p(
+    M,
     {
-      align: s === "end" ? "right" : s === "center" ? "center" : "left",
+      title: d == null || typeof d == "object" ? void 0 : String(d),
+      children: m
+    }
+  ) : m, S = g ? R(q(b, f)) : V(v, b);
+  return /* @__PURE__ */ p(
+    T,
+    {
+      align: C === "end" ? "right" : C === "center" ? "center" : "left",
+      "data-col-id": r.column.id,
       sx: {
-        width: b,
-        cursor: l && !e ? "pointer" : "default",
-        "&:hover": l && !e ? { backgroundColor: "action.hover" } : {},
-        ...C
+        verticalAlign: "middle",
+        ...S,
+        cursor: e && !t ? "pointer" : "default",
+        "&:hover": e && !t ? { backgroundColor: "action.hover" } : {},
+        ...w
       },
-      onClick: e ? (n) => n.stopPropagation() : void 0,
-      ...m,
-      children: h
+      onClick: t ? (n) => n.stopPropagation() : void 0,
+      ...D,
+      children: P
     }
   );
 }
 export {
-  j as DataCell
+  K as DataCell
 };

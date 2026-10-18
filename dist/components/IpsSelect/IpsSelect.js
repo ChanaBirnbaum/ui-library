@@ -1,80 +1,88 @@
-import { jsxs as c, jsx as r, Fragment as S } from "react/jsx-runtime";
-import { forwardRef as I } from "react";
-import j from "@mui/material/FormControl";
-import A from "@mui/material/InputLabel";
-import F from "@mui/material/Select";
-import N from "@mui/material/MenuItem";
-import T from "@mui/material/FormHelperText";
-import k from "@mui/material/Checkbox";
-import E from "@mui/material/ListItemText";
-const L = I(
+import { jsx as e, jsxs as c, Fragment as N } from "react/jsx-runtime";
+import { forwardRef as F } from "react";
+import L from "@mui/material/FormControl";
+import M from "@mui/material/InputLabel";
+import O from "@mui/material/Select";
+import T from "@mui/material/MenuItem";
+import k from "@mui/material/FormHelperText";
+import E from "@mui/material/Checkbox";
+import w from "@mui/material/ListItemText";
+import B from "@mui/material/ListSubheader";
+import { groupOptions as H } from "../internal/optionGroups.js";
+const R = F(
   (d, h) => {
     const {
-      options: t = [],
-      value: l,
-      onChange: m,
+      options: n = [],
+      value: a,
+      onChange: p,
       label: i,
-      readOnly: o = !1,
-      placeholder: s,
-      error: v = !1,
-      helperText: f,
-      multiple: a = !1,
-      disabled: x = !1,
-      className: y,
-      ...b
-    } = d, g = ["ips-select", y].filter(Boolean).join(" ");
+      readOnly: s = !1,
+      placeholder: m,
+      error: g = !1,
+      helperText: u,
+      multiple: o = !1,
+      disabled: v = !1,
+      className: b,
+      ...y
+    } = d, x = ["ips-select", b].filter(Boolean).join(" "), C = s ? {
+      pointerEvents: "none",
+      "& .MuiSelect-icon": {
+        display: "none"
+      }
+    } : {}, I = (r) => {
+      p && !s && p(r.target.value);
+    }, S = (r) => /* @__PURE__ */ e(T, { value: r.value, children: o ? /* @__PURE__ */ c(N, { children: [
+      /* @__PURE__ */ e(
+        E,
+        {
+          checked: Array.isArray(a) ? a.includes(r.value) : a === r.value
+        }
+      ),
+      /* @__PURE__ */ e(w, { primary: r.label })
+    ] }) : r.label }, r.value), j = H(n).flatMap((r) => {
+      const l = r.options.map(S);
+      return r.group === null ? l : [
+        /* @__PURE__ */ e(B, { className: "ips-select-group", children: r.group }, `group-${r.group}`),
+        ...l
+      ];
+    });
     return /* @__PURE__ */ c(
-      j,
+      L,
       {
-        className: g,
-        error: v,
-        disabled: x || o,
+        className: x,
+        error: g,
+        disabled: v || s,
         fullWidth: !0,
         children: [
-          i && /* @__PURE__ */ r(A, { children: i }),
-          /* @__PURE__ */ r(
-            F,
+          i && /* @__PURE__ */ e(M, { children: i }),
+          /* @__PURE__ */ e(
+            O,
             {
               ref: h,
-              value: l ?? (a ? [] : ""),
-              onChange: (e) => {
-                m && !o && m(e.target.value);
-              },
+              value: a ?? (o ? [] : ""),
+              onChange: I,
               label: i,
-              multiple: a,
-              displayEmpty: !!s,
-              renderValue: (e) => {
-                var u;
-                return a && Array.isArray(e) ? e.length === 0 ? s || "" : e.map((n) => {
-                  var p;
-                  return ((p = t.find((C) => C.value === n)) == null ? void 0 : p.label) || n;
-                }).join(", ") : e === "" || e === void 0 ? s || "" : ((u = t.find((n) => n.value === e)) == null ? void 0 : u.label) || e;
+              multiple: o,
+              displayEmpty: !!m,
+              renderValue: (r) => {
+                var l;
+                return o && Array.isArray(r) ? r.length === 0 ? m || "" : r.map((t) => {
+                  var f;
+                  return ((f = n.find((A) => A.value === t)) == null ? void 0 : f.label) || t;
+                }).join(", ") : r === "" || r === void 0 ? m || "" : ((l = n.find((t) => t.value === r)) == null ? void 0 : l.label) || r;
               },
-              sx: o ? {
-                pointerEvents: "none",
-                "& .MuiSelect-icon": {
-                  display: "none"
-                }
-              } : {},
-              ...b,
-              children: t.map((e) => /* @__PURE__ */ r(N, { value: e.value, children: a ? /* @__PURE__ */ c(S, { children: [
-                /* @__PURE__ */ r(
-                  k,
-                  {
-                    checked: Array.isArray(l) ? l.includes(e.value) : l === e.value
-                  }
-                ),
-                /* @__PURE__ */ r(E, { primary: e.label })
-              ] }) : e.label }, e.value))
+              sx: C,
+              ...y,
+              children: j
             }
           ),
-          f && /* @__PURE__ */ r(T, { children: f })
+          u && /* @__PURE__ */ e(k, { children: u })
         ]
       }
     );
   }
 );
-L.displayName = "IpsSelect";
+R.displayName = "IpsSelect";
 export {
-  L as IpsSelect
+  R as IpsSelect
 };

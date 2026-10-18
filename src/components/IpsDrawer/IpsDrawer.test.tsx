@@ -247,6 +247,47 @@ describe('IpsDrawer', () => {
     expect(paper?.style.width).toBe('40%')
   })
 
+  // ── Bottom sheet ─────────────────────────────────────────────────────────────
+
+  it('limits a bottom sheet to 90% height by default', () => {
+    wrap(<IpsDrawer open anchor="bottom" size="auto" title="T">{null}</IpsDrawer>)
+    const paper = document.querySelector('.ips-drawer') as HTMLElement
+    expect(paper?.style.height).toBe('auto')
+    expect(paper?.style.maxHeight).toBe('90%')
+  })
+
+  it('applies a custom maxSize', () => {
+    wrap(<IpsDrawer open anchor="right" maxSize={320} title="T">{null}</IpsDrawer>)
+    const paper = document.querySelector('.ips-drawer') as HTMLElement
+    expect(paper?.style.maxWidth).toBe('320px')
+  })
+
+  it('shows the grab handle only on a temporary bottom sheet', () => {
+    const { unmount } = wrap(<IpsDrawer open anchor="bottom" title="T">{null}</IpsDrawer>)
+    expect(document.querySelector('.ips-drawer-puller')).toBeInTheDocument()
+    unmount()
+    wrap(<IpsDrawer open anchor="right" title="T">{null}</IpsDrawer>)
+    expect(document.querySelector('.ips-drawer-puller')).not.toBeInTheDocument()
+  })
+
+  it('lets the bottom sheet close with the X button', () => {
+    const handler = jest.fn<void, [IpsDrawerCloseReason]>()
+    wrap(<IpsDrawer open anchor="bottom" title="T" onClose={handler}>{null}</IpsDrawer>)
+    fireEvent.click(screen.getByRole('button', { name: 'Close' }))
+    expect(handler).toHaveBeenCalledWith('closeButton')
+  })
+
+  it('forwards ref to the paper element of a bottom sheet', () => {
+    const ref = React.createRef<HTMLDivElement>()
+    wrap(<IpsDrawer open anchor="bottom" title="T" ref={ref}>{null}</IpsDrawer>)
+    expect(ref.current).toHaveClass('ips-drawer')
+  })
+
+  it('uses the given close button label', () => {
+    wrap(<IpsDrawer open title="T" closeButtonLabel="סגירה">{null}</IpsDrawer>)
+    expect(screen.getByRole('button', { name: 'סגירה' })).toBeInTheDocument()
+  })
+
   // ── loading overlay + aria-busy ──────────────────────────────────────────────
 
   it('shows the CircularProgress overlay when loading=true', () => {

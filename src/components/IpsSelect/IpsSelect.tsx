@@ -6,7 +6,9 @@ import MenuItem from '@mui/material/MenuItem';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
-import type { IpsSelectProps } from './IpsSelect.types';
+import ListSubheader from '@mui/material/ListSubheader';
+import { groupOptions } from '../internal/optionGroups';
+import type { IpsSelectOption, IpsSelectProps } from './IpsSelect.types';
 
 export const IpsSelect = forwardRef<HTMLSelectElement, IpsSelectProps>(
   (props, ref) => {
@@ -43,6 +45,39 @@ export const IpsSelect = forwardRef<HTMLSelectElement, IpsSelectProps>(
       }
     };
 
+    const renderOption = (option: IpsSelectOption) => (
+      <MenuItem key={option.value} value={option.value}>
+        {multiple ? (
+          <>
+            <Checkbox
+              checked={
+                Array.isArray(value)
+                  ? (value as (string | number)[]).includes(option.value)
+                  : value === option.value
+              }
+            />
+            <ListItemText primary={option.label} />
+          </>
+        ) : (
+          option.label
+        )}
+      </MenuItem>
+    );
+
+    // Select does not accept fragments, so groups become a flat list: a subheader, then its items
+    const menuItems = groupOptions(options).flatMap((section) => {
+      const items = section.options.map(renderOption);
+      if (section.group === null) {
+        return items;
+      }
+      return [
+        <ListSubheader key={`group-${section.group}`} className="ips-select-group">
+          {section.group}
+        </ListSubheader>,
+        ...items,
+      ];
+    });
+
     return (
       <FormControl
         className={rootClass}
@@ -74,24 +109,7 @@ export const IpsSelect = forwardRef<HTMLSelectElement, IpsSelectProps>(
           sx={selectSx}
           {...rest}
         >
-          {options.map((option) => (
-            <MenuItem key={option.value} value={option.value}>
-              {multiple ? (
-                <>
-                  <Checkbox
-                    checked={
-                      Array.isArray(value)
-                        ? (value as (string | number)[]).includes(option.value)
-                        : value === option.value
-                    }
-                  />
-                  <ListItemText primary={option.label} />
-                </>
-              ) : (
-                option.label
-              )}
-            </MenuItem>
-          ))}
+          {menuItems}
         </Select>
         {helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormControl>

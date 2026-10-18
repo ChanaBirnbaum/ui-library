@@ -197,6 +197,8 @@ export function createIpsTheme(mode: 'light' | 'dark'): Theme {
           },
           sizeSmall:  { padding: '6px 16px'   },
           sizeMedium: { padding: '10px 20px'  },
+          // 48px: the primary action height on mobile (full-width sheet and form buttons)
+          sizeLarge:  { padding: '12px 24px', minHeight: 48 },
           outlined: {
             borderWidth: '1.5px',
             '&:hover': { borderWidth: '1.5px' },

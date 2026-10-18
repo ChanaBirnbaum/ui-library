@@ -14,6 +14,15 @@
   - [IpsTextField](#ipstextfield)
   - [IpsTextArea](#ipstextarea)
   - [IpsSelect](#ipsselect)
+  - [IpsSelectMobile](#ipsselectmobile)
+  - [IpsMultiSelectMobile](#ipsmultiselectmobile)
+  - [IpsRadioListMobile](#ipsradiolistmobile)
+  - [IpsSearchFieldMobile](#ipssearchfieldmobile)
+  - [IpsTextFieldMobile](#ipstextfieldmobile)
+  - [IpsTextAreaMobile](#ipstextareamobile)
+  - [IpsDatePickerMobile](#ipsdatepickermobile)
+  - [IpsTimePickerMobile](#ipstimepickermobile)
+  - [IpsRadioGroupMobile](#ipsradiogroupmobile)
   - [IpsAutocomplete](#ipsautocomplete)
   - [IpsChipSelect](#ipschipselect)
   - [IpsPillSelect](#ipspillselect)
@@ -302,13 +311,287 @@ const options = [
 
 | Prop | סוג | ברירת מחדל | תיאור |
 |------|-----|-----------|-------|
-| `options` | `{ label: string, value: string \| number }[]` | חובה | רשימת הערכים |
+| `options` | `{ label: string, value: string \| number, group?: string }[]` | חובה | רשימת הערכים |
 | `value` | `string \| number \| (string \| number)[]` | — | ערך נבחר |
 | `onChange` | `(value) => void` | — | callback בשינוי |
 | `multiple` | `boolean` | `false` | בחירה מרובה |
 | `readOnly` | `boolean` | `false` | לקריאה בלבד |
 | `disabled` | `boolean` | `false` | מנטרל |
 | `error` | `boolean` | — | מצב שגיאה |
+
+**קבוצות (`group`)** — שדה אופציונלי בכל אפשרות, משותף לכל פקדי הבחירה (`IpsSelect`, `IpsSelectMobile`, `IpsMultiSelectMobile`). אפשרויות עם אותה קבוצה מוצגות יחד תחת כותרת — בתפריט כ-`ListSubheader` (לא ניתנת לבחירה), בפקד נייטיבי כ-`<optgroup>`. הקבוצות מופיעות לפי סדר ההופעה הראשון, ואפשרויות בלי קבוצה מופיעות קודם.
+
+```tsx
+const locationOptions = [
+  { label: 'חדר 1', value: 11, group: 'אגף א' },
+  { label: 'חדר 2', value: 12, group: 'אגף א' },
+  { label: 'קומה 1', value: 21, group: 'אגף ב' },
+]
+```
+
+---
+
+### IpsSelectMobile
+
+בחירה בודדת למובייל, מבוססת `<select>` נייטיבי: הלחיצה פותחת את בוחר מערכת ההפעלה. אזור הלחיצה (תווית, ערך/placeholder וחץ) בנוי מאלמנטים נייטיביים ומעוצב לפי ה-theme, בלי רכיבי MUI.
+
+```tsx
+import { IpsSelectMobile } from '@ips/ui-library'
+
+<IpsSelectMobile
+  label="פנימייה"
+  placeholder="בחר פנימייה"
+  options={[
+    { label: 'פנימיית הדר', value: 1 },
+    { label: 'פנימיית אורות', value: 2 },
+  ]}
+  value={instituteId}
+  onChange={(val) => setInstituteId(Number(val))}
+  required
+  error={hasError}
+  helperText="שדה חובה"
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `options` | `{ label: string, value: string \| number, group?: string }[]` | חובה | רשימת הערכים (כמו ב-`IpsSelect`; `group` → `<optgroup>`) |
+| `value` | `string \| number \| null` | — | ערך נבחר. `null` / `''` = לא נבחר, מוצג ה-placeholder |
+| `onChange` | `(value: string \| number) => void` | — | מחזיר את הערך המקורי של האפשרות — ערך מספרי חוזר כמספר |
+| `variant` | `'outlined' \| 'plain'` | `'outlined'` | `plain`: רק טקסט הערך וחץ, בלי מסגרת ורקע, יורש גופן וצבע מההורה (לבוררי הקשר בשורת כותרת). הלחיצה עדיין פותחת את הבוחר הנייטיבי |
+| `label` | `string` | — | תווית מעל השדה |
+| `placeholder` | `string` | — | טקסט כשלא נבחר ערך (אפשרות ראשונה, לא ניתנת לבחירה) |
+| `required` | `boolean` | `false` | שדה חובה — כוכבית אדומה בתווית |
+| `disabled` | `boolean` | `false` | מנטרל |
+| `error` | `boolean` | `false` | מצב שגיאה (`aria-invalid`) |
+| `helperText` | `string` | — | טקסט עזר / שגיאה, מקושר ב-`aria-describedby` |
+
+שאר מאפייני `<select>` (כמו `id`, `name`, `aria-label`) מועברים לאלמנט הנייטיבי. אין תמיכה ב-`multiple` — לבחירה מרובה ראו `IpsMultiSelectMobile`.
+
+---
+
+### IpsMultiSelectMobile
+
+בחירה מרובה למובייל. באייפון / אייפד אמיתי נפתח הבוחר הנייטיבי של iOS (`<select multiple>` שקוף מעל אזור הלחיצה). בכל השאר — Android, דסקטופ ואמולציה ב-devtools — מוצג `IpsSelect multiple` (תפריט עם checkbox), כי שם `<select multiple>` נייטיבי מוצג כרשימה פתוחה. הזיהוי נעשה עם `isIosWebKit()`.
+
+```tsx
+import { IpsMultiSelectMobile } from '@ips/ui-library'
+
+<IpsMultiSelectMobile
+  label="אגף"
+  allOptionLabel="הכל"
+  options={wingOptions}
+  value={wingIds}
+  onChange={(values) => setWingIds(values as number[])}
+  formatSelection={(labels) => (labels.length === 1 ? labels[0] : `${labels.length} נבחרו`)}
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `options` | `{ label: string, value: string \| number, group?: string }[]` | חובה | רשימת הערכים (`group` → `<optgroup>` בנייטיבי / כותרת בתפריט) |
+| `value` | `(string \| number)[]` | חובה | הערכים הנבחרים. `[]` = לא נבחר (או "הכל", כשיש `allOptionLabel`) |
+| `onChange` | `(values) => void` | — | מחזיר את הערכים המקוריים — ערכים מספריים חוזרים כמספרים |
+| `allOptionLabel` | `string` | — | מוסיף אפשרות "הכל" מפורשת בראש הרשימה. "הכל" = `[]`: בחירה בה מנקה את שאר האפשרויות, ובחירת אפשרות כש"הכל" מסומן משאירה רק אותה |
+| `placeholder` | `string` | — | טקסט כשלא נבחר ערך (כשאין `allOptionLabel`) |
+| `formatSelection` | `(labels: string[]) => string` | חיבור בפסיקים | הטקסט בשדה כשנבחרו ערכים |
+| `picker` | `'auto' \| 'native' \| 'menu'` | `'auto'` | כפיית סוג הבוחר (לבדיקות / stories) |
+| `label`, `required`, `disabled`, `error`, `helperText`, `aria-label`, `id`, `name` | | | כמו ב-`IpsSelectMobile` |
+
+---
+
+### IpsRadioListMobile
+
+בחירה בודדת מתוך רשימה, שורה מלאה לכל אפשרות (למשל אפשרויות מיון במגירה תחתונה). מבוסס על רדיו נייטיבי מוסתר ויזואלית — נשמרים הסמנטיקה, ניווט החצים במקלדת וקורא המסך. השורה הנבחרת מודגשת, בצבע הראשי ועם וי.
+
+```tsx
+import { IpsRadioListMobile } from '@ips/ui-library'
+
+<IpsRadioListMobile
+  aria-label="מיון"
+  options={[
+    { label: 'שם – א׳ עד ת׳', value: 'name-asc' },
+    { label: 'תאריך אחרון – מהחדש לישן', value: 'date-desc' },
+  ]}
+  value={sortKey}
+  onChange={(val) => setSortKey(String(val))}
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `options` | `{ label: string, value: string \| number }[]` | חובה | שורה לכל אפשרות |
+| `value` | `string \| number \| null` | חובה | הערך הנבחר |
+| `onChange` | `(value) => void` | — | מחזיר את הערך המקורי של האפשרות |
+| `label` | `string` | — | כותרת גלויה מעל הרשימה (גם שם הקבוצה) |
+| `aria-label` | `string` | — | שם נגיש כשאין כותרת גלויה |
+| `disabled` | `boolean` | `false` | מנטרל את כל השורות |
+
+---
+
+### IpsSearchFieldMobile
+
+שדה חיפוש למובייל, מבוסס `<input type="search">` נייטיבי: המקלדת מציגה מקש "חיפוש" (`enterKeyHint`), והגופן 16px כדי ש-iOS לא יגדיל את המסך בפוקוס. נראה כגלולה בגובה 44px על רקע לבן ובלי מסגרת, עם אייקון חיפוש וכפתור ניקוי כשיש טקסט. בלי רכיבי MUI.
+
+```tsx
+import { IpsSearchFieldMobile } from '@ips/ui-library'
+
+<IpsSearchFieldMobile
+  aria-label="חיפוש חניכים"
+  placeholder="חיפוש לפי שם או מספר"
+  clearButtonLabel="ניקוי חיפוש"
+  value={query}
+  onChange={setQuery}
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `value` | `string` | חובה | הטקסט (controlled) |
+| `onChange` | `(value: string) => void` | — | בכל הקלדה, ו-`''` בניקוי |
+| `clearButtonLabel` | `string` | `'Clear'` | השם הנגיש של כפתור הניקוי |
+| `placeholder` / `aria-label` / `disabled` / `id` / `name` | | | מועברים ל-input הנייטיבי |
+
+אחרי ניקוי הפוקוס חוזר לשדה.
+
+---
+
+### IpsTextFieldMobile
+
+שדה טקסט למובייל, מבוסס `<input>` נייטיבי: גופן 16px (בלי זום של iOS בפוקוס), אותה קופסה 42px כמו `IpsSelectMobile`, יחידה אופציונלית מיד אחרי הערך, אייקון בסוף השדה וכפתור ניקוי. בלי רכיבי MUI.
+
+```tsx
+import { IpsTextFieldMobile } from '@ips/ui-library'
+
+<IpsTextFieldMobile
+  label="משך מרבי לכל שיחה"
+  required
+  inputMode="numeric"
+  maxLength={3}
+  placeholder="הזן דקות"
+  suffix="דק'"
+  endIcon={<TimerIcon />}
+  clearButtonLabel="ניקוי משך השיחה"
+  value={minutes}
+  onChange={(val) => setMinutes(val.replace(/\D/g, ''))}
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `value` | `string` | חובה | הטקסט (controlled) |
+| `onChange` | `(value: string) => void` | — | בכל הקלדה, ו-`''` בניקוי |
+| `suffix` | `string` | — | יחידה שמוצגת מיד אחרי הערך (רק כשיש ערך) |
+| `endIcon` | `ReactNode` | — | אייקון דקורטיבי בסוף השדה; מתחלף בכפתור הניקוי כשיש ערך |
+| `clearButtonLabel` | `string` | — | השם הנגיש של כפתור הניקוי. בלעדיו אין כפתור ניקוי |
+| `label`, `required`, `disabled`, `error`, `helperText` | | | כמו ב-`IpsSelectMobile` |
+
+שאר מאפייני `<input>` (כמו `inputMode`, `maxLength`, `placeholder`, `type`, `id`, `aria-label`) מועברים לאלמנט הנייטיבי. אחרי ניקוי הפוקוס חוזר לשדה.
+
+---
+
+### IpsTextAreaMobile
+
+טקסט מרובה שורות למובייל, מבוסס `<textarea>` נייטיבי: ברוחב מלא, גופן 16px, מספר שורות קבוע ובלי ידית שינוי גודל. בלי רכיבי MUI.
+
+```tsx
+import { IpsTextAreaMobile } from '@ips/ui-library'
+
+<IpsTextAreaMobile label="פירוט" placeholder="הוסף פירוט" value={details} onChange={setDetails} />
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `value` | `string` | חובה | הטקסט (controlled) |
+| `onChange` | `(value: string) => void` | — | בכל הקלדה |
+| `rows` | `number` | `3` | מספר השורות הגלויות |
+| `label`, `required`, `disabled`, `error`, `helperText` | | | כמו ב-`IpsSelectMobile` |
+
+---
+
+### IpsDatePickerMobile
+
+תאריך למובייל, מבוסס `<input type="date">` נייטיבי שקוף שמכסה את השדה: לחיצה בכל מקום פותחת את בוחר התאריכים של מערכת ההפעלה (גם בדסקטופ). השדה מציג את הערך המעוצב או placeholder, עם אייקון לוח שנה. בלי רכיבי MUI ובלי בעיות הלוקאל של `IpsDatePicker`.
+
+```tsx
+import { IpsDatePickerMobile } from '@ips/ui-library'
+
+<IpsDatePickerMobile
+  label="בחר תאריך"
+  aria-label="תאריך התחלה"
+  placeholder="--/--/--"
+  value={startDate}              // 'YYYY-MM-DD' או ''
+  onChange={setStartDate}
+  formatValue={formatShortDate}  // ברירת מחדל: DD/MM/YYYY
+  min={todayIsoDate}
+  muted={!isTouched}
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `value` | `string` | חובה | `'YYYY-MM-DD'`, או `''` כשאין תאריך |
+| `onChange` | `(value: string) => void` | — | הערך החדש (`''` כשבוחר המערכת מנקה) |
+| `formatValue` | `(value: string) => string` | `DD/MM/YYYY` | הטקסט שמוצג לערך |
+| `placeholder` | `string` | — | טקסט כשאין תאריך |
+| `min` / `max` | `string` | — | טווח מותר, `'YYYY-MM-DD'` |
+| `muted` | `boolean` | `false` | הערך בצבע משני (למשל ברירת מחדל שהמשתמש עוד לא שינה) |
+| `label`, `required`, `disabled`, `error`, `helperText`, `aria-label`, `id` | | | כמו ב-`IpsSelectMobile` |
+
+---
+
+### IpsTimePickerMobile
+
+שעה למובייל, באותו מבנה כמו `IpsDatePickerMobile` עם `<input type="time">` ואייקון שעון. כשיש ערך ו-`clearButtonLabel`, האייקון מתחלף בכפתור ניקוי. בלי Moment ובלי רכיבי MUI.
+
+```tsx
+import { IpsTimePickerMobile } from '@ips/ui-library'
+
+<IpsTimePickerMobile
+  label="בחר שעה"
+  aria-label="שעת התחלה"
+  placeholder="--:--"
+  clearButtonLabel="ניקוי שעת התחלה"
+  value={startTime}   // 'HH:mm' או ''
+  onChange={setStartTime}
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `value` | `string` | חובה | `'HH:mm'` (24 שעות), או `''` |
+| `onChange` | `(value: string) => void` | — | הערך החדש, ו-`''` בניקוי |
+| `clearButtonLabel` | `string` | — | השם הנגיש של כפתור הניקוי. בלעדיו אין כפתור ניקוי |
+| `placeholder`, `min`, `max`, `label`, `required`, `disabled`, `error`, `helperText` | | | כמו ב-`IpsDatePickerMobile` |
+
+---
+
+### IpsRadioGroupMobile
+
+בחירה בודדת בין כמה אפשרויות שמוצגות זו לצד זו (שורה אחת שנשברת לפי הרוחב). מבוסס על רדיו נייטיבי מוסתר ויזואלית מאחורי עיגול מצויר — נשמרים הסמנטיקה, ניווט החצים במקלדת וקורא המסך. לרשימה של שורות מלאות ראו `IpsRadioListMobile`.
+
+```tsx
+import { IpsRadioGroupMobile } from '@ips/ui-library'
+
+<IpsRadioGroupMobile
+  aria-label="סוג ההגבלה"
+  options={[
+    { label: 'הגבלה מלאה', value: 'full' },
+    { label: 'הגבלת משך שיחה', value: 'limited' },
+  ]}
+  value={limitType}
+  onChange={(val) => setLimitType(String(val))}
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `options` | `{ label: string, value: string \| number }[]` | חובה | אפשרות לכל רדיו |
+| `value` | `string \| number \| null` | חובה | הערך הנבחר |
+| `onChange` | `(value) => void` | — | מחזיר את הערך המקורי של האפשרות |
+| `label` | `string` | — | כותרת גלויה מעל האפשרויות (גם שם הקבוצה) |
+| `aria-label` | `string` | — | שם נגיש כשאין כותרת גלויה |
+| `disabled` | `boolean` | `false` | מנטרל את כל האפשרויות |
 
 ---
 
@@ -387,6 +670,14 @@ import { IpsPillSelect } from '@ips/ui-library'
 />
 ```
 
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `allowDeselect` | `boolean` | `true` | בבחירה בודדת: לחיצה חוזרת על ה-pill הנבחר מנקה את הבחירה (`''`). `false` כשהקבוצה חייבת להחזיק ערך (למשל "הכל") |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | `large` = גובה 44px, משטח מגע במובייל |
+| `label` | `string` | — | כותרת מעל ה-pills; הקבוצה מקבלת `role="group"` עם שם נגיש |
+
+כל pill מסומן ב-`aria-pressed` לפי מצב הבחירה.
+
 ---
 
 ### IpsCheckBox
@@ -456,6 +747,7 @@ import { IpsButton } from '@ips/ui-library'
 | `startIcon` | `ReactNode` | אייקון לפני הטקסט |
 | `loading` | `boolean` | מציג spinner ומנטרל לחיצה |
 | `disabled` | `boolean` | מנטרל את הכפתור |
+| `size` | `'small' \| 'medium' \| 'large'` | `large` = גובה 48px, כפתור הפעולה הראשי במובייל (פוטר של מגירה / טופס) |
 
 ---
 
@@ -475,6 +767,10 @@ import DeleteIcon from '@mui/icons-material/Delete'
   onClick={handleDelete}
 />
 ```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `variant` | `'plain' \| 'surface'` | `'plain'` | `surface`: עיגול 44×44 (משטח מגע במובייל) על רקע לבן, לשורות כלים במובייל לצד שדות באותו גובה |
 
 ---
 
@@ -983,10 +1279,15 @@ import type { IpsDrawerCloseReason } from '@ips/ui-library'
 | Prop | סוג | תיאור |
 |------|-----|-------|
 | `open` | `boolean` | חובה — controlled |
-| `onClose` | `(reason) => void` | מדווח כוונה בלבד; `reason`: `backdropClick` \| `escapeKeyDown` \| `closeButton` |
+| `onClose` | `(reason) => void` | מדווח כוונה בלבד; `reason`: `backdropClick` \| `escapeKeyDown` \| `closeButton` \| `swipe` |
 | `anchor` | `'left'\|'right'\|'top'\|'bottom'` | הצד שממנו נכנס המגירה (ברירת מחדל: `right`) |
 | `variant` | `'temporary'\|'persistent'\|'permanent'` | וריאנט של MUI Drawer |
-| `size` | `number \| string` | רוחב (left/right) או גובה (top/bottom); מספר = px |
+| `size` | `number \| string` | רוחב (left/right) או גובה (top/bottom); מספר = px. `'auto'` = לפי התוכן |
+| `maxSize` | `number \| string` | רוחב / גובה מרבי. ברירת מחדל ב-`bottom`: `'90%'` |
+| `showPuller` | `boolean` | ידית גרירה אפורה בראש המגירה. ברירת מחדל: `true` במגירה תחתונה זמנית |
+| `closeButtonLabel` | `string` | השם הנגיש של כפתור ה-X (ברירת מחדל: `'Close'`) |
+
+**מגירה תחתונה (`anchor="bottom"`, `temporary`)** מתנהגת כבוטום שיט למובייל: רדיוס עליון 24, ידית גרירה, וגרירה למטה סוגרת אותה (`onClose('swipe')`). מבוססת על `SwipeableDrawer` של MUI, ולכן התוכן נשאר mounted גם כשהיא סגורה.
 | `title` / `icon` | `ReactNode` | כותרת הדרור ואייקון אופציונלי |
 | `actions` | `ReactNode` | תוכן הפוטר |
 | `dividers` / `showCloseButton` / `hideBackdrop` | `boolean` | אפשרויות תצוגה |

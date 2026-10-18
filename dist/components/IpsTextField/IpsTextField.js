@@ -1,5 +1,5 @@
 import { jsx as e, jsxs as i } from "react/jsx-runtime";
-import { forwardRef as H, useId as N, useState as z, useRef as $ } from "react";
+import { forwardRef as H, useId as N, useState as $, useRef as z } from "react";
 import q from "@mui/material/TextField";
 import I from "@mui/material/InputAdornment";
 import D from "@mui/material/IconButton";
@@ -74,7 +74,7 @@ const J = () => /* @__PURE__ */ i(
       defaultValue: k,
       onChange: o,
       ...S
-    } = b, W = N(), x = M ?? W, C = f === "search", a = c !== void 0, [V, g] = z(k ?? ""), w = a ? c : V, B = w != null && String(w).length > 0, l = $(null), F = {
+    } = b, W = N(), x = M ?? W, C = f === "search", a = c !== void 0, [V, g] = $(k ?? ""), w = a ? c : V, B = w != null && String(w).length > 0, l = z(null), F = {
       ...t,
       ref: (r) => {
         l.current = r, typeof s == "function" ? s(r) : s && typeof s == "object" && (s.current = r), typeof (t == null ? void 0 : t.ref) == "function" ? t.ref(r) : t != null && t.ref && typeof t.ref == "object" && (t.ref.current = r);

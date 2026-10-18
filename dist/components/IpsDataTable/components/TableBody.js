@@ -1,120 +1,133 @@
-import { jsx as n, jsxs as F } from "react/jsx-runtime";
-import O from "react";
-import E from "@mui/material/TableBody";
-import r from "@mui/material/TableRow";
+import { jsx as n, jsxs as A } from "react/jsx-runtime";
+import H from "react";
+import D from "@mui/material/TableBody";
+import d from "@mui/material/TableRow";
 import t from "@mui/material/TableCell";
-import { flexRender as q } from "../../../node_modules/@tanstack/react-table/build/lib/index.js";
-import { DataCell as z } from "./DataCell.js";
-import { ActionCell as G } from "./ActionCell.js";
-function Y({
-  table: m,
-  editingState: p,
-  onEditValueChange: M,
-  onStartInlineEdit: u,
-  onSaveInline: f,
-  onCancelEdit: h,
-  onEdit: R,
-  onDeleteRequest: A,
-  expandedContent: x,
-  customActions: S = [],
-  hasInlineEdit: g,
-  hasActionColumn: H,
-  variant: T,
-  cellSx: b,
-  renderEmptyState: V,
-  isLoading: j,
+import { flexRender as J } from "../../../node_modules/@tanstack/react-table/build/lib/index.js";
+import { DataCell as K } from "./DataCell.js";
+import { ActionCell as N } from "./ActionCell.js";
+function oo({
+  table: p,
+  editingState: f,
+  onEditValueChange: S,
+  onStartInlineEdit: h,
+  onSaveInline: u,
+  onCancelEdit: x,
+  onEdit: T,
+  onDeleteRequest: V,
+  expandedContent: g,
+  customActions: j = [],
+  hasInlineEdit: b,
+  hasActionColumn: P,
+  variant: k,
+  cellSx: C,
+  renderEmptyState: w,
+  isLoading: B,
   onRowClick: c,
-  virtualItems: l,
-  paddingTop: C = 0,
-  paddingBottom: y = 0
+  virtualItems: e,
+  paddingTop: y = 0,
+  paddingBottom: _ = 0,
+  measureElement: L,
+  cellOverflow: O = "wrap",
+  autoWidths: s
 }) {
-  const s = m.getRowModel().rows, d = m.getVisibleLeafColumns().length;
-  if (!j && s.length === 0)
-    return /* @__PURE__ */ n(E, { children: /* @__PURE__ */ n(r, { children: /* @__PURE__ */ n(
+  const a = p.getRowModel().rows, l = p.getVisibleLeafColumns().length;
+  if (!B && a.length === 0)
+    return /* @__PURE__ */ n(D, { children: /* @__PURE__ */ n(d, { children: /* @__PURE__ */ n(
       t,
       {
-        colSpan: d,
+        colSpan: l,
         align: "center",
         sx: { py: 6, color: "text.secondary", border: "none" },
-        children: V()
+        children: w()
       }
     ) }) });
-  const k = l ? l.map((o) => s[o.index]).filter((o) => !!o) : s;
-  return /* @__PURE__ */ F(E, { children: [
-    C > 0 && /* @__PURE__ */ n(r, { children: /* @__PURE__ */ n(
+  const q = e ? e.map((o) => a[o.index]).filter((o) => !!o) : a;
+  return /* @__PURE__ */ A(D, { children: [
+    y > 0 && /* @__PURE__ */ n(d, { children: /* @__PURE__ */ n(
       t,
       {
-        colSpan: d,
-        sx: { p: 0, border: "none", height: C }
+        colSpan: l,
+        sx: { p: 0, border: "none", height: y }
       }
     ) }),
-    k.map((o, _) => {
-      const D = l ? l[_].index : _, a = p.rowId === o.id, v = o.getIsExpanded(), B = D % 2 === 0, L = {
-        backgroundColor: T === "striped" && !B ? "grey.50" : void 0,
+    q.map((o, v) => {
+      const F = e ? e[v].index : v, m = f.rowId === o.id, E = o.getIsExpanded(), z = F % 2 === 0, G = {
+        backgroundColor: k === "striped" && !z ? "grey.50" : void 0,
         "&:hover": { backgroundColor: "grey.100" },
         cursor: c ? "pointer" : void 0,
-        ...v ? { backgroundColor: "#EFF6FF" } : {},
-        ...a ? { outline: "2px solid", outlineColor: "primary.main", outlineOffset: "-2px" } : {}
+        ...E ? { backgroundColor: "#EFF6FF" } : {},
+        ...m ? { outline: "2px solid", outlineColor: "primary.main", outlineOffset: "-2px" } : {}
       };
-      return /* @__PURE__ */ F(O.Fragment, { children: [
+      return /* @__PURE__ */ A(H.Fragment, { children: [
         /* @__PURE__ */ n(
-          r,
+          d,
           {
-            sx: L,
-            onClick: c ? (e) => c(o.original, e) : void 0,
-            children: o.getVisibleCells().map((e) => {
-              const i = e.column.id;
-              return i === "_select" || i === "_expand" ? /* @__PURE__ */ n(
-                t,
-                {
-                  sx: { width: i === "_select" ? 40 : 48, p: 0.5 },
-                  children: q(e.column.columnDef.cell, e.getContext())
-                },
-                e.id
-              ) : i === "_actions" ? /* @__PURE__ */ n(
-                G,
+            sx: G,
+            "data-index": e ? F : void 0,
+            ref: e ? L : void 0,
+            onClick: c ? (i) => c(o.original, i) : void 0,
+            children: o.getVisibleCells().map((i) => {
+              var M;
+              const r = i.column.id;
+              if (r === "_select" || r === "_expand") {
+                const R = r === "_select" ? 40 : 48;
+                return /* @__PURE__ */ n(
+                  t,
+                  {
+                    sx: { width: R, maxWidth: R, p: 0.5 },
+                    children: J(i.column.columnDef.cell, i.getContext())
+                  },
+                  i.id
+                );
+              }
+              return r === "_actions" ? /* @__PURE__ */ n(
+                N,
                 {
                   row: o.original,
-                  onEdit: R,
-                  onStartInlineEdit: () => u(o.id),
-                  onDeleteRequest: A,
-                  onSaveInline: () => f(o.id),
-                  onCancelEdit: h,
-                  isEditing: a,
-                  hasInlineEdit: g,
-                  customActions: S,
-                  cellSx: b
+                  onEdit: T,
+                  onStartInlineEdit: () => h(o.id),
+                  onDeleteRequest: V,
+                  onSaveInline: () => u(o.id),
+                  onCancelEdit: x,
+                  isEditing: m,
+                  hasInlineEdit: b,
+                  customActions: j,
+                  cellSx: C,
+                  width: (M = i.column.columnDef.meta) == null ? void 0 : M.width
                 },
-                e.id
+                i.id
               ) : /* @__PURE__ */ n(
-                z,
+                K,
                 {
-                  cell: e,
-                  isEditing: a,
-                  editValue: p.values[i],
-                  onEditValueChange: M,
-                  onActivateEdit: g ? () => u(o.id) : void 0,
-                  onCommit: () => f(o.id),
-                  onCancel: h,
-                  cellSx: b
+                  cell: i,
+                  isEditing: m,
+                  editValue: f.values[r],
+                  onEditValueChange: S,
+                  onActivateEdit: b ? () => h(o.id) : void 0,
+                  onCommit: () => u(o.id),
+                  onCancel: x,
+                  cellSx: C,
+                  cellOverflow: O,
+                  autoWidth: s == null ? void 0 : s[r]
                 },
-                e.id
+                i.id
               );
             })
           }
         ),
-        v && x && /* @__PURE__ */ n(r, { children: /* @__PURE__ */ n(t, { colSpan: d, sx: { p: 0 }, children: x(o.original) }) })
+        E && g && /* @__PURE__ */ n(d, { children: /* @__PURE__ */ n(t, { colSpan: l, sx: { p: 0 }, children: g(o.original) }) })
       ] }, o.id);
     }),
-    y > 0 && /* @__PURE__ */ n(r, { children: /* @__PURE__ */ n(
+    _ > 0 && /* @__PURE__ */ n(d, { children: /* @__PURE__ */ n(
       t,
       {
-        colSpan: d,
-        sx: { p: 0, border: "none", height: y }
+        colSpan: l,
+        sx: { p: 0, border: "none", height: _ }
       }
     ) })
   ] });
 }
 export {
-  Y as TableBody
+  oo as TableBody
 };

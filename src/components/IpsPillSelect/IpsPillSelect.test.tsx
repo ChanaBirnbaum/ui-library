@@ -82,6 +82,35 @@ describe('IpsPillSelect', () => {
     expect(handleChange).toHaveBeenCalledWith('')
   })
 
+  it('keeps the selection when allowDeselect is false (single mode)', () => {
+    const handleChange = jest.fn()
+    wrap(
+      <IpsPillSelect
+        options={options}
+        value="react"
+        onChange={handleChange}
+        allowDeselect={false}
+      />
+    )
+    fireEvent.click(screen.getByText('React'))
+    expect(handleChange).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByText('Vue'))
+    expect(handleChange).toHaveBeenCalledWith('vue')
+  })
+
+  it('marks the selected pill with aria-pressed', () => {
+    wrap(<IpsPillSelect options={options} value="vue" />)
+    expect(screen.getByRole('button', { name: 'Vue' })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('button', { name: 'React' })).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('renders a labelled group when label is given', () => {
+    const ref = React.createRef<HTMLDivElement>()
+    wrap(<IpsPillSelect options={options} label="Framework" ref={ref} />)
+    expect(screen.getByRole('group', { name: 'Framework' })).toBeInTheDocument()
+    expect(ref.current).toHaveClass('ips-pill-select')
+  })
+
   it('does not call onChange when no handler is provided', () => {
     // should not throw
     wrap(<IpsPillSelect options={options} value="" />)
@@ -163,6 +192,11 @@ describe('IpsPillSelect', () => {
   it('renders with size="small" without errors', () => {
     wrap(<IpsPillSelect options={options} size="small" />)
     expect(screen.getByText('React')).toBeInTheDocument()
+  })
+
+  it('renders size="large" pills as 44px touch targets', () => {
+    wrap(<IpsPillSelect options={options} size="large" />)
+    expect(screen.getByRole('button', { name: 'React' })).toHaveStyle({ minHeight: '44px' })
   })
 
   it('renders with size="medium" (default) without errors', () => {

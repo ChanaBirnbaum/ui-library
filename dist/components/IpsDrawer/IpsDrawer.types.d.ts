@@ -1,7 +1,9 @@
 import { DrawerProps } from '@mui/material/Drawer';
 import { ReactNode } from 'react';
 
-export type IpsDrawerCloseReason = 'backdropClick' | 'escapeKeyDown' | 'closeButton';
+export type IpsDrawerCloseReason = 'backdropClick' | 'escapeKeyDown' | 'closeButton'
+/** Bottom sheet dragged down (anchor="bottom", temporary) */
+ | 'swipe';
 /** Context passed to header/footer render-prop slots. */
 export interface IpsDrawerRenderContext {
     /** Programmatic close request — emits onClose('closeButton'). */
@@ -20,6 +22,18 @@ export type IpsDrawerProps = Omit<DrawerProps, 'open' | 'onClose' | 'anchor' | '
     variant?: 'temporary' | 'persistent' | 'permanent';
     /** Width (left/right) or height (top/bottom). Number = px */
     size?: number | string;
+    /**
+     * Maximum width (left/right) or height (top/bottom). Number = px.
+     * Default: '90%' for anchor="bottom" (a sheet never covers the whole screen), none otherwise
+     */
+    maxSize?: number | string;
+    /**
+     * Show the grab handle at the top of the sheet.
+     * Default: true for a temporary bottom sheet, which can also be dragged down to close
+     */
+    showPuller?: boolean;
+    /** Accessible name of the header close (X) button. Default: 'Close' */
+    closeButtonLabel?: string;
     /** Header title. Ignored if renderHeader is provided */
     title?: ReactNode;
     /** Optional icon shown beside the title */

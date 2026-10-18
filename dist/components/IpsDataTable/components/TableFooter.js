@@ -1,36 +1,50 @@
-import { jsx as a } from "react/jsx-runtime";
-import P from "@mui/material/TableFooter";
-import m from "@mui/material/TableRow";
-import d from "@mui/material/TableCell";
-import u from "@mui/material/TablePagination";
-function f({
-  table: o,
-  totalRows: n,
-  pageSizeOptions: i = [10, 25, 50, 100],
-  showTotal: t,
-  colSpan: g
+import { jsx as o } from "react/jsx-runtime";
+import P from "@mui/material/Box";
+import b from "@mui/material/TableFooter";
+import c from "@mui/material/TableRow";
+import u from "@mui/material/TableCell";
+import x from "@mui/material/TablePagination";
+function v({
+  table: r,
+  totalRows: a,
+  pageSizeOptions: t = [10, 25, 50, 100],
+  showTotal: l,
+  colSpan: g,
+  standalone: d = !1
 }) {
-  const { pageIndex: l, pageSize: p } = o.getState().pagination;
-  return /* @__PURE__ */ a(P, { children: /* @__PURE__ */ a(m, { children: /* @__PURE__ */ a(d, { colSpan: g, sx: { p: 0, borderBottom: "none" }, children: /* @__PURE__ */ a(
-    u,
+  const { pageIndex: p, pageSize: s } = r.getState().pagination, n = /* @__PURE__ */ o(
+    x,
     {
       component: "div",
-      count: n,
-      page: l,
-      rowsPerPage: p,
-      rowsPerPageOptions: i,
-      onPageChange: (e, r) => o.setPageIndex(r),
+      count: a,
+      page: p,
+      rowsPerPage: s,
+      rowsPerPageOptions: t,
+      onPageChange: (e, i) => r.setPageIndex(i),
       onRowsPerPageChange: (e) => {
-        o.setPageSize(Number(e.target.value)), o.setPageIndex(0);
+        r.setPageSize(Number(e.target.value)), r.setPageIndex(0);
       },
       labelRowsPerPage: "שורות בעמוד:",
-      labelDisplayedRows: ({ from: e, to: r, count: s }) => t ? `${e}–${r} מתוך ${s}` : `${e}–${r}`,
+      labelDisplayedRows: ({ from: e, to: i, count: m }) => l ? `${e}–${i} מתוך ${m}` : `${e}–${i}`,
       sx: {
-        "& .MuiTablePagination-toolbar": { direction: "ltr" }
+        "& .MuiTablePagination-toolbar": { direction: "ltr" },
+        overflow: "hidden"
       }
     }
-  ) }) }) });
+  );
+  return d ? /* @__PURE__ */ o(
+    P,
+    {
+      sx: {
+        flexShrink: 0,
+        borderTop: "1px solid",
+        borderColor: "divider",
+        backgroundColor: "background.paper"
+      },
+      children: n
+    }
+  ) : /* @__PURE__ */ o(b, { children: /* @__PURE__ */ o(c, { children: /* @__PURE__ */ o(u, { colSpan: g, sx: { p: 0, borderBottom: "none" }, children: n }) }) });
 }
 export {
-  f as TableFooter
+  v as TableFooter
 };

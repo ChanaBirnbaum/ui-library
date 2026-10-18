@@ -1,22 +1,29 @@
-import { jsx as r } from "react/jsx-runtime";
+import { jsx as a } from "react/jsx-runtime";
 import { forwardRef as m } from "react";
-import p from "@mui/material/IconButton";
-import f from "@mui/material/Tooltip";
-const l = m(
-  ({ icon: n, tooltip: o, className: i, ...s }, e) => {
-    const c = ["ips-icon-button", i].filter(Boolean).join(" "), t = /* @__PURE__ */ r(
-      p,
+import b from "@mui/material/IconButton";
+import g from "@mui/material/Tooltip";
+const s = 44, I = (o) => ({
+  width: s,
+  height: s,
+  backgroundColor: o.palette.background.paper,
+  "&:hover": { backgroundColor: o.palette.grey[100] },
+  "&.Mui-disabled": { backgroundColor: o.palette.background.paper }
+}), S = m(
+  ({ icon: o, tooltip: t, variant: i = "plain", className: u, sx: r, ...l }, p) => {
+    const n = i === "surface", d = ["ips-icon-button", n && "ips-icon-button-surface", u].filter(Boolean).join(" "), c = Array.isArray(r) ? r : r != null ? [r] : [], f = n ? [I, ...c] : c, e = /* @__PURE__ */ a(
+      b,
       {
-        ref: e,
-        className: c,
-        ...s,
-        children: n
+        ref: p,
+        className: d,
+        sx: f,
+        ...l,
+        children: o
       }
     );
-    return o ? /* @__PURE__ */ r(f, { title: o, children: t }) : t;
+    return t ? /* @__PURE__ */ a(g, { title: t, children: e }) : e;
   }
 );
-l.displayName = "IpsIconButton";
+S.displayName = "IpsIconButton";
 export {
-  l as IpsIconButton
+  S as IpsIconButton
 };

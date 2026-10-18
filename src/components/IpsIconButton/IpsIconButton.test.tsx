@@ -105,4 +105,16 @@ describe('IpsIconButton', () => {
     render(<IpsIconButton ref={ref} icon={<TestIcon />} />);
     expect(ref.current).toBeInstanceOf(HTMLButtonElement);
   });
+
+  test('uses the plain variant by default', () => {
+    const { container } = render(<IpsIconButton icon={<TestIcon />} aria-label="Sort" />);
+    expect(container.querySelector('button')).not.toHaveClass('ips-icon-button-surface');
+  });
+
+  test('renders the surface variant as a 44px touch target', () => {
+    const { container } = render(<IpsIconButton icon={<TestIcon />} aria-label="Sort" variant="surface" />);
+    const button = container.querySelector('button') as HTMLElement;
+    expect(button).toHaveClass('ips-icon-button-surface');
+    expect(button).toHaveStyle({ width: '44px', height: '44px' });
+  });
 });

@@ -1,2 +1,2 @@
 export { IpsIconButton } from './IpsIconButton';
-export type { IpsIconButtonProps } from './IpsIconButton.types';
+export type { IpsIconButtonProps, IpsIconButtonVariant } from './IpsIconButton.types';

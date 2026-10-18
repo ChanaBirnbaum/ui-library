@@ -1,18 +1,25 @@
 import { jsx as r, Fragment as a } from "react/jsx-runtime";
 import m from "@mui/material/TableRow";
-import l from "@mui/material/TableCell";
-import h from "@mui/material/Skeleton";
-function c({ rowCount: o = 5, columnCount: i, cellSx: n }) {
-  return /* @__PURE__ */ r(a, { children: Array.from({ length: o }).map((f, t) => /* @__PURE__ */ r(m, { children: Array.from({ length: i }).map((p, e) => /* @__PURE__ */ r(l, { sx: n, children: /* @__PURE__ */ r(
+import h from "@mui/material/TableCell";
+import l from "@mui/material/Skeleton";
+function s({ rowCount: o = 5, columnCount: i, cellSx: n }) {
+  return /* @__PURE__ */ r(a, { children: Array.from({ length: o }).map((f, e) => /* @__PURE__ */ r(m, { children: Array.from({ length: i }).map((p, t) => /* @__PURE__ */ r(
     h,
     {
-      variant: "text",
-      width: `${60 + Math.floor(Math.sin(t * 7 + e) * 30)}%`,
-      height: 20,
-      animation: "wave"
-    }
-  ) }, e)) }, t)) });
+      sx: { ...n, whiteSpace: "nowrap", overflow: "hidden" },
+      children: /* @__PURE__ */ r(
+        l,
+        {
+          variant: "text",
+          width: `${60 + Math.floor(Math.sin(e * 7 + t) * 30)}%`,
+          height: 20,
+          animation: "wave"
+        }
+      )
+    },
+    t
+  )) }, e)) });
 }
 export {
-  c as SkeletonRows
+  s as SkeletonRows
 };
