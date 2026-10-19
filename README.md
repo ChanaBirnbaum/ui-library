@@ -23,6 +23,8 @@
   - [IpsDatePickerMobile](#ipsdatepickermobile)
   - [IpsTimePickerMobile](#ipstimepickermobile)
   - [IpsRadioGroupMobile](#ipsradiogroupmobile)
+  - [IpsRadioGroup](#ipsradiogroup)
+  - [IpsMenu](#ipsmenu)
   - [IpsAutocomplete](#ipsautocomplete)
   - [IpsChipSelect](#ipschipselect)
   - [IpsPillSelect](#ipspillselect)
@@ -610,6 +612,88 @@ import { IpsRadioGroupMobile } from '@ips/ui-library'
 
 ---
 
+### IpsRadioGroup
+
+בחירה בודדת בין כמה אפשרויות, לדסקטופ: המקבילה של `IpsRadioGroupMobile` מבוססת MUI (`RadioGroup` + `Radio`), עם אותו API. בלי תיאורים — האפשרויות בשורה אחת שנשברת לפי הרוחב; כשלאפשרות כלשהי יש `description` — כל אפשרות בשורה משלה, כותרת מודגשת ומתחתיה התיאור. החצים במקלדת עוברים בין האפשרויות ובוחרים, כמו בכל קבוצת רדיו.
+
+```tsx
+import { IpsRadioGroup } from '@ips/ui-library'
+
+<IpsRadioGroup
+  aria-label="סוג ההגבלה"
+  options={[
+    { label: 'הגבלה מלאה', value: 'full', description: 'השיחות חסומות, למעט ההיתרים שיוגדרו למטה' },
+    { label: 'הגבלת משך שיחה', value: 'limited', description: 'השיחות מותרות, עד משך מרבי לכל שיחה' },
+  ]}
+  value={limitType}
+  onChange={(val) => setLimitType(String(val))}
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `options` | `{ label: string, value: string \| number, description?: ReactNode }[]` | חובה | אפשרות לכל רדיו |
+| `value` | `string \| number \| null` | חובה | הערך הנבחר (`null` = לא נבחר כלום) |
+| `onChange` | `(value) => void` | — | מחזיר את הערך המקורי של האפשרות (מספר נשאר מספר) |
+| `variant` | `'list' \| 'cards'` | `'list'` | `cards` — כל אפשרות היא כרטיס עם מסגרת, לחיץ כולו; הכרטיס הנבחר במסגרת בצבע הראשי |
+| `label` | `string` | — | כותרת גלויה מעל האפשרויות (גם שם הקבוצה) |
+| `aria-label` | `string` | — | שם נגיש כשאין כותרת גלויה |
+| `aria-labelledby` / `aria-describedby` | `string` | — | שם ותיאור מאלמנטים אחרים בדף (למשל כותרת ורמז מעל הרשימה) |
+| `name` | `string` | — | שם קבוצת הרדיו |
+| `disabled` | `boolean` | `false` | מנטרל את כל האפשרויות |
+
+**כרטיסים:** מתאים לבחירה של רשומה אחת מתוך כמה, כשכל אפשרות מציגה כמה שורות מידע. ב-`description` אפשר להעביר כל תוכן; הוא מוקרא אחרי שם הרדיו (`aria-describedby`).
+
+```tsx
+<IpsRadioGroup
+  variant="cards"
+  aria-labelledby="picker-title"
+  options={restrictions.map((restriction) => ({
+    value: restriction.id,
+    label: restriction.scopeLabel,
+    description: <RestrictionLines restriction={restriction} />,
+  }))}
+  value={selectedRestrictionId}
+  onChange={(id) => selectRestriction(Number(id))}
+/>
+```
+
+---
+
+### IpsMenu
+
+כפתור תפריט: כפתור אייקון (למשל ⋮) שפותח רשימת פעולות, מבוסס MUI (`Menu` + `MenuItem`). התפריט נפתח מתחת לכפתור, מיושר לצד הסוף שלו (שמאל ב-RTL), כך שהוא נפתח לתוך התוכן. החצים במקלדת עוברים בין הפריטים, Escape ולחיצה מחוץ לתפריט סוגרים אותו, והפוקוס חוזר לכפתור. הכפתור מקבל `aria-haspopup="menu"`, `aria-expanded` ו-`aria-controls`.
+
+`onSelect` נקרא רק אחרי שהתפריט נסגר והפוקוס חזר לכפתור — כך מה שהבחירה פותחת (דיאלוג, מגירה) מחזיר את הפוקוס לכפתור כשהוא נסגר.
+
+```tsx
+import { IpsMenu } from '@ips/ui-library'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+
+<IpsMenu
+  icon={<MoreVertIcon />}
+  label="פעולות עבור דנה כהן"
+  items={[
+    { value: 'restriction', label: 'הגבלה/היתר לחניך' },
+    { value: 'number', label: 'הגבלה/היתר למספר' },
+    { value: 'all', label: 'כל הפעולות', dividerBefore: true },
+  ]}
+  onSelect={(value) => openActions(value)}
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `icon` | `ReactNode` | חובה | האייקון של הכפתור |
+| `label` | `string` | חובה | השם הנגיש של הכפתור (אין לו טקסט גלוי) |
+| `items` | `{ value: string \| number, label: string, icon?: ReactNode, disabled?: boolean, dividerBefore?: boolean }[]` | חובה | פריט לכל פעולה. `dividerBefore` — קו מפריד מעל הפריט |
+| `onSelect` | `(value) => void` | חובה | הערך של הפריט שנבחר, אחרי שהתפריט נסגר |
+| `size` | `'small' \| 'medium' \| 'large'` | `'medium'` | גודל הכפתור |
+| `disabled` | `boolean` | `false` | מנטרל את הכפתור |
+| `id` | `string` | נוצר אוטומטית | המזהה של רשימת התפריט |
+
+---
+
 ### IpsAutocomplete
 
 שדה חיפוש עם השלמה אוטומטית. גנרי — תומך בכל סוג נתון.
@@ -815,6 +899,7 @@ import { IpsDatePicker } from '@ips/ui-library'
 | `value` | `Date \| null` | — | תאריך נבחר |
 | `onChange` | `(Date \| null) => void` | — | callback |
 | `format` | `string` | `'dd/MM/yyyy'` | פורמט תצוגה |
+| `locale` | `Locale` (date-fns) | — | שפת לוח השנה (שמות החודשים והימים, היום הראשון בשבוע), למשל `he` מ-`date-fns/locale`. בלעדיו — אנגלית |
 | `minDate` / `maxDate` | `Date` | — | טווח תאריכים מותר |
 | `readOnly` | `boolean` | `false` | לקריאה בלבד |
 | `rtl` | `boolean` | `false` | כיוון RTL |

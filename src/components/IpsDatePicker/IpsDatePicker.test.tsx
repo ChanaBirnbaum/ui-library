@@ -1,6 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { he } from 'date-fns/locale'
 import { IpsDatePicker } from './IpsDatePicker'
 
 const theme = createTheme()
@@ -168,5 +169,12 @@ describe('IpsDatePicker', () => {
       />
     )
     expect(document.querySelector('.ips-date-picker')).toBeInTheDocument()
+  })
+
+  // ── locale ─────────────────────────────────────────────────────────────────
+
+  it('shows the calendar in the given date-fns locale', () => {
+    wrap(<IpsDatePicker label="תאריך" value={new Date(2026, 9, 19)} onChange={jest.fn()} locale={he} open />)
+    expect(screen.getByText('אוקטובר 2026')).toBeInTheDocument()
   })
 })

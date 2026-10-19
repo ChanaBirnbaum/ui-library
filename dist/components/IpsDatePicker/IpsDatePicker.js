@@ -1,53 +1,54 @@
-import { jsx as i } from "react/jsx-runtime";
-import { forwardRef as v } from "react";
-import y from "@mui/material/Box";
-import { DatePicker as k } from "@mui/x-date-pickers/DatePicker";
-import { LocalizationProvider as x } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns as D } from "@mui/x-date-pickers/AdapterDateFns";
-const g = v(
+import { jsx as r } from "react/jsx-runtime";
+import { forwardRef as y } from "react";
+import k from "@mui/material/Box";
+import { DatePicker as x } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider as D } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns as g } from "@mui/x-date-pickers/AdapterDateFns";
+const C = y(
   ({
     format: d = "dd/MM/yyyy",
-    rtl: m = !1,
-    error: r,
-    helperText: t,
+    locale: m,
+    rtl: n = !1,
+    error: a,
+    helperText: i,
     slotProps: e,
-    sx: n,
-    className: c,
-    readOnly: o,
-    onChange: a,
-    ...f
-  }, l) => {
-    const p = ["ips-date-picker", c].filter(Boolean).join(" "), s = {
+    sx: c,
+    className: l,
+    readOnly: t,
+    onChange: o,
+    ...p
+  }, f) => {
+    const s = ["ips-date-picker", l].filter(Boolean).join(" "), h = {
       ...e,
       textField: {
         ...e == null ? void 0 : e.textField,
-        ...r !== void 0 ? { error: r } : {},
-        ...t !== void 0 ? { helperText: t } : {},
-        ...o ? { readOnly: !0 } : {}
+        ...a !== void 0 ? { error: a } : {},
+        ...i !== void 0 ? { helperText: i } : {},
+        ...t ? { readOnly: !0 } : {}
       }
     };
-    return /* @__PURE__ */ i(
-      y,
+    return /* @__PURE__ */ r(
+      k,
       {
-        ref: l,
-        className: p,
-        dir: m ? "rtl" : void 0,
-        sx: n,
-        children: /* @__PURE__ */ i(x, { dateAdapter: D, children: /* @__PURE__ */ i(
-          k,
+        ref: f,
+        className: s,
+        dir: n ? "rtl" : void 0,
+        sx: c,
+        children: /* @__PURE__ */ r(D, { dateAdapter: g, adapterLocale: m, children: /* @__PURE__ */ r(
+          x,
           {
             format: d,
-            ...f,
-            readOnly: o,
-            onChange: a ? (h) => a(h) : void 0,
-            slotProps: s
+            ...p,
+            readOnly: t,
+            onChange: o ? (v) => o(v) : void 0,
+            slotProps: h
           }
         ) })
       }
     );
   }
 );
-g.displayName = "IpsDatePicker";
+C.displayName = "IpsDatePicker";
 export {
-  g as IpsDatePicker
+  C as IpsDatePicker
 };

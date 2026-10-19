@@ -1,5 +1,6 @@
 import type { DatePickerProps } from '@mui/x-date-pickers/DatePicker'
 import type { SxProps, Theme } from '@mui/material/styles'
+import type { Locale } from 'date-fns'
 
 export interface IpsDatePickerProps
   extends Omit<DatePickerProps, 'onChange' | 'value' | 'minDate' | 'maxDate'> {
@@ -19,6 +20,11 @@ export interface IpsDatePickerProps
   maxDate?: Date
   /** Display format — default dd/MM/yyyy */
   format?: string
+  /**
+   * date-fns locale of the calendar (month and day names, first day of the week),
+   * e.g. `he` from 'date-fns/locale'. Default: date-fns's default (English)
+   */
+  locale?: Locale
   /** Force RTL layout (dir="rtl" on wrapper) */
   rtl?: boolean
   /** Show error state on the input field */

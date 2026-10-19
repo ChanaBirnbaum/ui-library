@@ -49,6 +49,15 @@ export type {
   IpsRadioGroupMobileProps,
   IpsRadioGroupMobileValue,
 } from './components/IpsRadioGroupMobile'
+export { IpsRadioGroup } from './components/IpsRadioGroup'
+export type {
+  IpsRadioGroupOption,
+  IpsRadioGroupProps,
+  IpsRadioGroupValue,
+  IpsRadioGroupVariant,
+} from './components/IpsRadioGroup'
+export { IpsMenu } from './components/IpsMenu'
+export type { IpsMenuItem, IpsMenuProps, IpsMenuValue } from './components/IpsMenu'
 export { isIosWebKit } from './utils/platform'
 export { IpsAutocomplete, IPS_AUTOCOMPLETE_POPUP_CLASS } from './components/IpsAutocomplete'
 export type { IpsAutocompleteProps } from './components/IpsAutocomplete/IpsAutocomplete.types'

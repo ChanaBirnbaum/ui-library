@@ -9,6 +9,7 @@ export const IpsDatePicker = forwardRef<HTMLDivElement, IpsDatePickerProps>(
   (
     {
       format = 'dd/MM/yyyy',
+      locale,
       rtl = false,
       error,
       helperText,
@@ -47,7 +48,7 @@ export const IpsDatePicker = forwardRef<HTMLDivElement, IpsDatePickerProps>(
         dir={rtl ? 'rtl' : undefined}
         sx={sx}
       >
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={locale}>
           <DatePicker
             format={format}
             {...(props as any)}

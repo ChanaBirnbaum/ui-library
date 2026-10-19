@@ -1,7 +1,7 @@
 import { jsxs as u, jsx as l } from "react/jsx-runtime";
-import { forwardRef as v, useId as D } from "react";
-import { styled as t, alpha as N } from "@mui/material/styles";
-const I = 20, _ = 10, g = 24, E = 16, R = 24, T = 14, G = 18, $ = 8, X = 16, F = 16, L = 0.4, k = t("div")({
+import { forwardRef as C, useId as v } from "react";
+import { styled as t, alpha as D } from "@mui/material/styles";
+const I = 20, _ = 10, g = 24, N = 16, E = 24, R = 14, T = 18, G = 8, X = 16, F = 16, L = 0.4, k = t("div")({
   display: "flex",
   flexDirection: "column",
   width: "100%"
@@ -12,7 +12,7 @@ const I = 20, _ = 10, g = 24, E = 16, R = 24, T = 14, G = 18, $ = 8, X = 16, F =
 })), W = t("div", {
   shouldForwardProp: (e) => e !== "isStacked"
 })(
-  ({ isStacked: e }) => e ? { display: "flex", flexDirection: "column", rowGap: X } : { display: "flex", flexWrap: "wrap", rowGap: $, columnGap: F }
+  ({ isStacked: e }) => e ? { display: "flex", flexDirection: "column", rowGap: X } : { display: "flex", flexWrap: "wrap", rowGap: G, columnGap: F }
 ), j = t("label", {
   shouldForwardProp: (e) => e !== "isDisabled" && e !== "isStacked"
 })(({ theme: e, isDisabled: i, isStacked: a }) => ({
@@ -21,14 +21,14 @@ const I = 20, _ = 10, g = 24, E = 16, R = 24, T = 14, G = 18, $ = 8, X = 16, F =
   // A stacked option wraps its text, so the circle stays next to the first line
   alignItems: a ? "flex-start" : "center",
   gap: 8,
-  fontSize: E,
-  lineHeight: `${R}px`,
+  fontSize: N,
+  lineHeight: `${E}px`,
   whiteSpace: a ? "normal" : "nowrap",
   color: i ? e.palette.text.disabled : e.palette.text.primary,
   cursor: i ? "default" : "pointer",
   // The radio comes first, so keyboard focus can ring the drawn circle after it
   "& input:focus-visible + span": {
-    boxShadow: `0 0 0 3px ${N(e.palette.primary.main, L)}`
+    boxShadow: `0 0 0 3px ${D(e.palette.primary.main, L)}`
   }
 })), A = t("input")({
   position: "absolute",
@@ -74,11 +74,11 @@ const I = 20, _ = 10, g = 24, E = 16, R = 24, T = 14, G = 18, $ = 8, X = 16, F =
 })), K = t("span", {
   shouldForwardProp: (e) => e !== "isDisabled"
 })(({ theme: e, isDisabled: i }) => ({
-  fontSize: T,
-  lineHeight: `${G}px`,
+  fontSize: R,
+  lineHeight: `${T}px`,
   color: i ? e.palette.text.disabled : e.palette.text.secondary
-})), V = v((e, i) => {
-  const { options: a, value: b, onChange: n, label: r, "aria-label": y, name: P, disabled: s = !1, className: S } = e, d = D(), O = P ?? d, h = `${d}-label`, c = a.some((o) => !!o.description), w = ["ips-radio-group-mobile", S].filter(Boolean).join(" ");
+})), V = C((e, i) => {
+  const { options: a, value: b, onChange: n, label: r, "aria-label": y, name: P, disabled: s = !1, className: S } = e, d = v(), O = P ?? d, h = `${d}-label`, c = a.some((o) => !!o.description), $ = ["ips-radio-group-mobile", S].filter(Boolean).join(" ");
   return /* @__PURE__ */ u(
     k,
     {
@@ -86,11 +86,11 @@ const I = 20, _ = 10, g = 24, E = 16, R = 24, T = 14, G = 18, $ = 8, X = 16, F =
       role: "radiogroup",
       "aria-labelledby": r ? h : void 0,
       "aria-label": r ? void 0 : y,
-      className: w,
+      className: $,
       children: [
         r && /* @__PURE__ */ l(H, { id: h, children: r }),
-        /* @__PURE__ */ l(W, { isStacked: c, children: a.map((o, C) => {
-          const p = b !== null && String(o.value) === String(b), m = `${d}-option-${C}`, x = o.description ? `${m}-title` : void 0, f = o.description ? `${m}-description` : void 0;
+        /* @__PURE__ */ l(W, { isStacked: c, children: a.map((o, w) => {
+          const p = b !== null && String(o.value) === String(b), m = `${d}-option-${w}`, x = o.description ? `${m}-title` : void 0, f = o.description ? `${m}-description` : void 0;
           return /* @__PURE__ */ u(
             j,
             {
