@@ -50,6 +50,8 @@ const ClearIcon = () => (
   </svg>
 );
 
+const DEFAULT_CLEAR_BUTTON_LABEL = 'Clear search';
+
 export const IpsTextField = forwardRef<HTMLInputElement, IpsTextFieldProps>(
   (props, ref) => {
     const {
@@ -68,6 +70,7 @@ export const IpsTextField = forwardRef<HTMLInputElement, IpsTextFieldProps>(
       value: valueProp,
       defaultValue,
       onChange: onChangeProp,
+      clearButtonLabel = DEFAULT_CLEAR_BUTTON_LABEL,
       ...rest
     } = props as any;
 
@@ -131,10 +134,9 @@ export const IpsTextField = forwardRef<HTMLInputElement, IpsTextFieldProps>(
         ? (
           <IconButton
             size="small"
-            aria-label="Clear search"
+            aria-label={clearButtonLabel}
             onClick={handleClear}
             edge="end"
-            tabIndex={-1}
           >
             <ClearIcon />
           </IconButton>

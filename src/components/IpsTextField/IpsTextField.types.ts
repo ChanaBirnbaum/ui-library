@@ -18,4 +18,6 @@ export type IpsTextFieldProps = TextFieldProps & {
   defaultValue?: string;
   /** Read-only mode (input cannot be edited) */
   readOnly?: boolean;
+  /** type="search" only: accessible name of the clear button (default: "Clear search") */
+  clearButtonLabel?: string;
 };

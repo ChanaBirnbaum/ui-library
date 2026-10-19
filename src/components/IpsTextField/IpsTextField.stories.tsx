@@ -58,3 +58,12 @@ export const SearchWithValue: Story = {
     defaultValue: 'query text',
   },
 };
+
+export const SearchWithClearButtonLabel: Story = {
+  args: {
+    label: 'חיפוש',
+    type: 'search',
+    defaultValue: 'יוסי',
+    clearButtonLabel: 'ניקוי חיפוש',
+  },
+};

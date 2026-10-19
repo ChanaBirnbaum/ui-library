@@ -43,6 +43,27 @@ describe('IpsTextField', () => {
     expect(screen.queryByLabelText('Clear search')).not.toBeInTheDocument();
   });
 
+  test('search field uses a custom clear button label', async () => {
+    render(<IpsTextField label="חיפוש" type="search" clearButtonLabel="ניקוי חיפוש" />);
+    await userEvent.type(screen.getByLabelText('חיפוש'), 'abc');
+    expect(screen.getByLabelText('ניקוי חיפוש')).toBeInTheDocument();
+    expect(screen.queryByLabelText('Clear search')).not.toBeInTheDocument();
+  });
+
+  test('search clear button is reachable with the keyboard', async () => {
+    render(<IpsTextField label="Search" type="search" defaultValue="query" />);
+    const input = screen.getByLabelText('Search') as HTMLInputElement;
+    await userEvent.click(input);
+
+    await userEvent.tab();
+    const clearButton = screen.getByLabelText('Clear search');
+    expect(clearButton).toHaveFocus();
+
+    await userEvent.keyboard('{Enter}');
+    expect(input.value).toBe('');
+    expect(input).toHaveFocus();
+  });
+
   test('search field clears via onChange when controlled', async () => {
     const ControlledSearch = () => {
       const [value, setValue] = React.useState('preset');

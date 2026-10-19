@@ -249,7 +249,8 @@ import { IpsTextField } from '@ips/ui-library'
 | `label` | `ReactNode` | — | תווית השדה |
 | `placeholder` | `string` | — | placeholder |
 | `required` | `boolean` | — | שדה חובה — מציג כוכבית אדומה בכותרת |
-| `type="search"` | `string` | — | מציג אייקון חיפוש אוטומטי |
+| `type="search"` | `string` | — | מציג אייקון חיפוש אוטומטי, וכשיש ערך – כפתור ניקוי (נגיש גם במקלדת) |
+| `clearButtonLabel` | `string` | `"Clear search"` | עם `type="search"` בלבד: השם הנגיש של כפתור הניקוי (למשל `"ניקוי חיפוש"`) |
 | `readOnly` | `boolean` | `false` | שדה לקריאה בלבד |
 | `startAdornment` | `ReactNode` | — | אייקון בתחילת השדה |
 | `endAdornment` | `ReactNode` | — | אייקון בסוף השדה |

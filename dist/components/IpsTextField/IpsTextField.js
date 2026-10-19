@@ -1,11 +1,11 @@
 import { jsx as e, jsxs as i } from "react/jsx-runtime";
-import { forwardRef as H, useId as N, useState as $, useRef as z } from "react";
-import q from "@mui/material/TextField";
-import I from "@mui/material/InputAdornment";
-import D from "@mui/material/IconButton";
-import Z from "@mui/material/FormLabel";
-import G from "@mui/material/Box";
-const J = () => /* @__PURE__ */ i(
+import { forwardRef as H, useId as $, useState as _, useRef as z } from "react";
+import D from "@mui/material/TextField";
+import A from "@mui/material/InputAdornment";
+import U from "@mui/material/IconButton";
+import q from "@mui/material/FormLabel";
+import Z from "@mui/material/Box";
+const G = () => /* @__PURE__ */ i(
   "svg",
   {
     width: "16",
@@ -29,7 +29,7 @@ const J = () => /* @__PURE__ */ i(
       /* @__PURE__ */ e("path", { d: "M12 16H12.01", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" })
     ]
   }
-), K = () => /* @__PURE__ */ i(
+), J = () => /* @__PURE__ */ i(
   "svg",
   {
     width: "18",
@@ -42,7 +42,7 @@ const J = () => /* @__PURE__ */ i(
       /* @__PURE__ */ e("path", { d: "M21 21L16.65 16.65", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" })
     ]
   }
-), Q = () => /* @__PURE__ */ i(
+), K = () => /* @__PURE__ */ i(
   "svg",
   {
     width: "16",
@@ -55,40 +55,41 @@ const J = () => /* @__PURE__ */ i(
       /* @__PURE__ */ e("path", { d: "M18 6L6 18", stroke: "currentColor", strokeWidth: "1.5", strokeLinecap: "round", strokeLinejoin: "round" })
     ]
   }
-), U = H(
-  (b, s) => {
+), Q = "Clear search", X = H(
+  (I, s) => {
     const {
       startAdornment: u,
-      endAdornment: j,
+      endAdornment: b,
       InputProps: n,
       inputProps: t,
-      className: A,
+      className: j,
       readOnly: T,
       error: h,
-      helperText: d,
+      helperText: c,
       label: p,
       required: m,
-      id: M,
+      id: B,
       type: f,
-      value: c,
+      value: d,
       defaultValue: k,
       onChange: o,
-      ...S
-    } = b, W = N(), x = M ?? W, C = f === "search", a = c !== void 0, [V, g] = $(k ?? ""), w = a ? c : V, B = w != null && String(w).length > 0, l = z(null), F = {
+      clearButtonLabel: E = Q,
+      ...M
+    } = I, S = $(), C = B ?? S, x = f === "search", a = d !== void 0, [W, g] = _(k ?? ""), L = a ? d : W, F = L != null && String(L).length > 0, l = z(null), O = {
       ...t,
       ref: (r) => {
         l.current = r, typeof s == "function" ? s(r) : s && typeof s == "object" && (s.current = r), typeof (t == null ? void 0 : t.ref) == "function" ? t.ref(r) : t != null && t.ref && typeof t.ref == "object" && (t.ref.current = r);
       },
       readOnly: T ? !0 : t == null ? void 0 : t.readOnly
-    }, O = (r) => {
+    }, R = (r) => {
       a || g(r.target.value), o == null || o(r);
-    }, v = j ?? (C ? B ? /* @__PURE__ */ e(
-      D,
+    }, w = b ?? (x ? F ? /* @__PURE__ */ e(
+      U,
       {
         size: "small",
-        "aria-label": "Clear search",
+        "aria-label": E,
         onClick: () => {
-          var r, L;
+          var r, v;
           if (a)
             o == null || o({
               target: { value: "" },
@@ -102,51 +103,50 @@ const J = () => /* @__PURE__ */ i(
             )) == null ? void 0 : r.set;
             l.current && y && (y.call(l.current, ""), l.current.dispatchEvent(new Event("input", { bubbles: !0 })));
           }
-          (L = l.current) == null || L.focus();
+          (v = l.current) == null || v.focus();
         },
         edge: "end",
-        tabIndex: -1,
-        children: /* @__PURE__ */ e(Q, {})
+        children: /* @__PURE__ */ e(K, {})
       }
-    ) : /* @__PURE__ */ e(K, {}) : void 0), R = {
-      startAdornment: u ? /* @__PURE__ */ e(I, { position: "start", children: u }) : n == null ? void 0 : n.startAdornment,
-      endAdornment: v ? /* @__PURE__ */ e(I, { position: "end", children: v }) : n == null ? void 0 : n.endAdornment,
+    ) : /* @__PURE__ */ e(J, {}) : void 0), V = {
+      startAdornment: u ? /* @__PURE__ */ e(A, { position: "start", children: u }) : n == null ? void 0 : n.startAdornment,
+      endAdornment: w ? /* @__PURE__ */ e(A, { position: "end", children: w }) : n == null ? void 0 : n.endAdornment,
       ...n
-    }, E = h && d ? /* @__PURE__ */ i("span", { style: { display: "inline-flex", alignItems: "center", gap: "4px" }, children: [
-      /* @__PURE__ */ e(J, {}),
-      d
-    ] }) : d;
-    return /* @__PURE__ */ i(G, { className: A, children: [
+    }, N = h && c ? /* @__PURE__ */ i("span", { style: { display: "inline-flex", alignItems: "center", gap: "4px" }, children: [
+      /* @__PURE__ */ e(G, {}),
+      c
+    ] }) : c;
+    return /* @__PURE__ */ i(Z, { className: j, children: [
       p != null && /* @__PURE__ */ e(
-        Z,
+        q,
         {
-          htmlFor: x,
+          htmlFor: C,
           required: m,
           sx: { display: "block", mb: "3px", fontSize: "12px", lineHeight: 1 },
           children: p
         }
       ),
       /* @__PURE__ */ e(
-        q,
+        D,
         {
-          ...S,
-          id: x,
-          type: C ? "text" : f,
+          ...M,
+          id: C,
+          type: x ? "text" : f,
           label: void 0,
           required: m,
           error: h,
-          helperText: E,
-          value: c,
+          helperText: N,
+          value: d,
           defaultValue: k,
-          onChange: O,
-          slotProps: { input: R, htmlInput: F },
+          onChange: R,
+          slotProps: { input: V, htmlInput: O },
           className: "ips-text-field"
         }
       )
     ] });
   }
 );
-U.displayName = "IpsTextField";
+X.displayName = "IpsTextField";
 export {
-  U as IpsTextField
+  X as IpsTextField
 };
