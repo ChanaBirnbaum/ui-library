@@ -117,4 +117,16 @@ describe('IpsIconButton', () => {
     expect(button).toHaveClass('ips-icon-button-surface');
     expect(button).toHaveStyle({ width: '44px', height: '44px' });
   });
+
+  test('outlines the surface variant like the mobile fields, with the theme base radius', () => {
+    const { container } = render(<IpsIconButton icon={<TestIcon />} aria-label="Sort" variant="surface" />);
+    const button = container.querySelector('button') as HTMLElement;
+    // Default MUI theme: grey[300] = #e0e0e0, shape.borderRadius = 4
+    expect(button).toHaveStyle({ border: '1px solid #e0e0e0', borderRadius: '4px' });
+  });
+
+  test('keeps the plain variant without a border', () => {
+    const { container } = render(<IpsIconButton icon={<TestIcon />} aria-label="Sort" />);
+    expect(container.querySelector('button')).not.toHaveStyle({ border: '1px solid #e0e0e0' });
+  });
 });

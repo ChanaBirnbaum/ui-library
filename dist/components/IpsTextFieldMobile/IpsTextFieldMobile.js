@@ -1,17 +1,17 @@
-import { jsxs as d, jsx as o } from "react/jsx-runtime";
-import { forwardRef as M, useId as N, useRef as T } from "react";
+import { jsxs as a, jsx as t } from "react/jsx-runtime";
+import { forwardRef as T, useId as $, useRef as z } from "react";
 import { styled as n } from "@mui/material/styles";
-import { MOBILE_FIELD as s, CHEVRON_CLEARANCE_PX as $, outlinedFieldDisabledStyles as z, outlinedFieldFocusStyles as D, mobileFieldRadius as L, MobileFieldLabel as O, RequiredMark as _, MobileHelperText as W } from "../internal/mobileFieldParts.js";
-import { FieldClearButton as j, ClearIcon as A, FieldEndIconSlot as H } from "../internal/mobileFieldEndParts.js";
-const q = 0.5, V = n("div")({
+import { MOBILE_FIELD as s, CHEVRON_CLEARANCE_PX as D, outlinedFieldDisabledStyles as L, outlinedFieldFocusStyles as O, mobileFieldRadius as _, MobileFieldLabel as j, RequiredMark as W, MobileHelperText as A } from "../internal/mobileFieldParts.js";
+import { FieldClearButton as H, ClearIcon as q, FieldEndIconSlot as V } from "../internal/mobileFieldEndParts.js";
+const X = 0.5, G = n("div")({
   display: "flex",
   flexDirection: "column",
   width: "100%",
   minWidth: 0
-}), X = n("div")({
+}), J = n("div")({
   position: "relative",
   width: "100%"
-}), G = n("div", {
+}), K = n("div", {
   shouldForwardProp: (e) => e !== "hasError" && e !== "isDisabled"
 })(({ theme: e, hasError: i, isDisabled: l }) => ({
   display: "flex",
@@ -21,16 +21,16 @@ const q = 0.5, V = n("div")({
   width: "100%",
   height: s.heightPx,
   paddingInlineStart: s.paddingStartPx,
-  paddingInlineEnd: $,
+  paddingInlineEnd: D,
   fontSize: s.fontSizePx,
   color: e.palette.text.primary,
   backgroundColor: e.palette.background.paper,
   border: `1px solid ${i ? e.palette.error.main : e.palette.grey[300]}`,
-  borderRadius: L(e),
+  borderRadius: _(e),
   cursor: "text",
-  "&:focus-within": D(e, i),
-  ...l ? z(e) : {}
-})), J = n("input", {
+  "&:focus-within": O(e, i),
+  ...l ? L(e) : {}
+})), Q = n("input", {
   shouldForwardProp: (e) => e !== "contentWidthCh"
 })(({ theme: e, contentWidthCh: i }) => ({
   flex: i === null ? 1 : "0 0 auto",
@@ -51,10 +51,10 @@ const q = 0.5, V = n("div")({
     color: e.palette.text.secondary,
     opacity: 1
   }
-})), K = n("span")({
+})), U = n("span")({
   flexShrink: 0,
   whiteSpace: "nowrap"
-}), Q = M((e, i) => {
+}), Y = T((e, i) => {
   const {
     value: l,
     onChange: r,
@@ -64,50 +64,51 @@ const q = 0.5, V = n("div")({
     label: m,
     required: g = !1,
     disabled: c = !1,
-    error: a = !1,
+    error: d = !1,
     helperText: p,
-    className: S,
-    id: v,
-    ...w
-  } = e, R = N(), u = v ?? R, I = `${u}-helper-text`, f = T(null), F = l.length > 0, y = !!h && F, C = F && !!b && !c, E = y ? l.length + q : null, P = (t) => {
-    f.current = t, typeof i == "function" ? i(t) : i && (i.current = t);
-  }, k = () => {
-    var t;
-    r == null || r(""), (t = f.current) == null || t.focus();
-  }, B = ["ips-text-field-mobile", S].filter(Boolean).join(" ");
-  return /* @__PURE__ */ d(V, { className: B, children: [
-    m && /* @__PURE__ */ d(O, { htmlFor: u, children: [
+    className: v,
+    id: S,
+    "aria-describedby": w,
+    ...R
+  } = e, C = $(), u = S ?? C, y = `${u}-helper-text`, B = [w, p ? y : void 0].filter(Boolean).join(" ") || void 0, f = z(null), I = l.length > 0, F = !!h && I, E = I && !!b && !c, P = F ? l.length + X : null, k = (o) => {
+    f.current = o, typeof i == "function" ? i(o) : i && (i.current = o);
+  }, M = () => {
+    var o;
+    r == null || r(""), (o = f.current) == null || o.focus();
+  }, N = ["ips-text-field-mobile", v].filter(Boolean).join(" ");
+  return /* @__PURE__ */ a(G, { className: N, children: [
+    m && /* @__PURE__ */ a(j, { htmlFor: u, children: [
       m,
-      g && /* @__PURE__ */ o(_, { "aria-hidden": "true", children: " *" })
+      g && /* @__PURE__ */ t(W, { "aria-hidden": "true", children: " *" })
     ] }),
-    /* @__PURE__ */ d(X, { children: [
-      /* @__PURE__ */ d(G, { hasError: a, isDisabled: c, onClick: () => {
-        var t;
-        return (t = f.current) == null ? void 0 : t.focus();
+    /* @__PURE__ */ a(J, { children: [
+      /* @__PURE__ */ a(K, { hasError: d, isDisabled: c, onClick: () => {
+        var o;
+        return (o = f.current) == null ? void 0 : o.focus();
       }, children: [
-        /* @__PURE__ */ o(
-          J,
+        /* @__PURE__ */ t(
+          Q,
           {
-            ...w,
-            ref: P,
+            ...R,
+            ref: k,
             id: u,
             value: l,
-            onChange: (t) => r == null ? void 0 : r(t.target.value),
+            onChange: (o) => r == null ? void 0 : r(o.target.value),
             disabled: c,
             required: g,
-            contentWidthCh: E,
-            "aria-invalid": a || void 0,
-            "aria-describedby": p ? I : void 0
+            contentWidthCh: P,
+            "aria-invalid": d || void 0,
+            "aria-describedby": B
           }
         ),
-        y && /* @__PURE__ */ o(K, { "aria-hidden": "true", children: h })
+        F && /* @__PURE__ */ t(U, { "aria-hidden": "true", children: h })
       ] }),
-      C ? /* @__PURE__ */ o(j, { type: "button", "aria-label": b, onClick: k, children: /* @__PURE__ */ o(A, {}) }) : x && /* @__PURE__ */ o(H, { children: x })
+      E ? /* @__PURE__ */ t(H, { type: "button", "aria-label": b, onClick: M, children: /* @__PURE__ */ t(q, {}) }) : x && /* @__PURE__ */ t(V, { children: x })
     ] }),
-    p && /* @__PURE__ */ o(W, { id: I, hasError: a, role: a ? "alert" : void 0, children: p })
+    p && /* @__PURE__ */ t(A, { id: y, hasError: d, role: d ? "alert" : void 0, children: p })
   ] });
 });
-Q.displayName = "IpsTextFieldMobile";
+Y.displayName = "IpsTextFieldMobile";
 export {
-  Q as IpsTextFieldMobile
+  Y as IpsTextFieldMobile
 };

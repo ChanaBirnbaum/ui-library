@@ -1,26 +1,26 @@
-import { jsxs as c, jsx as t } from "react/jsx-runtime";
-import { forwardRef as S, useRef as g } from "react";
-import { styled as i } from "@mui/material/styles";
-import { MOBILE_FIELD as k } from "../internal/mobileFieldParts.js";
-const a = 44, s = 20, f = 18, b = 14, C = b + s + 8, l = a, L = "Clear", v = "search", N = i("div")({
+import { jsxs as s, jsx as t } from "react/jsx-runtime";
+import { forwardRef as m, useRef as k } from "react";
+import { styled as r } from "@mui/material/styles";
+import { MOBILE_FIELD as C, outlinedFieldDisabledStyles as L, outlinedFieldFocusStyles as v, mobileFieldRadius as h } from "../internal/mobileFieldParts.js";
+const b = 44, a = 20, f = 18, I = 14, N = I + a + 8, l = b, R = "Clear", T = "search", w = r("div")({
   position: "relative",
   width: "100%",
   minWidth: 0
-}), w = i("input")(({ theme: e }) => ({
+}), A = r("input")(({ theme: e }) => ({
   appearance: "none",
   WebkitAppearance: "none",
   boxSizing: "border-box",
   width: "100%",
-  height: a,
+  height: b,
   margin: 0,
-  paddingInlineStart: C,
+  paddingInlineStart: N,
   paddingInlineEnd: l,
   fontFamily: "inherit",
-  fontSize: k.fontSizePx,
+  fontSize: C.fontSizePx,
   color: e.palette.text.primary,
   backgroundColor: e.palette.background.paper,
-  border: "none",
-  borderRadius: a / 2,
+  border: `1px solid ${e.palette.grey[300]}`,
+  borderRadius: h(e),
   outline: "none",
   textOverflow: "ellipsis",
   "&::placeholder": {
@@ -32,21 +32,17 @@ const a = 44, s = 20, f = 18, b = 14, C = b + s + 8, l = a, L = "Clear", v = "se
     WebkitAppearance: "none",
     display: "none"
   },
-  "&:focus": {
-    boxShadow: `0 0 0 2px ${e.palette.primary.main}`
-  },
-  "&:disabled": {
-    color: e.palette.text.disabled
-  }
-})), R = i("span")(({ theme: e }) => ({
+  "&:focus": v(e, !1),
+  "&:disabled": L(e)
+})), F = r("span")(({ theme: e }) => ({
   position: "absolute",
   top: "50%",
-  insetInlineStart: b,
+  insetInlineStart: I,
   display: "flex",
   transform: "translateY(-50%)",
   pointerEvents: "none",
   color: e.palette.text.secondary
-})), T = i("button")(({ theme: e }) => ({
+})), B = r("button")(({ theme: e }) => ({
   position: "absolute",
   top: 0,
   insetInlineEnd: 0,
@@ -58,7 +54,7 @@ const a = 44, s = 20, f = 18, b = 14, C = b + s + 8, l = a, L = "Clear", v = "se
   margin: 0,
   padding: 0,
   border: "none",
-  borderRadius: "50%",
+  borderRadius: h(e),
   background: "transparent",
   color: e.palette.text.secondary,
   cursor: "pointer",
@@ -67,13 +63,13 @@ const a = 44, s = 20, f = 18, b = 14, C = b + s + 8, l = a, L = "Clear", v = "se
     outlineOffset: -4
   }
 }));
-function A() {
-  return /* @__PURE__ */ c(
+function P() {
+  return /* @__PURE__ */ s(
     "svg",
     {
       "aria-hidden": "true",
-      width: s,
-      height: s,
+      width: a,
+      height: a,
       viewBox: "0 0 24 24",
       fill: "none",
       stroke: "currentColor",
@@ -87,8 +83,8 @@ function A() {
     }
   );
 }
-function B() {
-  return /* @__PURE__ */ c(
+function O() {
+  return /* @__PURE__ */ s(
     "svg",
     {
       "aria-hidden": "true",
@@ -107,40 +103,40 @@ function B() {
     }
   );
 }
-const P = S(
-  (e, r) => {
+const X = m(
+  (e, i) => {
     const {
-      value: d,
+      value: c,
       onChange: o,
-      clearButtonLabel: I = L,
-      disabled: p = !1,
-      className: m,
-      ...u
-    } = e, h = g(null), _ = d.length > 0, x = (n) => {
-      h.current = n, typeof r == "function" ? r(n) : r && (r.current = n);
-    }, y = () => {
+      clearButtonLabel: y = R,
+      disabled: d = !1,
+      className: _,
+      ...p
+    } = e, u = k(null), E = c.length > 0, S = (n) => {
+      u.current = n, typeof i == "function" ? i(n) : i && (i.current = n);
+    }, x = () => {
       var n;
-      o == null || o(""), (n = h.current) == null || n.focus();
-    }, E = ["ips-search-field-mobile", m].filter(Boolean).join(" ");
-    return /* @__PURE__ */ c(N, { className: E, children: [
-      /* @__PURE__ */ t(R, { children: /* @__PURE__ */ t(A, {}) }),
+      o == null || o(""), (n = u.current) == null || n.focus();
+    }, g = ["ips-search-field-mobile", _].filter(Boolean).join(" ");
+    return /* @__PURE__ */ s(w, { className: g, children: [
+      /* @__PURE__ */ t(F, { children: /* @__PURE__ */ t(P, {}) }),
       /* @__PURE__ */ t(
-        w,
+        A,
         {
-          ...u,
-          ref: x,
+          ...p,
+          ref: S,
           type: "search",
-          enterKeyHint: u.enterKeyHint ?? v,
-          value: d,
+          enterKeyHint: p.enterKeyHint ?? T,
+          value: c,
           onChange: (n) => o == null ? void 0 : o(n.target.value),
-          disabled: p
+          disabled: d
         }
       ),
-      _ && !p && /* @__PURE__ */ t(T, { type: "button", "aria-label": I, onClick: y, children: /* @__PURE__ */ t(B, {}) })
+      E && !d && /* @__PURE__ */ t(B, { type: "button", "aria-label": y, onClick: x, children: /* @__PURE__ */ t(O, {}) })
     ] });
   }
 );
-P.displayName = "IpsSearchFieldMobile";
+X.displayName = "IpsSearchFieldMobile";
 export {
-  P as IpsSearchFieldMobile
+  X as IpsSearchFieldMobile
 };

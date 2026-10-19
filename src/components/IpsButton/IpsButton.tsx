@@ -74,8 +74,9 @@ export const IpsButton = forwardRef<HTMLButtonElement, IpsButtonProps>((props, r
 
   const rootClass = ['ips-button', className].filter(Boolean).join(' ');
 
+  // RTL: a startIcon is shown at the end (as before); an explicit endIcon is kept instead of being dropped
   const resolvedStartIcon = isRtl ? undefined : startIcon;
-  const resolvedEndIcon   = isRtl ? startIcon : (muiProps.endIcon as any);
+  const resolvedEndIcon   = isRtl ? (startIcon ?? muiProps.endIcon) : (muiProps.endIcon as any);
 
   const baseSx = {
     fontWeight: 400,

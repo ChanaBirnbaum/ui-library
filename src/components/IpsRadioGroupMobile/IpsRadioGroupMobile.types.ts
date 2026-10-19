@@ -3,9 +3,17 @@ import type { IpsSelectOption } from '../IpsSelect/IpsSelect.types'
 /** The value type of a single option (kept as is: a number stays a number) */
 export type IpsRadioGroupMobileValue = string | number
 
+export interface IpsRadioGroupMobileOption extends IpsSelectOption {
+  /**
+   * A line under the label that explains what choosing this option means.
+   * When any option has one, the options are stacked one per row instead of a single row.
+   */
+  description?: string
+}
+
 export interface IpsRadioGroupMobileProps {
-  /** One radio per option, in a single wrapping row */
-  options: IpsSelectOption[]
+  /** One radio per option: in a single wrapping row, or stacked when any option has a description */
+  options: IpsRadioGroupMobileOption[]
   /** Selected value. null = nothing selected */
   value: IpsRadioGroupMobileValue | null
   /** Fired with the original option value when an option is chosen */

@@ -1,10 +1,15 @@
 import React, { forwardRef, useRef } from 'react'
 import { styled } from '@mui/material/styles'
-import { MOBILE_FIELD } from '../internal/mobileFieldParts'
+import {
+  MOBILE_FIELD,
+  mobileFieldRadius,
+  outlinedFieldDisabledStyles,
+  outlinedFieldFocusStyles,
+} from '../internal/mobileFieldParts'
 import type { IpsSearchFieldMobileProps } from './IpsSearchFieldMobile.types'
 
-// Mobile search field built on the native <input type="search">: the keyboard shows a search key,
-// and the field is a borderless pill sized for touch. No MUI components.
+// Mobile search field built on the native <input type="search">: the keyboard shows a search key.
+// It looks like the other mobile fields (outlined box, field radius token), only touch-sized. No MUI components.
 
 const FIELD_HEIGHT_PX = 44
 const ICON_SIZE_PX = 20
@@ -35,8 +40,8 @@ const NativeSearchInput = styled('input')(({ theme }) => ({
   fontSize: MOBILE_FIELD.fontSizePx,
   color: theme.palette.text.primary,
   backgroundColor: theme.palette.background.paper,
-  border: 'none',
-  borderRadius: FIELD_HEIGHT_PX / 2,
+  border: `1px solid ${theme.palette.grey[300]}`,
+  borderRadius: mobileFieldRadius(theme),
   outline: 'none',
   textOverflow: 'ellipsis',
   '&::placeholder': {
@@ -48,12 +53,8 @@ const NativeSearchInput = styled('input')(({ theme }) => ({
     WebkitAppearance: 'none',
     display: 'none',
   },
-  '&:focus': {
-    boxShadow: `0 0 0 2px ${theme.palette.primary.main}`,
-  },
-  '&:disabled': {
-    color: theme.palette.text.disabled,
-  },
+  '&:focus': outlinedFieldFocusStyles(theme, false),
+  '&:disabled': outlinedFieldDisabledStyles(theme),
 }))
 
 const SearchIconSlot = styled('span')(({ theme }) => ({
@@ -78,7 +79,7 @@ const ClearButton = styled('button')(({ theme }) => ({
   margin: 0,
   padding: 0,
   border: 'none',
-  borderRadius: '50%',
+  borderRadius: mobileFieldRadius(theme),
   background: 'transparent',
   color: theme.palette.text.secondary,
   cursor: 'pointer',

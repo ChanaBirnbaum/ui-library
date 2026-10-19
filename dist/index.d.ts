@@ -40,7 +40,7 @@ export type { IpsDatePickerMobileProps } from './components/IpsDatePickerMobile'
 export { IpsTimePickerMobile } from './components/IpsTimePickerMobile';
 export type { IpsTimePickerMobileProps } from './components/IpsTimePickerMobile';
 export { IpsRadioGroupMobile } from './components/IpsRadioGroupMobile';
-export type { IpsRadioGroupMobileProps, IpsRadioGroupMobileValue } from './components/IpsRadioGroupMobile';
+export type { IpsRadioGroupMobileOption, IpsRadioGroupMobileProps, IpsRadioGroupMobileValue, } from './components/IpsRadioGroupMobile';
 export { isIosWebKit } from './utils/platform';
 export { IpsAutocomplete, IPS_AUTOCOMPLETE_POPUP_CLASS } from './components/IpsAutocomplete';
 export type { IpsAutocompleteProps } from './components/IpsAutocomplete/IpsAutocomplete.types';

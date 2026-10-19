@@ -3,8 +3,8 @@ import type { IconButtonProps } from '@mui/material/IconButton';
 
 /**
  * plain — the default MUI icon button (transparent).
- * surface — a 44×44 touch-sized circle on a paper (white) background, for mobile toolbars
- * where it sits next to fields of the same height.
+ * surface — a 44×44 touch-sized square on a paper (white) background, outlined like the mobile fields
+ * and rounded with the theme base radius, for mobile toolbars where it sits next to fields of the same height.
  */
 export type IpsIconButtonVariant = 'plain' | 'surface';
 

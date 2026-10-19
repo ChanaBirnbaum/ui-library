@@ -7,12 +7,19 @@ import type { IpsIconButtonProps } from './IpsIconButton.types';
 // Minimum touch target on mobile
 const SURFACE_SIZE_PX = 44;
 
+// Looks like the outlined mobile fields it sits next to: the same border, with the base radius of buttons
 const surfaceSx: SxProps<Theme> = (theme) => ({
   width: SURFACE_SIZE_PX,
   height: SURFACE_SIZE_PX,
+  boxSizing: 'border-box',
   backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${theme.palette.grey[300]}`,
+  borderRadius: `${theme.shape.borderRadius}px`,
   '&:hover': { backgroundColor: theme.palette.grey[100] },
-  '&.Mui-disabled': { backgroundColor: theme.palette.background.paper },
+  '&.Mui-disabled': {
+    backgroundColor: theme.palette.grey[50],
+    borderColor: theme.palette.grey[200],
+  },
 });
 
 export const IpsIconButton = forwardRef<HTMLButtonElement, IpsIconButtonProps>(

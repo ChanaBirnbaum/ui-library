@@ -99,12 +99,15 @@ export const IpsTextFieldMobile = forwardRef<HTMLInputElement, IpsTextFieldMobil
     helperText,
     className,
     id: idProp,
+    'aria-describedby': describedByProp,
     ...nativeInputProps
   } = props
 
   const generatedId = useId()
   const inputId = idProp ?? generatedId
   const helperTextId = `${inputId}-helper-text`
+  // The consumer's description (e.g. a hint above the field) is kept, and the helper text is added to it
+  const describedBy = [describedByProp, helperText ? helperTextId : undefined].filter(Boolean).join(' ') || undefined
   const inputRef = useRef<HTMLInputElement | null>(null)
   const hasValue = value.length > 0
   const showSuffix = Boolean(suffix) && hasValue
@@ -152,7 +155,7 @@ export const IpsTextFieldMobile = forwardRef<HTMLInputElement, IpsTextFieldMobil
             required={required}
             contentWidthCh={contentWidthCh}
             aria-invalid={error || undefined}
-            aria-describedby={helperText ? helperTextId : undefined}
+            aria-describedby={describedBy}
           />
           {showSuffix && <Suffix aria-hidden="true">{suffix}</Suffix>}
         </FieldBox>

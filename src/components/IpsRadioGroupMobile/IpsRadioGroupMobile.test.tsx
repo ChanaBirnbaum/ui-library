@@ -66,4 +66,29 @@ describe('IpsRadioGroupMobile', () => {
     renderGroup({ disabled: true })
     screen.getAllByRole('radio').forEach((radio) => expect(radio).toBeDisabled())
   })
+
+  describe('with descriptions', () => {
+    const DESCRIBED_OPTIONS = [
+      { label: 'Full', value: 'full', description: 'Calls are blocked' },
+      { label: 'Limited', value: 'limited', description: 'Calls are capped' },
+    ]
+
+    test('names each radio by its title and describes it with its description', () => {
+      renderGroup({ options: DESCRIBED_OPTIONS })
+      const fullRadio = screen.getByRole('radio', { name: 'Full' })
+      expect(fullRadio).toHaveAccessibleDescription('Calls are blocked')
+    })
+
+    test('chooses an option when its description is tapped', async () => {
+      const onChange = jest.fn()
+      renderGroup({ options: DESCRIBED_OPTIONS, onChange })
+      await userEvent.click(screen.getByText('Calls are capped'))
+      expect(onChange).toHaveBeenCalledWith('limited')
+    })
+
+    test('leaves options without a description unchanged', () => {
+      renderGroup()
+      expect(screen.getByRole('radio', { name: 'Full' })).not.toHaveAttribute('aria-describedby')
+    })
+  })
 })

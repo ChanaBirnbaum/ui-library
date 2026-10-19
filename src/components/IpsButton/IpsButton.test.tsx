@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider, createTheme } from '@mui/material';
 import IpsButton from './IpsButton';
 
 test('renders default button and clicks', () => {
@@ -18,6 +19,16 @@ test('buttonType add maps to contained variant and shows icon', () => {
   expect(btn.className).toMatch(/MuiButton-contained/);
   // startIcon should render an svg icon
   expect(btn.querySelector('svg')).toBeInTheDocument();
+});
+
+test('keeps an endIcon in RTL', () => {
+  const rtlTheme = createTheme({ direction: 'rtl' });
+  render(
+    <ThemeProvider theme={rtlTheme}>
+      <IpsButton endIcon={<span data-testid="end-icon" />}>Choose</IpsButton>
+    </ThemeProvider>
+  );
+  expect(screen.getByTestId('end-icon')).toBeInTheDocument();
 });
 
 test('loading disables and shows CircularProgress', () => {

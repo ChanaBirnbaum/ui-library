@@ -431,7 +431,7 @@ import { IpsRadioListMobile } from '@ips/ui-library'
 
 ### IpsSearchFieldMobile
 
-שדה חיפוש למובייל, מבוסס `<input type="search">` נייטיבי: המקלדת מציגה מקש "חיפוש" (`enterKeyHint`), והגופן 16px כדי ש-iOS לא יגדיל את המסך בפוקוס. נראה כגלולה בגובה 44px על רקע לבן ובלי מסגרת, עם אייקון חיפוש וכפתור ניקוי כשיש טקסט. בלי רכיבי MUI.
+שדה חיפוש למובייל, מבוסס `<input type="search">` נייטיבי: המקלדת מציגה מקש "חיפוש" (`enterKeyHint`), והגופן 16px כדי ש-iOS לא יגדיל את המסך בפוקוס. נראה כמו שאר השדות למובייל – רקע לבן, מסגרת דקה ורדיוס מטוקן השדה – בגובה 44px (משטח מגע), עם אייקון חיפוש וכפתור ניקוי כשיש טקסט. בלי רכיבי MUI.
 
 ```tsx
 import { IpsSearchFieldMobile } from '@ips/ui-library'
@@ -586,12 +586,26 @@ import { IpsRadioGroupMobile } from '@ips/ui-library'
 
 | Prop | סוג | ברירת מחדל | תיאור |
 |------|-----|-----------|-------|
-| `options` | `{ label: string, value: string \| number }[]` | חובה | אפשרות לכל רדיו |
+| `options` | `{ label: string, value: string \| number, description?: string }[]` | חובה | אפשרות לכל רדיו |
 | `value` | `string \| number \| null` | חובה | הערך הנבחר |
 | `onChange` | `(value) => void` | — | מחזיר את הערך המקורי של האפשרות |
 | `label` | `string` | — | כותרת גלויה מעל האפשרויות (גם שם הקבוצה) |
 | `aria-label` | `string` | — | שם נגיש כשאין כותרת גלויה |
 | `disabled` | `boolean` | `false` | מנטרל את כל האפשרויות |
+
+**אפשרויות עם תיאור:** כשלאפשרות כלשהי יש `description`, האפשרויות מוצגות זו מתחת לזו — כותרת מודגשת (משקל 500) ומתחתיה התיאור באפור. מתאים לבחירה שמגדירה את הרשומה, כשחשוב לראות את ההשלכה של כל אפשרות לפני שבוחרים. כל האפשרות (כותרת ותיאור) לחיצה, והתיאור מוקרא אחרי שם הרדיו (`aria-describedby`).
+
+```tsx
+<IpsRadioGroupMobile
+  aria-label="סוג ההגבלה"
+  options={[
+    { label: 'הגבלה מלאה', value: 'full', description: 'השיחות חסומות, למעט ההיתרים שיוגדרו למטה' },
+    { label: 'הגבלת משך שיחה', value: 'limited', description: 'השיחות מותרות, עד משך מרבי לכל שיחה' },
+  ]}
+  value={limitType}
+  onChange={(val) => setLimitType(String(val))}
+/>
+```
 
 ---
 
@@ -744,7 +758,8 @@ import { IpsButton } from '@ips/ui-library'
 |------|-----|-------|
 | `buttonType` | `IpsButtonType` | סוג הכפתור |
 | `variant` | `'contained' \| 'outlined'` | סגנון הכפתור |
-| `startIcon` | `ReactNode` | אייקון לפני הטקסט |
+| `startIcon` | `ReactNode` | אייקון לפני הטקסט (ב-RTL מוצג בסוף הכפתור) |
+| `endIcon` | `ReactNode` | אייקון אחרי הטקסט. ב-RTL מוצג בסוף הכפתור כשאין `startIcon` |
 | `loading` | `boolean` | מציג spinner ומנטרל לחיצה |
 | `disabled` | `boolean` | מנטרל את הכפתור |
 | `size` | `'small' \| 'medium' \| 'large'` | `large` = גובה 48px, כפתור הפעולה הראשי במובייל (פוטר של מגירה / טופס) |
@@ -770,7 +785,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 
 | Prop | סוג | ברירת מחדל | תיאור |
 |------|-----|-----------|-------|
-| `variant` | `'plain' \| 'surface'` | `'plain'` | `surface`: עיגול 44×44 (משטח מגע במובייל) על רקע לבן, לשורות כלים במובייל לצד שדות באותו גובה |
+| `variant` | `'plain' \| 'surface'` | `'plain'` | `surface`: ריבוע 44×44 (משטח מגע במובייל) על רקע לבן, עם מסגרת כמו השדות למובייל ורדיוס הבסיס של ה-theme, לשורות כלים במובייל לצד שדות באותו גובה |
 
 ---
 

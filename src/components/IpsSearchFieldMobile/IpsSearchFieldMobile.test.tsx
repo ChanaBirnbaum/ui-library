@@ -68,6 +68,12 @@ describe('IpsSearchFieldMobile', () => {
     expect(screen.queryByRole('button', { name: 'Clear search' })).not.toBeInTheDocument()
   })
 
+  test('is outlined like the other mobile fields, with the field radius', () => {
+    renderField()
+    // Plain MUI theme: grey[300] = #e0e0e0; without the IPS radius token the fields fall back to 6px
+    expect(screen.getByRole('searchbox')).toHaveStyle({ border: '1px solid #e0e0e0', borderRadius: '6px' })
+  })
+
   test('forwards the ref to the input', () => {
     const ref = React.createRef<HTMLInputElement>()
     render(

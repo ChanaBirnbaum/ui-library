@@ -74,4 +74,24 @@ describe('IpsTextFieldMobile', () => {
     expect(input).toHaveAttribute('aria-invalid', 'true')
     expect(input).toHaveAccessibleDescription('Enter minutes')
   })
+
+  test('keeps the consumer description and adds the helper text to it', () => {
+    render(
+      <ThemeProvider theme={muiTheme}>
+        <p id="field-hint">Enter the full number</p>
+        <ControlledField aria-describedby="field-hint" helperText="Invalid number" />
+      </ThemeProvider>
+    )
+    expect(screen.getByRole('textbox')).toHaveAccessibleDescription('Enter the full number Invalid number')
+  })
+
+  test('keeps the consumer description when there is no helper text', () => {
+    render(
+      <ThemeProvider theme={muiTheme}>
+        <p id="field-hint">Enter the full number</p>
+        <ControlledField aria-describedby="field-hint" />
+      </ThemeProvider>
+    )
+    expect(screen.getByRole('textbox')).toHaveAccessibleDescription('Enter the full number')
+  })
 })
