@@ -25,6 +25,7 @@ export function IpsDropZone({
   multiple   = true,
   disabled   = false,
   containerId,
+  separatorLabel,
 }: IpsDropZoneProps & { containerId?: string; screenshot?: boolean }) {
   const theme        = useTheme()
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -162,9 +163,20 @@ export function IpsDropZone({
           cursor: 'default',
         }}
       >
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography
+          className="ips-drop-zone-hint"
+          variant="body1"
+          color="text.secondary"
+          sx={{ mb: separatorLabel ? 1 : 2 }}
+        >
           🗂&nbsp; גרור קבצים לכאן
         </Typography>
+
+        {separatorLabel && (
+          <Typography className="ips-drop-zone-separator" variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            {separatorLabel}
+          </Typography>
+        )}
 
         {screenshotError && (
           <Alert severity="error" sx={{ mb: 1, textAlign: 'right' }} onClose={() => setScreenshotError(null)}>
@@ -172,7 +184,10 @@ export function IpsDropZone({
           </Alert>
         )}
 
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <Box
+          className="ips-drop-zone-buttons"
+          sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}
+        >
           {/* Browse */}
           <Button
             variant="outlined"

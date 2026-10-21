@@ -44,7 +44,19 @@ export interface IpsFileUploadProps {
   disabled?: boolean
   /** MUI sx override on outer Box */
   sx?: SxProps<Theme>
+  /**
+   * A short line between the drop text and the drop zone buttons (e.g. "או" / "or").
+   * Not shown by default
+   */
+  separatorLabel?: string
+  /**
+   * The order of the actions bar under the drop zone (DOM order, so also the keyboard order).
+   * 'save-first' (default): save, then clear all. 'clear-first': clear all, then save
+   */
+  actionsOrder?: FileUploadActionsOrder
 }
+
+export type FileUploadActionsOrder = 'save-first' | 'clear-first'
 
 // ─── Single file row ──────────────────────────────────────────────────────────
 
@@ -59,6 +71,8 @@ export interface IpsFileItemProps {
 
 export interface IpsDropZoneProps {
   onFilesAdded: (files: File[]) => void
+  /** A short line between the drop text and the buttons. Not shown by default */
+  separatorLabel?: string
   camera?: boolean
   screenshot?: boolean
   scan?: boolean

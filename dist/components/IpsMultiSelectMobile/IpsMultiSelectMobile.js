@@ -1,119 +1,132 @@
-import { jsxs as I, jsx as o } from "react/jsx-runtime";
-import { forwardRef as U, useId as W, useMemo as q } from "react";
-import { styled as m } from "@mui/material/styles";
-import { IpsSelect as H } from "../IpsSelect/IpsSelect.js";
-import { outlinedFieldFocusStyles as K, outlinedFieldDisabledStyles as z, outlinedFieldBoxStyles as G, invisibleOverlayStyles as J, MobileFieldLabel as Q, RequiredMark as X, OutlinedChevronSlot as Y, ChevronDownIcon as Z, MobileHelperText as ee } from "../internal/mobileFieldParts.js";
-import { NativeOptions as le } from "../internal/NativeOptions.js";
-import { isIosWebKit as ie } from "../../utils/platform.js";
-const te = ", ", p = "__ips_all__";
-function oe(e) {
-  return e.join(te);
+import { jsxs as g, jsx as i } from "react/jsx-runtime";
+import { forwardRef as W, useId as q, useMemo as X } from "react";
+import { styled as h } from "@mui/material/styles";
+import { IpsSelect as z } from "../IpsSelect/IpsSelect.js";
+import { outlinedFieldFocusStyles as G, outlinedFieldDisabledStyles as K, outlinedFieldBoxStyles as Z, invisibleOverlayStyles as J, MobileFieldLabel as Q, RequiredMark as Y, OutlinedChevronSlot as ee, ChevronDownIcon as C, MOBILE_FIELD as O, MobileHelperText as le } from "../internal/mobileFieldParts.js";
+import { NativeOptions as ie } from "../internal/NativeOptions.js";
+import { isIosWebKit as te } from "../../utils/platform.js";
+const oe = ", ", p = "__ips_all__", ne = "50vh", re = { slotProps: { paper: { sx: { maxHeight: ne } } } }, se = O.chevronSizePx / 2, ae = (e) => ({
+  height: O.heightPx,
+  "& .MuiSelect-icon": {
+    top: `calc(50% - ${se}px)`,
+    right: O.chevronInsetPx,
+    color: e.palette.text.secondary
+  }
+});
+function ce({ className: e }) {
+  return /* @__PURE__ */ i("span", { className: e, style: { display: "flex" }, children: /* @__PURE__ */ i(C, {}) });
 }
-function re(e, i) {
-  return e.filter((l) => i.includes(l.value));
+function de(e) {
+  return e.join(oe);
 }
-function E(e, i) {
-  const l = e.filter((t) => t !== p);
-  return e.includes(p) && !i ? [] : l;
+function ue(e, t) {
+  return e.filter((l) => t.includes(l.value));
 }
-const se = m("div")({
+function w(e, t) {
+  const l = e.filter((o) => o !== p);
+  return e.includes(p) && !t ? [] : l;
+}
+const pe = h("div")({
   display: "flex",
   flexDirection: "column",
   width: "100%",
   minWidth: 0
-}), ne = m("div", {
+}), he = h("div", {
   shouldForwardProp: (e) => e !== "hasValue" && e !== "hasError" && e !== "isDisabled"
-})(({ theme: e, hasValue: i, hasError: l, isDisabled: r }) => ({
-  ...G(e, { hasValue: i, hasError: l }),
+})(({ theme: e, hasValue: t, hasError: l, isDisabled: n }) => ({
+  ...Z(e, { hasValue: t, hasError: l }),
   position: "relative",
   display: "flex",
   alignItems: "center",
-  ...r ? z(e) : {},
+  ...n ? K(e) : {},
   // Like any field, the box shows focus while its native select is focused
-  "&:focus-within": K(e, l)
-})), ae = m("span")({
+  "&:focus-within": G(e, l)
+})), me = h("span")({
   minWidth: 0,
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap"
-}), de = m("select")(J), ce = U(
-  (e, i) => {
+}), ve = h("select")(J), fe = W(
+  (e, t) => {
     const {
       options: l,
-      value: r,
-      onChange: t,
-      label: h,
-      placeholder: x,
+      value: n,
+      onChange: o,
+      label: m,
+      placeholder: M,
       allOptionLabel: v,
-      formatSelection: k = oe,
+      formatSelection: D = de,
       picker: f = "auto",
-      required: A = !1,
+      required: _ = !1,
       disabled: b = !1,
-      error: n = !1,
+      error: s = !1,
       helperText: u,
-      "aria-label": N,
-      id: D,
-      name: M,
-      className: P
-    } = e, V = W(), a = D ?? V, T = `${a}-label`, w = `${a}-helper-text`, S = q(
-      () => f === "native" || f === "auto" && ie(),
+      "aria-label": P,
+      id: R,
+      name: A,
+      className: V
+    } = e, k = q(), a = R ?? k, E = `${a}-label`, S = `${a}-helper-text`, N = X(
+      () => f === "native" || f === "auto" && te(),
       [f]
-    ), L = !!v, d = L && r.length === 0, O = L ? [{ value: p, label: v }, ...l] : l, _ = d ? [p] : r, g = re(l, r), j = g.length > 0 || d, F = g.length > 0 ? k(g.map((s) => s.label)) : (d ? v : x) ?? "", C = (s) => {
-      const y = Array.from(s.target.selectedOptions, (c) => c.value), B = O.filter((c) => y.includes(String(c.value))).map((c) => c.value);
-      t == null || t(E(B, d));
-    }, R = (s) => {
-      const y = Array.isArray(s) ? s : [];
-      t == null || t(E(y, d));
-    }, $ = ["ips-multi-select-mobile", P].filter(Boolean).join(" ");
-    return /* @__PURE__ */ I(se, { className: $, children: [
-      h && /* @__PURE__ */ I(Q, { id: T, htmlFor: S ? a : void 0, children: [
-        h,
-        A && /* @__PURE__ */ o(X, { "aria-hidden": "true", children: " *" })
+    ), L = !!v, c = L && n.length === 0, x = L ? [{ value: p, label: v }, ...l] : l, F = c ? [p] : n, I = ue(l, n), H = I.length > 0 || c, T = I.length > 0 ? D(I.map((r) => r.label)) : (c ? v : M) ?? "", j = (r) => {
+      const y = Array.from(r.target.selectedOptions, (d) => d.value), B = x.filter((d) => y.includes(String(d.value))).map((d) => d.value);
+      o == null || o(w(B, c));
+    }, U = (r) => {
+      const y = Array.isArray(r) ? r : [];
+      o == null || o(w(y, c));
+    }, $ = ["ips-multi-select-mobile", V].filter(Boolean).join(" ");
+    return /* @__PURE__ */ g(pe, { className: $, children: [
+      m && /* @__PURE__ */ g(Q, { id: E, htmlFor: N ? a : void 0, children: [
+        m,
+        _ && /* @__PURE__ */ i(Y, { "aria-hidden": "true", children: " *" })
       ] }),
-      S ? /* @__PURE__ */ I(ne, { hasValue: j, hasError: n, isDisabled: b, children: [
-        /* @__PURE__ */ o(ae, { "aria-hidden": "true", children: F }),
-        /* @__PURE__ */ o(Y, { children: /* @__PURE__ */ o(Z, {}) }),
-        /* @__PURE__ */ o(
-          de,
+      N ? /* @__PURE__ */ g(he, { hasValue: H, hasError: s, isDisabled: b, children: [
+        /* @__PURE__ */ i(me, { "aria-hidden": "true", children: T }),
+        /* @__PURE__ */ i(ee, { children: /* @__PURE__ */ i(C, {}) }),
+        /* @__PURE__ */ i(
+          ve,
           {
-            ref: i,
+            ref: t,
             id: a,
-            name: M,
+            name: A,
             multiple: !0,
-            value: _.map(String),
-            onChange: C,
+            value: F.map(String),
+            onChange: j,
             disabled: b,
-            required: A,
-            "aria-label": N,
-            "aria-invalid": n || void 0,
-            "aria-describedby": u ? w : void 0,
-            children: /* @__PURE__ */ o(le, { options: O })
+            required: _,
+            "aria-label": P,
+            "aria-invalid": s || void 0,
+            "aria-describedby": u ? S : void 0,
+            children: /* @__PURE__ */ i(ie, { options: x })
           }
         )
-      ] }) : /* @__PURE__ */ o(
-        H,
+      ] }) : /* @__PURE__ */ i(
+        z,
         {
-          ref: i,
+          ref: t,
           id: a,
-          name: M,
+          name: A,
           multiple: !0,
-          options: O,
-          value: _,
-          onChange: R,
-          placeholder: x,
-          renderValue: () => F,
+          options: x,
+          value: F,
+          onChange: U,
+          placeholder: M,
+          renderValue: () => T,
           disabled: b,
-          error: n,
-          helperText: u,
-          labelId: h ? T : void 0,
-          inputProps: { "aria-label": N }
+          error: s,
+          labelId: m ? E : void 0,
+          inputProps: { "aria-label": P },
+          SelectDisplayProps: { "aria-describedby": u ? S : void 0 },
+          MenuProps: re,
+          IconComponent: ce,
+          sx: ae
         }
       ),
-      S && u && /* @__PURE__ */ o(ee, { id: w, hasError: n, role: n ? "alert" : void 0, children: u })
+      u && /* @__PURE__ */ i(le, { id: S, hasError: s, role: s ? "alert" : void 0, children: u })
     ] });
   }
 );
-ce.displayName = "IpsMultiSelectMobile";
+fe.displayName = "IpsMultiSelectMobile";
 export {
-  ce as IpsMultiSelectMobile
+  fe as IpsMultiSelectMobile
 };

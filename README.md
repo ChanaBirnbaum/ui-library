@@ -377,6 +377,8 @@ import { IpsSelectMobile } from '@ips/ui-library'
 
 בחירה מרובה למובייל. באייפון / אייפד אמיתי נפתח הבוחר הנייטיבי של iOS (`<select multiple>` שקוף מעל אזור הלחיצה). בכל השאר — Android, דסקטופ ואמולציה ב-devtools — מוצג `IpsSelect multiple` (תפריט עם checkbox), כי שם `<select multiple>` נייטיבי מוצג כרשימה פתוחה. הזיהוי נעשה עם `isIosWebKit()`.
 
+בתפריט (מחוץ לאייפון) השדה הסגור נראה כמו שאר שדות המובייל: גובה 42, אותו חץ קו ואותו טקסט עזר (מקושר ל-combobox ב-`aria-describedby`). התפריט הפתוח מוגבל לחצי מסך ונגלל בתוכו, כך שתמיד נשאר סביבו מקום ללחיצה שסוגרת אותו.
+
 ```tsx
 import { IpsMultiSelectMobile } from '@ips/ui-library'
 
@@ -989,6 +991,8 @@ import { IpsToolTips } from '@ips/ui-library'
 
 מערכת הודעות. דורשת `IpsToastProvider` בשורש האפליקציה.
 
+ההודעות בשכבת ה-snackbar של MUI (`theme.zIndex.snackbar`), מעל דיאלוגים ומגירות פתוחים. הרוחב לא עובר את רוחב המסך פחות המרווחים מהקצוות, כך שבטלפון צר ההודעה לא נחתכת.
+
 **הגדרה (פעם אחת בשורש):**
 
 ```tsx
@@ -1031,6 +1035,8 @@ function MyComponent() {
 | `position` | `'bottom-right' \| 'bottom-left' \| 'top-right' \| 'top-left'` | `'bottom-right'` | מיקום |
 | `deleteTime` | `number` | `3000` | זמן היעלמות (ms) |
 | `maxToasts` | `number` | `5` | מקסימום הודעות בו-זמנית |
+| `bottomOffset` | `number` | `24` | המרחק (px) של הודעות בתחתית המסך מהקצה התחתון – למשל כדי להישאר מעל פס פעולה בתחתית ולא לכסות אותו |
+| `closeButtonLabel` | `string` | `'close'` | השם הנגיש של כפתור הסגירה בכל הודעה – בשפת האפליקציה, למשל `"סגירה"` |
 
 ---
 
@@ -1199,6 +1205,38 @@ import { IpsFileUpload } from '@ips/ui-library'
 | `onBeforeSave` | `() => Promise<boolean>` | — | ולידציה אסינכרונית; `false` חוסם את השמירה |
 | `onSaveSuccess` | `(results: UploadResult[]) => void` | — | callback לאחר העלאה מוצלחת |
 | `onSaveError` | `(error: unknown) => void` | — | callback כשהעלאה נכשלת |
+| `separatorLabel` | `string` | — | שורה קצרה בין "גרור קבצים לכאן" לכפתורים שבאזור הגרירה, למשל `"או"`. בלי – לא מוצגת |
+| `actionsOrder` | `'save-first' \| 'clear-first'` | `'save-first'` | סדר הכפתורים שמתחת לאזור הגרירה – סדר ה-DOM, ולכן גם סדר המקלדת. `clear-first`: "נקה הכל" ואחריו "שמור קבצים" |
+
+**התאמת המראה במקום השימוש:** לחלקים הפנימיים יש class יציבים – `ips-drop-zone-hint` (טקסט הגרירה), `ips-drop-zone-separator`, `ips-drop-zone-buttons` (הכפתורים באזור הגרירה), `ips-file-upload-actions` (שורת הכפתורים שמתחת) – כדי שצרכן יוכל להתאים פריסה דרך `sx` בלי להסתמך על מבנה ה-DOM.
+
+---
+
+### IpsFileUploadMobile
+
+צירוף קובץ אחד במובייל. משתמש בחלקים של `IpsFileUpload` כמו שהם: אותו קלט קבצים נסתר של "עיין בקבצים", אותו `CameraDialog` של "מצלמה", ואותו hook העלאה (בדיקת גודל, FormData, שליחה ל-SharePoint וה-callbacks). רק המראה מותאם למובייל: שדה כמו שאר שדות המובייל (42, אייקון אטב), בלי אזור גרירה (אין גרירה במגע), וההעלאה מתחילה מיד כשנבחר קובץ — בלי שלב "שמור קבצים". בזמן ההעלאה השדה מציג את שם הקובץ ו"מעלה…", ושגיאת גודל מוצגת מתחתיו. בחירה חדשה מחליפה קובץ קודם.
+
+```tsx
+import { IpsFileUploadMobile } from '@ips/ui-library'
+
+<IpsFileUploadMobile
+  sviva="dev"
+  system="my-sharepoint-site"
+  camera
+  onBeforeSave={async () => true}
+  onSaveSuccess={([uploaded]) => console.log('הועלה:', uploaded)} // { name, path }
+  onSaveError={(err) => console.error(err)}
+/>
+```
+
+| Prop | סוג | ברירת מחדל | תיאור |
+|------|-----|-----------|-------|
+| `sviva`, `system`, `uploadParams`, `uploadMethod`, `maxFileSizeMB`, `accept`, `camera`, `disabled`, `onBeforeSave`, `onSaveSuccess`, `onSaveError` | | | כמו ב-`IpsFileUpload` (קובץ אחד בלבד) |
+| `placeholder` | `string` | `'בחירת קובץ'` | הטקסט בשדה לפני בחירה |
+| `uploadingText` | `string` | `'מעלה…'` | ליד שם הקובץ בזמן ההעלאה |
+| `cameraButtonLabel` | `string` | `'מצלמה'` | השם הנגיש של כפתור המצלמה |
+| `error` | `boolean` | `false` | מסגרת שגיאה (למשל כשחסר קובץ חובה) |
+| `id` | `string` | — | מזהה כפתור השדה, להעברת פוקוס |
 
 ---
 

@@ -56,6 +56,24 @@ describe('IpsToastProvider', () => {
     expect(document.body.querySelector('[data-testid="ips-toast-container"]')).toBeInTheDocument()
   })
 
+  it('puts the container on the snackbar layer, above open dialogs and drawers', () => {
+    renderWithProvider(<span />)
+    const container = document.body.querySelector('[data-testid="ips-toast-container"]') as HTMLElement
+    // MUI's default theme: modal 1300, snackbar 1400
+    expect(container.style.zIndex).toBe('1400')
+  })
+
+  it('keeps the default bottom distance, and raises a bottom stack by bottomOffset', () => {
+    const { unmount } = renderWithProvider(<span />)
+    const defaultContainer = document.body.querySelector('[data-testid="ips-toast-container"]') as HTMLElement
+    expect(defaultContainer.style.bottom).toBe('24px')
+    unmount()
+
+    renderWithProvider(<span />, { bottomOffset: 92 })
+    const raisedContainer = document.body.querySelector('[data-testid="ips-toast-container"]') as HTMLElement
+    expect(raisedContainer.style.bottom).toBe('92px')
+  })
+
   it('shows a success toast when addToast is called', () => {
     renderWithProvider(<ToastTrigger type={TOAST_TYPES.SUCCESS} message="הצלחה!" />)
     fireEvent.click(screen.getByText('trigger'))
@@ -103,6 +121,13 @@ describe('IpsToastProvider', () => {
 
     fireEvent.click(screen.getByLabelText('close'))
     expect(screen.queryByText('סגור אותי')).not.toBeInTheDocument()
+  })
+
+  it('names the close button by closeButtonLabel, and "close" by default', () => {
+    renderWithProvider(<ToastTrigger message="שם הכפתור" />, { closeButtonLabel: 'סגירה' })
+    fireEvent.click(screen.getByText('trigger'))
+    expect(screen.getByLabelText('סגירה')).toBeInTheDocument()
+    expect(screen.queryByLabelText('close')).not.toBeInTheDocument()
   })
 
   it('enforces maxToasts — drops oldest when limit is exceeded', () => {

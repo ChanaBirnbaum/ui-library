@@ -1,92 +1,98 @@
-import { jsxs as s, jsx as e } from "react/jsx-runtime";
-import t from "@mui/material/Box";
-import n from "@mui/material/Button";
-import D from "@mui/material/Stack";
-import S from "@mui/material/CircularProgress";
-import $ from "@mui/icons-material/Save";
-import b from "@mui/icons-material/DeleteSweep";
-import { IpsDropZone as j } from "./IpsDropZone.js";
-import { IpsFileItem as k } from "./IpsFileItem.js";
-import { useFileUpload as N } from "./useFileUpload.js";
-function U(r) {
+import { jsx as e, jsxs as r, Fragment as c } from "react/jsx-runtime";
+import m from "@mui/material/Box";
+import p from "@mui/material/Button";
+import $ from "@mui/material/Stack";
+import j from "@mui/material/CircularProgress";
+import k from "@mui/icons-material/Save";
+import A from "@mui/icons-material/DeleteSweep";
+import { IpsDropZone as U } from "./IpsDropZone.js";
+import { IpsFileItem as w } from "./IpsFileItem.js";
+import { useFileUpload as L } from "./useFileUpload.js";
+function O(s) {
   const {
-    camera: c = !1,
-    screenshot: m = !1,
-    scan: p = !1,
-    accept: d,
-    multiple: f = !0,
+    camera: d = !1,
+    screenshot: f = !1,
+    scan: u = !1,
+    accept: h,
+    multiple: x = !0,
     disabled: l = !1,
-    containerId: u,
-    className: a,
-    sx: x
-  } = r, {
+    containerId: I,
+    className: i,
+    sx: F,
+    separatorLabel: g,
+    actionsOrder: v = "save-first"
+  } = s, {
     files: o,
-    addFiles: I,
-    removeFile: h,
-    clearAll: F,
-    saveFiles: g,
-    loading: v,
-    canSave: y
-  } = N(r);
-  return /* @__PURE__ */ s(
-    t,
+    addFiles: b,
+    removeFile: y,
+    clearAll: z,
+    saveFiles: B,
+    loading: C,
+    canSave: D
+  } = L(s), t = /* @__PURE__ */ e(
+    p,
     {
-      className: `ips-file-upload${a ? ` ${a}` : ""}`,
-      sx: { display: "flex", flexDirection: "column", gap: 2, ...x },
+      variant: "contained",
+      size: "small",
+      disabled: !D || l,
+      onClick: B,
+      startIcon: C ? /* @__PURE__ */ e(j, { size: 16, color: "inherit" }) : /* @__PURE__ */ e(k, {}),
+      children: "שמור קבצים"
+    }
+  ), n = /* @__PURE__ */ e(
+    p,
+    {
+      variant: "outlined",
+      size: "small",
+      color: "error",
+      disabled: o.length === 0 || l,
+      onClick: z,
+      startIcon: /* @__PURE__ */ e(A, {}),
+      children: "נקה הכל"
+    }
+  );
+  return /* @__PURE__ */ r(
+    m,
+    {
+      className: `ips-file-upload${i ? ` ${i}` : ""}`,
+      sx: { display: "flex", flexDirection: "column", gap: 2, ...F },
       children: [
         /* @__PURE__ */ e(
-          j,
+          U,
           {
-            onFilesAdded: I,
-            camera: c,
-            screenshot: m,
-            scan: p,
-            accept: d,
-            multiple: f,
+            onFilesAdded: b,
+            camera: d,
+            screenshot: f,
+            scan: u,
+            accept: h,
+            multiple: x,
             disabled: l,
-            containerId: u
+            containerId: I,
+            separatorLabel: g
           }
         ),
-        o.length > 0 && /* @__PURE__ */ e(D, { spacing: 0.75, children: o.map(({ file: i, hasError: z, errorMessage: C }) => /* @__PURE__ */ e(
-          k,
+        o.length > 0 && /* @__PURE__ */ e($, { spacing: 0.75, children: o.map(({ file: a, hasError: N, errorMessage: S }) => /* @__PURE__ */ e(
+          w,
           {
-            file: i,
-            hasError: z,
-            errorMessage: C,
-            onDelete: h
+            file: a,
+            hasError: N,
+            errorMessage: S,
+            onDelete: y
           },
-          `${i.name}-${i.size}`
+          `${a.name}-${a.size}`
         )) }),
-        /* @__PURE__ */ s(t, { sx: { display: "flex", gap: 1, justifyContent: "flex-start" }, children: [
-          /* @__PURE__ */ e(
-            n,
-            {
-              variant: "contained",
-              size: "small",
-              disabled: !y || l,
-              onClick: g,
-              startIcon: v ? /* @__PURE__ */ e(S, { size: 16, color: "inherit" }) : /* @__PURE__ */ e($, {}),
-              children: "שמור קבצים"
-            }
-          ),
-          /* @__PURE__ */ e(
-            n,
-            {
-              variant: "outlined",
-              size: "small",
-              color: "error",
-              disabled: o.length === 0 || l,
-              onClick: F,
-              startIcon: /* @__PURE__ */ e(b, {}),
-              children: "נקה הכל"
-            }
-          )
-        ] })
+        /* @__PURE__ */ e(m, { className: "ips-file-upload-actions", sx: { display: "flex", gap: 1, justifyContent: "flex-start" }, children: v === "clear-first" ? /* @__PURE__ */ r(c, { children: [
+          n,
+          t
+        ] }) : /* @__PURE__ */ r(c, { children: [
+          t,
+          n
+        ] }) })
       ]
     }
   );
 }
-U.displayName = "IpsFileUpload";
+O.displayName = "IpsFileUpload";
 export {
-  U as IpsFileUpload
+  O as IpsFileUpload
 };

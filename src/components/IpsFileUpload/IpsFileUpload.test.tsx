@@ -47,6 +47,36 @@ function addFilesViaInput(container: HTMLElement, files: File[]) {
 // ─── Tests ────────────────────────────────────────────────────────────────────
 describe('IpsFileUpload', () => {
 
+  test('separatorLabel: not shown by default, and shown between the drop text and the buttons when given', () => {
+    const { container, rerender } = renderComponent()
+    expect(container.querySelector('.ips-drop-zone-separator')).toBeNull()
+
+    rerender(
+      <ThemeProvider theme={muiTheme}>
+        <IpsFileUpload sviva="dev" system="test-site" separatorLabel="או" />
+      </ThemeProvider>
+    )
+    const hint = container.querySelector('.ips-drop-zone-hint')!
+    const separator = screen.getByText('או')
+    const buttons = container.querySelector('.ips-drop-zone-buttons')!
+    expect(hint.compareDocumentPosition(separator) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(separator.compareDocumentPosition(buttons) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
+  test('actionsOrder: save first by default, clear first with "clear-first" (DOM and keyboard order)', () => {
+    const { container, rerender } = renderComponent()
+    const actionLabels = () =>
+      Array.from(container.querySelectorAll('.ips-file-upload-actions button')).map((button) => button.textContent)
+    expect(actionLabels()).toEqual(['שמור קבצים', 'נקה הכל'])
+
+    rerender(
+      <ThemeProvider theme={muiTheme}>
+        <IpsFileUpload sviva="dev" system="test-site" actionsOrder="clear-first" />
+      </ThemeProvider>
+    )
+    expect(actionLabels()).toEqual(['נקה הכל', 'שמור קבצים'])
+  })
+
   test('1. renders without crashing', () => {
     const { container } = renderComponent()
     expect(container.querySelector('.ips-file-upload')).toBeInTheDocument()

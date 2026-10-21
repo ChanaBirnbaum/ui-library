@@ -1,9 +1,10 @@
 import React, { forwardRef, useId, useMemo } from 'react'
-import { styled } from '@mui/material/styles'
+import { styled, type Theme } from '@mui/material/styles'
 import { IpsSelect } from '../IpsSelect'
 import type { IpsSelectOption } from '../IpsSelect/IpsSelect.types'
 import {
   ChevronDownIcon,
+  MOBILE_FIELD,
   MobileFieldLabel,
   MobileHelperText,
   OutlinedChevronSlot,
@@ -24,6 +25,35 @@ import type { IpsMultiSelectMobileProps, IpsMultiSelectMobileValue } from './Ips
 const DEFAULT_SELECTION_SEPARATOR = ', '
 // Internal value of the "all" option. It never reaches the consumer: "all" is reported as []
 const ALL_OPTION_VALUE = '__ips_all__'
+
+// The menu picker opens over the page and stays open while picking. It is capped at half the screen,
+// so a long (grouped) list always leaves room around it to tap and close it; the list scrolls inside.
+// The native picker has its own "Done" and is not affected
+const MENU_MAX_HEIGHT = '50vh'
+const MENU_PROPS = { slotProps: { paper: { sx: { maxHeight: MENU_MAX_HEIGHT } } } }
+const CHEVRON_HALF_SIZE_PX = MOBILE_FIELD.chevronSizePx / 2
+
+/**
+ * The closed menu field looks like the native mobile fields next to it: the same height and the same line chevron
+ * (instead of MUI's filled triangle), at the same inset. `right` is flipped by the RTL cache like MUI's own value
+ */
+const menuFieldSx = (theme: Theme) => ({
+  height: MOBILE_FIELD.heightPx,
+  '& .MuiSelect-icon': {
+    top: `calc(50% - ${CHEVRON_HALF_SIZE_PX}px)`,
+    right: MOBILE_FIELD.chevronInsetPx,
+    color: theme.palette.text.secondary,
+  },
+})
+
+/** MUI passes a className that positions the icon and rotates it while the menu is open */
+function MenuChevronIcon({ className }: { className?: string }) {
+  return (
+    <span className={className} style={{ display: 'flex' }}>
+      <ChevronDownIcon />
+    </span>
+  )
+}
 
 type PickerValue = IpsMultiSelectMobileValue | typeof ALL_OPTION_VALUE
 
@@ -191,13 +221,18 @@ export const IpsMultiSelectMobile = forwardRef<HTMLSelectElement, IpsMultiSelect
             renderValue={() => summary}
             disabled={disabled}
             error={error}
-            helperText={helperText}
             labelId={label ? labelId : undefined}
             inputProps={{ 'aria-label': ariaLabel }}
+            // The combobox (not the hidden input) is what a screen reader reads, so the helper text is linked to it
+            SelectDisplayProps={{ 'aria-describedby': helperText ? helperTextId : undefined }}
+            MenuProps={MENU_PROPS}
+            IconComponent={MenuChevronIcon}
+            sx={menuFieldSx}
           />
         )}
 
-        {shouldUseNativePicker && helperText && (
+        {/* The same helper text for both pickers, so the menu field matches the native one (MUI's is indented) */}
+        {helperText && (
           <MobileHelperText id={helperTextId} hasError={error} role={error ? 'alert' : undefined}>
             {helperText}
           </MobileHelperText>

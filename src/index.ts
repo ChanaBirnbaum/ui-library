@@ -98,4 +98,6 @@ export type { IpsDrawerProps, IpsDrawerCloseReason, IpsDrawerRenderContext } fro
 export { IpsCarousel } from './components/IpsCarousel'
 export type { IpsCarouselProps, IpsCarouselDotContext, IpsCarouselArrowContext } from './components/IpsCarousel'
 export { IpsFileUpload } from './components/IpsFileUpload'
-export type { IpsFileUploadProps, UploadResult } from './components/IpsFileUpload'
+export type { IpsFileUploadProps, UploadResult, FileUploadActionsOrder } from './components/IpsFileUpload'
+export { IpsFileUploadMobile } from './components/IpsFileUploadMobile'
+export type { IpsFileUploadMobileProps } from './components/IpsFileUploadMobile'

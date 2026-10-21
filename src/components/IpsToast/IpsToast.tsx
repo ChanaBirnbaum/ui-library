@@ -8,9 +8,17 @@ import type { ToastItem } from './IpsToast.types'
 interface IpsToastItemProps {
   toast: ToastItem
   onClose: (id: number) => void
+  /** Accessible name of the close button */
+  closeButtonLabel: string
 }
 
-export function IpsToastItem({ toast, onClose }: IpsToastItemProps) {
+/** Distance of the toasts from the screen edges (the provider's container offset) */
+export const TOAST_EDGE_OFFSET_PX = 24
+
+// On a narrow phone the toast never grows past the screen: at most the screen width minus both edge offsets
+const MAX_WIDTH_ON_SCREEN = `calc(100vw - ${TOAST_EDGE_OFFSET_PX * 2}px)`
+
+export function IpsToastItem({ toast, onClose, closeButtonLabel }: IpsToastItemProps) {
   return (
     <Box
       className="ips-toast"
@@ -26,8 +34,8 @@ export function IpsToastItem({ toast, onClose }: IpsToastItemProps) {
         backgroundColor: toast.bgColor,
         color: 'white',
         boxShadow: 4,
-        minWidth: '22em',
-        maxWidth: '32em',
+        minWidth: `min(22em, ${MAX_WIDTH_ON_SCREEN})`,
+        maxWidth: `min(32em, ${MAX_WIDTH_ON_SCREEN})`,
         animation: 'ips-toast-enter 0.3s ease forwards',
         '@keyframes ips-toast-enter': {
           from: { transform: 'translateX(100%)', opacity: 0 },
@@ -45,7 +53,7 @@ export function IpsToastItem({ toast, onClose }: IpsToastItemProps) {
         size="small"
         onClick={() => onClose(toast.id)}
         sx={{ color: 'white', ml: 0.5, flexShrink: 0 }}
-        aria-label="close"
+        aria-label={closeButtonLabel}
       >
         <CloseIcon fontSize="small" />
       </IconButton>

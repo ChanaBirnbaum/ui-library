@@ -39,10 +39,10 @@ const k = 14, w = 18, B = 16, F = 8, W = 16, j = 12, z = 12, H = s("div")({
     name: R,
     disabled: u = !1,
     className: A
-  } = o, g = T(), v = `${g}-label`, m = P === "cards", e = m || p.some((i) => !!i.description), N = ["ips-radio-group", A].filter(Boolean).join(" "), O = (i, x) => {
+  } = o, g = T(), v = `${g}-label`, m = P === "cards", e = m || p.some((i) => !!i.description), $ = ["ips-radio-group", A].filter(Boolean).join(" "), N = (i, x) => {
     const r = p.find((c) => String(c.value) === x);
     r && (b == null || b(r.value));
-  }, $ = (i, x) => {
+  }, O = (i, x) => {
     const r = d !== null && String(i.value) === String(d), c = `${g}-option-${x}`, _ = i.description ? `${c}-title` : void 0, I = i.description ? `${c}-description` : void 0;
     return /* @__PURE__ */ t(
       L,
@@ -86,7 +86,7 @@ const k = 14, w = 18, B = 16, F = 8, W = 16, j = 12, z = 12, H = s("div")({
       i.value
     );
   };
-  return /* @__PURE__ */ D(H, { ref: l, className: N, children: [
+  return /* @__PURE__ */ D(H, { ref: l, className: $, children: [
     n && /* @__PURE__ */ t(K, { id: v, children: n }),
     /* @__PURE__ */ t(
       E,
@@ -94,12 +94,12 @@ const k = 14, w = 18, B = 16, F = 8, W = 16, j = 12, z = 12, H = s("div")({
         name: R,
         row: !e,
         value: d === null ? "" : String(d),
-        onChange: O,
+        onChange: N,
         "aria-labelledby": n ? v : f,
         "aria-label": n || f ? void 0 : S,
         "aria-describedby": h,
         sx: { gap: e ? `${m ? F : B}px` : void 0 },
-        children: p.map($)
+        children: p.map(O)
       }
     )
   ] });

@@ -4,14 +4,14 @@ import { LTR_CACHE_KEY as i, RTL_CACHE_KEY as l, createLtrCache as I, createRtlC
 import { IpsRtlProvider as b } from "./components/IpsRtlProvider/IpsRtlProvider.js";
 import { IpsThemeProvider as P } from "./components/IpsThemeProvider/IpsThemeProvider.js";
 import { IpsAccordion as n } from "./components/IpsAccordion/IpsAccordion.js";
-import { IpsCheckBox as h } from "./components/IpsCheckBox/IpsCheckBox.js";
-import { IpsSwitch as E } from "./components/IpsSwitch/IpsSwitch.js";
+import { IpsCheckBox as R } from "./components/IpsCheckBox/IpsCheckBox.js";
+import { IpsSwitch as A } from "./components/IpsSwitch/IpsSwitch.js";
 import { IpsButton as u } from "./components/IpsButton/IpsButton.js";
 import { IpsTextField as _ } from "./components/IpsTextField/IpsTextField.js";
-import { IpsTextArea as k } from "./components/IpsTextArea/IpsTextArea.js";
+import { IpsTextArea as L } from "./components/IpsTextArea/IpsTextArea.js";
 import { IpsIconButton as O } from "./components/IpsIconButton/IpsIconButton.js";
-import { IpsToolTips as v } from "./components/IpsToolTips/IpsToolTips.js";
-import { IpsSelect as U } from "./components/IpsSelect/IpsSelect.js";
+import { IpsToolTips as U } from "./components/IpsToolTips/IpsToolTips.js";
+import { IpsSelect as w } from "./components/IpsSelect/IpsSelect.js";
 import { IpsSelectMobile as K } from "./components/IpsSelectMobile/IpsSelectMobile.js";
 import { IpsMultiSelectMobile as g } from "./components/IpsMultiSelectMobile/IpsMultiSelectMobile.js";
 import { IpsRadioListMobile as y } from "./components/IpsRadioListMobile/IpsRadioListMobile.js";
@@ -30,14 +30,14 @@ import { IpsPillSelect as To } from "./components/IpsPillSelect/IpsPillSelect.js
 import { IpsTimePicker as bo } from "./components/IpsTimePicker/IpsTimePicker.js";
 import { IpsDatePicker as Po } from "./components/IpsDatePicker/IpsDatePicker.js";
 import { IpsDateTimePicker as no } from "./components/IpsDateTimePicker/IpsDateTimePicker.js";
-import { IpsTable as ho } from "./components/IpsTable/IpsTable.js";
-import { IpsDataTable as Eo } from "./components/IpsDataTable/IpsDataTable.js";
+import { IpsTable as Ro } from "./components/IpsTable/IpsTable.js";
+import { IpsDataTable as Ao } from "./components/IpsDataTable/IpsDataTable.js";
 import { TableHeader as uo } from "./components/IpsDataTable/components/TableHeader.js";
 import { TableBody as _o } from "./components/IpsDataTable/components/TableBody.js";
-import { TableFooter as ko } from "./components/IpsDataTable/components/TableFooter.js";
+import { TableFooter as Lo } from "./components/IpsDataTable/components/TableFooter.js";
 import { DataCell as Oo } from "./components/IpsDataTable/components/DataCell.js";
-import { EditableCell as vo } from "./components/IpsDataTable/components/EditableCell.js";
-import { ActionCell as Uo } from "./components/IpsDataTable/components/ActionCell.js";
+import { EditableCell as Uo } from "./components/IpsDataTable/components/EditableCell.js";
+import { ActionCell as wo } from "./components/IpsDataTable/components/ActionCell.js";
 import { ExpandCell as Ko } from "./components/IpsDataTable/components/ExpandCell.js";
 import { ExpandedRow as go } from "./components/IpsDataTable/components/ExpandedRow.js";
 import { SkeletonRows as yo } from "./components/IpsDataTable/components/SkeletonRows.js";
@@ -56,15 +56,16 @@ import { IpsDialog as fe } from "./components/IpsDialog/IpsDialog.js";
 import { IpsDrawer as ie } from "./components/IpsDrawer/IpsDrawer.js";
 import { IpsCarousel as Ie } from "./components/IpsCarousel/IpsCarousel.js";
 import { IpsFileUpload as Te } from "./components/IpsFileUpload/IpsFileUpload.js";
-import { createIpsTheme as de } from "./theme/createIpsTheme.js";
-import { flexRender as Ce } from "./node_modules/@tanstack/react-table/build/lib/index.js";
-import { ipsTheme as Se } from "./theme/ipsTheme.js";
+import { IpsFileUploadMobile as de } from "./components/IpsFileUploadMobile/IpsFileUploadMobile.js";
+import { createIpsTheme as Ce } from "./theme/createIpsTheme.js";
+import { flexRender as Se } from "./node_modules/@tanstack/react-table/build/lib/index.js";
+import { ipsTheme as Me } from "./theme/ipsTheme.js";
 export {
-  Uo as ActionCell,
+  wo as ActionCell,
   ee as DEFAULT_TOOLBAR,
   Oo as DataCell,
   jo as DeleteConfirmDialog,
-  vo as EditableCell,
+  Uo as EditableCell,
   Ko as ExpandCell,
   go as ExpandedRow,
   so as IPS_AUTOCOMPLETE_POPUP_CLASS,
@@ -72,15 +73,16 @@ export {
   io as IpsAutocomplete,
   u as IpsButton,
   Ie as IpsCarousel,
-  h as IpsCheckBox,
+  R as IpsCheckBox,
   Io as IpsChipSelect,
-  Eo as IpsDataTable,
+  Ao as IpsDataTable,
   Po as IpsDatePicker,
   V as IpsDatePickerMobile,
   no as IpsDateTimePicker,
   fe as IpsDialog,
   ie as IpsDrawer,
   Te as IpsFileUpload,
+  de as IpsFileUploadMobile,
   O as IpsIconButton,
   to as IpsMenu,
   g as IpsMultiSelectMobile,
@@ -91,13 +93,13 @@ export {
   $o as IpsRichTextEditor,
   b as IpsRtlProvider,
   j as IpsSearchFieldMobile,
-  U as IpsSelect,
+  w as IpsSelect,
   K as IpsSelectMobile,
   pe as IpsStepper,
-  E as IpsSwitch,
-  ho as IpsTable,
+  A as IpsSwitch,
+  Ro as IpsTable,
   me as IpsTabs,
-  k as IpsTextArea,
+  L as IpsTextArea,
   N as IpsTextAreaMobile,
   _ as IpsTextField,
   z as IpsTextFieldMobile,
@@ -105,22 +107,22 @@ export {
   bo as IpsTimePicker,
   Z as IpsTimePickerMobile,
   zo as IpsToastProvider,
-  v as IpsToolTips,
+  U as IpsToolTips,
   i as LTR_CACHE_KEY,
   l as RTL_CACHE_KEY,
   yo as SkeletonRows,
   Xo as TOAST_TYPES,
   _o as TableBody,
-  ko as TableFooter,
+  Lo as TableFooter,
   uo as TableHeader,
   x as ThemeContext,
   f as ThemeProvider,
-  de as createIpsTheme,
+  Ce as createIpsTheme,
   I as createLtrCache,
   a as createRtlCache,
   T as directionFor,
-  Ce as flexRender,
-  Se as ipsTheme,
+  Se as flexRender,
+  Me as ipsTheme,
   xo as isIosWebKit,
   c as isRtl,
   No as useIpsToast,

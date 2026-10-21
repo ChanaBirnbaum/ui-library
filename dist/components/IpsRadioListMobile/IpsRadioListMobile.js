@@ -38,7 +38,7 @@ const _ = 56, N = 16, b = 20, w = 600, E = r("div")({
   opacity: 0,
   pointerEvents: "none"
 });
-function L() {
+function $() {
   return /* @__PURE__ */ i(
     "svg",
     {
@@ -55,7 +55,7 @@ function L() {
     }
   );
 }
-const $ = I(
+const L = I(
   (e, o) => {
     const {
       options: a,
@@ -92,7 +92,7 @@ const $ = I(
                 }
               ),
               /* @__PURE__ */ i("span", { children: t.label }),
-              s && /* @__PURE__ */ i(L, {})
+              s && /* @__PURE__ */ i($, {})
             ] }, t.value);
           })
         ]
@@ -100,7 +100,7 @@ const $ = I(
     );
   }
 );
-$.displayName = "IpsRadioListMobile";
+L.displayName = "IpsRadioListMobile";
 export {
-  $ as IpsRadioListMobile
+  L as IpsRadioListMobile
 };

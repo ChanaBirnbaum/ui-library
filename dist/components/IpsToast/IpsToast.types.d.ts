@@ -25,4 +25,11 @@ export interface IpsToastProviderProps {
     maxToasts?: number;
     /** Screen position of the toast stack (default: 'bottom-right') */
     position?: ToastPosition;
+    /**
+     * Distance in px of a bottom-positioned stack from the bottom of the screen (default: 24, like the other edges).
+     * Raise it to keep the toasts above a bottom action bar instead of covering it
+     */
+    bottomOffset?: number;
+    /** Accessible name of each toast's close button (default: 'close'), e.g. in the app's language */
+    closeButtonLabel?: string;
 }

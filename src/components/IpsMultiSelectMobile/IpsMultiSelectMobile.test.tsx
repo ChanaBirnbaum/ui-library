@@ -83,6 +83,23 @@ describe('IpsMultiSelectMobile — menu picker', () => {
     const { container } = renderComponent({ picker: 'auto' })
     expect(container.querySelector('.ips-select')).toBeInTheDocument()
   })
+
+  test('caps the open menu at half the screen, so there is room to tap outside and close it', async () => {
+    renderComponent({ picker: 'menu' })
+    await userEvent.click(screen.getByRole('combobox'))
+    expect(document.querySelector('.MuiMenu-paper')).toHaveStyle({ maxHeight: '50vh' })
+  })
+
+  test('uses the line chevron of the native mobile fields', () => {
+    const { container } = renderComponent({ picker: 'menu' })
+    expect(container.querySelector('.MuiSelect-icon path')).toHaveAttribute('d', 'm6 9 6 6 6-6')
+  })
+
+  test('links the helper text to the combobox, like the native picker', () => {
+    renderComponent({ picker: 'menu', error: true, helperText: 'Could not load' })
+    expect(screen.getByRole('combobox')).toHaveAccessibleDescription('Could not load')
+    expect(screen.getByRole('alert')).toHaveTextContent('Could not load')
+  })
 })
 
 const roomOptions = [

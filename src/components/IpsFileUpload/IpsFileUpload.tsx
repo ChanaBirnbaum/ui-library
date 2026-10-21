@@ -22,6 +22,8 @@ export function IpsFileUpload(props: IpsFileUploadProps) {
     containerId,
     className,
     sx,
+    separatorLabel,
+    actionsOrder = 'save-first',
   } = props
 
   const {
@@ -33,6 +35,35 @@ export function IpsFileUpload(props: IpsFileUploadProps) {
     loading,
     canSave,
   } = useFileUpload(props)
+
+  const saveButton = (
+    <Button
+      variant="contained"
+      size="small"
+      disabled={!canSave || disabled}
+      onClick={saveFiles}
+      startIcon={
+        loading
+          ? <CircularProgress size={16} color="inherit" />
+          : <SaveIcon />
+      }
+    >
+      שמור קבצים
+    </Button>
+  )
+
+  const clearAllButton = (
+    <Button
+      variant="outlined"
+      size="small"
+      color="error"
+      disabled={files.length === 0 || disabled}
+      onClick={clearAll}
+      startIcon={<DeleteSweepIcon />}
+    >
+      נקה הכל
+    </Button>
+  )
 
   return (
     <Box
@@ -49,6 +80,7 @@ export function IpsFileUpload(props: IpsFileUploadProps) {
         multiple={multiple}
         disabled={disabled}
         containerId={containerId}
+        separatorLabel={separatorLabel}
       />
 
       {/* ── File list ── */}
@@ -67,31 +99,18 @@ export function IpsFileUpload(props: IpsFileUploadProps) {
       )}
 
       {/* ── Actions bar ── */}
-      <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-start' }}>
-        <Button
-          variant="contained"
-          size="small"
-          disabled={!canSave || disabled}
-          onClick={saveFiles}
-          startIcon={
-            loading
-              ? <CircularProgress size={16} color="inherit" />
-              : <SaveIcon />
-          }
-        >
-          שמור קבצים
-        </Button>
-
-        <Button
-          variant="outlined"
-          size="small"
-          color="error"
-          disabled={files.length === 0 || disabled}
-          onClick={clearAll}
-          startIcon={<DeleteSweepIcon />}
-        >
-          נקה הכל
-        </Button>
+      <Box className="ips-file-upload-actions" sx={{ display: 'flex', gap: 1, justifyContent: 'flex-start' }}>
+        {actionsOrder === 'clear-first' ? (
+          <>
+            {clearAllButton}
+            {saveButton}
+          </>
+        ) : (
+          <>
+            {saveButton}
+            {clearAllButton}
+          </>
+        )}
       </Box>
     </Box>
   )
