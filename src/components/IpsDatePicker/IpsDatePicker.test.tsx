@@ -169,4 +169,23 @@ describe('IpsDatePicker', () => {
     )
     expect(document.querySelector('.ips-date-picker')).toBeInTheDocument()
   })
+
+  // ── Locale ─────────────────────────────────────────────────────────────────
+
+  it('shows Hebrew month and weekday names in the calendar by default', () => {
+    wrap(
+      <IpsDatePicker label="תאריך" value={new Date(2024, 0, 15)} onChange={jest.fn()} open />
+    )
+    expect(screen.getAllByText(/ינואר/).length).toBeGreaterThan(0)
+    expect(screen.queryByText(/January/)).not.toBeInTheDocument()
+  })
+
+  it('shows MUI picker texts in Hebrew by default', () => {
+    wrap(
+      <IpsDatePicker label="תאריך" value={new Date(2024, 0, 15)} onChange={jest.fn()} open />
+    )
+    expect(screen.getByLabelText('חודש הבא')).toBeInTheDocument()
+    expect(screen.getByLabelText('חודש קודם')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Next month')).not.toBeInTheDocument()
+  })
 })

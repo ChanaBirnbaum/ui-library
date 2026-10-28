@@ -65,60 +65,76 @@ export const IpsTabs = forwardRef<HTMLDivElement, IpsTabsProps>(function IpsTabs
     }
   }
 
+  const tabsNode = (
+    <MuiTabs
+      ref={ref}
+      value={value}
+      onChange={handleChange}
+      orientation={orientation}
+      variant={variant}
+      scrollButtons={scrollButtons as any}
+      centered={centered}
+      className={rootClass}
+      sx={{
+        '& .MuiTabs-indicator': { backgroundColor: 'primary.main' },
+        ...((sx as object | undefined) ?? {}),
+      }}
+      {...rest}
+    >
+      {tabs.map((tab, index) => {
+        const isSelected = tab.value === value
+        const ctx: IpsTabRenderContext = { index, tab, selected: isSelected }
+
+        const labelNode = renderTabLabel
+          ? renderTabLabel(ctx)
+          : <ComposedLabel tab={tab} />
+
+        const iconNode = renderTabLabel ? undefined : tab.icon
+
+        return (
+          <MuiTab
+            key={tab.key ?? tab.value}
+            value={tab.value}
+            label={labelNode}
+            icon={iconNode as any}
+            iconPosition={tab.iconPosition ?? 'top'}
+            disabled={tab.disabled}
+            id={`${idPrefix}-tab-${tab.value}`}
+            aria-controls={`${idPrefix}-panel-${tab.value}`}
+            aria-invalid={tab.error ? true : undefined}
+            className="ips-tab"
+            sx={
+              tab.error
+                ? {
+                    color: 'error.main',
+                    '&.Mui-selected': { color: 'error.main' },
+                  }
+                : undefined
+            }
+          />
+        )
+      })}
+    </MuiTabs>
+  )
+
+  if (!renderPanels) return tabsNode
+
+  // Fill the container's height; the tab list stays fixed and the active
+  // panel scrolls when its content is taller than the remaining space.
   return (
-    <>
-      <MuiTabs
-        ref={ref}
-        value={value}
-        onChange={handleChange}
-        orientation={orientation}
-        variant={variant}
-        scrollButtons={scrollButtons as any}
-        centered={centered}
-        className={rootClass}
-        sx={{
-          '& .MuiTabs-indicator': { backgroundColor: 'primary.main' },
-          ...((sx as object | undefined) ?? {}),
-        }}
-        {...rest}
-      >
-        {tabs.map((tab, index) => {
-          const isSelected = tab.value === value
-          const ctx: IpsTabRenderContext = { index, tab, selected: isSelected }
+    <Box
+      className="ips-tabs-container"
+      sx={{
+        display: 'flex',
+        flexDirection: orientation === 'vertical' ? 'row' : 'column',
+        height: '100%',
+        minHeight: 0,
+        '& > .ips-tabs': { flexShrink: 0 },
+      }}
+    >
+      {tabsNode}
 
-          const labelNode = renderTabLabel
-            ? renderTabLabel(ctx)
-            : <ComposedLabel tab={tab} />
-
-          const iconNode = renderTabLabel ? undefined : tab.icon
-
-          return (
-            <MuiTab
-              key={tab.key ?? tab.value}
-              value={tab.value}
-              label={labelNode}
-              icon={iconNode as any}
-              iconPosition={tab.iconPosition ?? 'top'}
-              disabled={tab.disabled}
-              id={`${idPrefix}-tab-${tab.value}`}
-              aria-controls={`${idPrefix}-panel-${tab.value}`}
-              aria-invalid={tab.error ? true : undefined}
-              className="ips-tab"
-              sx={
-                tab.error
-                  ? {
-                      color: 'error.main',
-                      '&.Mui-selected': { color: 'error.main' },
-                    }
-                  : undefined
-              }
-            />
-          )
-        })}
-      </MuiTabs>
-
-      {renderPanels &&
-        tabs.map((tab) => {
+      {tabs.map((tab) => {
           const isActive = tab.value === value
 
           if (!keepMounted && !isActive) return null
@@ -131,13 +147,17 @@ export const IpsTabs = forwardRef<HTMLDivElement, IpsTabsProps>(function IpsTabs
               aria-labelledby={`${idPrefix}-tab-${tab.value}`}
               className="ips-tab-panel"
               hidden={keepMounted && !isActive ? true : undefined}
-              style={keepMounted && !isActive ? { display: 'none' } : undefined}
+              style={
+                keepMounted && !isActive
+                  ? { display: 'none' }
+                  : { flex: 1, minHeight: 0, minWidth: 0, overflow: 'auto' }
+              }
             >
               {tab.content}
             </div>
           )
         })}
-    </>
+    </Box>
   )
 })
 

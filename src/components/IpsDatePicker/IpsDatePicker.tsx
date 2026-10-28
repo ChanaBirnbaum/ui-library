@@ -3,6 +3,9 @@ import Box from '@mui/material/Box'
 import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
+// Hebrew month and weekday names in the calendar
+import { he } from 'date-fns/locale'
+import { heLocaleText } from '../../utils/pickerLocale'
 import type { IpsDatePickerProps } from './IpsDatePicker.types'
 
 export const IpsDatePicker = forwardRef<HTMLDivElement, IpsDatePickerProps>(
@@ -47,7 +50,7 @@ export const IpsDatePicker = forwardRef<HTMLDivElement, IpsDatePickerProps>(
         dir={rtl ? 'rtl' : undefined}
         sx={sx}
       >
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={he} localeText={heLocaleText}>
           <DatePicker
             format={format}
             {...(props as any)}

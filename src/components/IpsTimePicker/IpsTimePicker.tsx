@@ -10,6 +10,7 @@ import type { Moment } from 'moment'
 // would be free to drop this line and the picker would fall back to English.
 // If that flag is ever wanted, register the locale explicitly first.
 import 'moment/locale/he'
+import { heLocaleText } from '../../utils/pickerLocale'
 import type { IpsTimePickerProps } from './IpsTimePicker.types'
 
 export const IpsTimePicker = forwardRef<HTMLDivElement, IpsTimePickerProps>(
@@ -46,7 +47,7 @@ export const IpsTimePicker = forwardRef<HTMLDivElement, IpsTimePickerProps>(
 
     return (
       <Box ref={ref} className={rootClassName} sx={sx}>
-        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he">
+        <LocalizationProvider dateAdapter={AdapterMoment} adapterLocale="he" localeText={heLocaleText}>
           <TimePicker
             {...props}
             onChange={handleChange as any}

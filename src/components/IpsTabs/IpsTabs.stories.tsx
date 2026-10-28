@@ -240,6 +240,35 @@ export const WithPanelsKeepMounted: Story = {
   },
 }
 
+export const FillContainerHeight: Story = {
+  render: () => {
+    const [value, setValue] = useState<string | number>('long')
+    const longContent = (
+      <Box sx={{ p: 2 }}>
+        {Array.from({ length: 30 }, (_, i) => (
+          <Typography key={i} variant="body2" sx={{ mb: 1 }}>
+            Row {i + 1} — long panel content that scrolls inside the fixed height.
+          </Typography>
+        ))}
+      </Box>
+    )
+    const tabs: IpsTabItem[] = [
+      { value: 'long', label: 'Long content', content: longContent },
+      {
+        value: 'short',
+        label: 'Short content',
+        content: <Typography variant="body2" sx={{ p: 2 }}>Short panel — no scroll.</Typography>,
+      },
+    ]
+    // IpsTabs fills its container's height — the panel scrolls when content is longer
+    return (
+      <Box sx={{ height: 300, border: 1, borderColor: 'divider' }}>
+        <IpsTabs tabs={tabs} value={value} onTabChange={(v) => setValue(v)} renderPanels />
+      </Box>
+    )
+  },
+}
+
 export const CustomRenderTabLabel: Story = {
   render: () => {
     const [value, setValue] = useState<string | number>('details')

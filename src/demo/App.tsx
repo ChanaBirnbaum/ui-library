@@ -1708,6 +1708,22 @@ function IpsTabsPanel() {
       content: <Typography variant="body2" sx={{ p: 2 }}>History panel content.</Typography> },
   ]
 
+  const [scrollValue, setScrollValue] = useState<string | number>('long')
+  const scrollTabs: IpsTabItem[] = [
+    { value: 'long', label: 'Long content',
+      content: (
+        <Box sx={{ p: 2 }}>
+          {Array.from({ length: 30 }, (_, i) => (
+            <Typography key={i} variant="body2" sx={{ mb: 1 }}>
+              Row {i + 1} — long panel content that scrolls inside the container.
+            </Typography>
+          ))}
+        </Box>
+      ) },
+    { value: 'short', label: 'Short content',
+      content: <Typography variant="body2" sx={{ p: 2 }}>Short panel — no scroll.</Typography> },
+  ]
+
   return (
     <Box>
       <PropsTable props={[
@@ -1782,6 +1798,19 @@ function IpsTabsPanel() {
       <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
         Current value: <strong>{value}</strong>
       </Typography>
+
+      <SectionTitle>Fill container height (scroll)</SectionTitle>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+        With renderPanels, IpsTabs fills 100% of its container — the panel scrolls when content is longer.
+      </Typography>
+      <Box sx={{ height: 260, border: 1, borderColor: 'divider', borderRadius: 1 }}>
+        <IpsTabs
+          tabs={scrollTabs}
+          value={scrollValue}
+          onTabChange={(v) => setScrollValue(v)}
+          renderPanels
+        />
+      </Box>
     </Box>
   )
 }

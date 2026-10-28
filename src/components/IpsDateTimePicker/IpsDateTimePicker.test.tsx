@@ -177,4 +177,15 @@ describe('IpsDateTimePicker', () => {
     )
     expect(document.querySelector('.ips-date-time-picker')).toBeInTheDocument()
   })
+
+  // ── Locale ─────────────────────────────────────────────────────────────────
+
+  it('shows Hebrew month names and MUI texts in the calendar by default', () => {
+    wrap(
+      <IpsDateTimePicker label="תאריך" value={new Date(2024, 0, 15, 10, 30)} onChange={jest.fn()} open />
+    )
+    expect(screen.getAllByText(/ינואר/).length).toBeGreaterThan(0)
+    expect(screen.queryByText(/January/)).not.toBeInTheDocument()
+    expect(screen.getByLabelText('חודש הבא')).toBeInTheDocument()
+  })
 })
