@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { SxProps, Theme } from '@mui/material/styles';
-
+import type React from 'react';
+import type { SxProps, Theme } from '@mui/material/styles';
 export type IpsTableWrap = 'ellipsis' | 'wrap' | 'nowrap';
 /** Base constraint for row data objects */
 export type IpsTableRow = Record<string, unknown>;

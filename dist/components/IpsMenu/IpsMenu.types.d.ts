@@ -1,7 +1,6 @@
-import { default as React } from 'react';
-import { IconButtonProps } from '@mui/material/IconButton';
-import { SxProps, Theme } from '@mui/material/styles';
-
+import React from 'react';
+import type { IconButtonProps } from '@mui/material/IconButton';
+import type { SxProps, Theme } from '@mui/material/styles';
 export type IpsMenuValue = string | number;
 export interface IpsMenuItem {
     /** Returned by onSelect when the item is chosen */

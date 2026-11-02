@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { ToastItem } from './IpsToast.types';
-
+import React from 'react';
+import type { ToastItem } from './IpsToast.types';
 interface IpsToastItemProps {
     toast: ToastItem;
     onClose: (id: number) => void;

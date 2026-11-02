@@ -1,7 +1,6 @@
-import { default as React } from 'react';
-import { Cell, RowData } from '@tanstack/react-table';
-import { CellOverflow } from '../IpsDataTable.types';
-
+import React from 'react';
+import type { Cell, RowData } from '@tanstack/react-table';
+import type { CellOverflow } from '../IpsDataTable.types';
 export interface DataCellProps<T extends RowData> {
     cell: Cell<T, unknown>;
     isEditing: boolean;

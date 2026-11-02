@@ -1,6 +1,5 @@
-import { DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker';
-import { SxProps, Theme } from '@mui/material/styles';
-
+import type { DateTimePickerProps } from '@mui/x-date-pickers/DateTimePicker';
+import type { SxProps, Theme } from '@mui/material/styles';
 export interface IpsDateTimePickerProps extends Omit<DateTimePickerProps, 'onChange' | 'value'> {
     /** Controlled date-time value */
     value?: Date | null;

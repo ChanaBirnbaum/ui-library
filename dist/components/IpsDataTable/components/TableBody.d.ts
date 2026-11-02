@@ -1,8 +1,7 @@
-import { default as React } from 'react';
-import { Table, RowData } from '@tanstack/react-table';
-import { VirtualItem } from '@tanstack/react-virtual';
-import { ActionDef, EditingState, CellOverflow } from '../IpsDataTable.types';
-
+import React from 'react';
+import type { Table, RowData } from '@tanstack/react-table';
+import type { VirtualItem } from '@tanstack/react-virtual';
+import type { ActionDef, EditingState, CellOverflow } from '../IpsDataTable.types';
 export interface TableBodyProps<T extends RowData> {
     table: Table<T>;
     editingState: EditingState;

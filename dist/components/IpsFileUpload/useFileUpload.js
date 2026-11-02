@@ -1,61 +1,81 @@
-import { useState as y, useCallback as i } from "react";
-import { buildUploadUrl as $ } from "../../utils/uploadUtils.js";
-function z(M) {
-  const {
-    sviva: m,
-    system: p,
-    uploadParams: u = {},
-    uploadMethod: h,
-    maxFileSizeMB: l = 10,
-    onBeforeSave: c,
-    onSaveSuccess: r,
-    onSaveError: n
-  } = M, [o, f] = y([]), [w, F] = y(!1), b = i((a) => {
-    const e = l * 1024 * 1024, s = a.map((t) => t.size > e ? {
-      file: t,
-      hasError: !0,
-      errorMessage: `הקובץ חורג מהגודל המותר (${l} MB)`
-    } : { file: t, hasError: !1 });
-    f((t) => [...t, ...s]);
-  }, [l]), g = i((a) => {
-    f((e) => e.filter(({ file: s }) => s !== a));
-  }, []), d = i(() => {
-    f([]);
-  }, []), v = i(async () => {
-    if (c && !await c())
-      return;
-    F(!0);
-    const a = [];
-    try {
-      for (const { file: e } of o) {
-        const s = new FormData();
-        s.append("file", e), Object.entries(u).forEach(([E, U]) => s.append(E, U));
-        const t = await fetch($(m, p, h), {
-          method: "POST",
-          body: s
+import { useState, useCallback } from 'react';
+import { buildUploadUrl } from '../../utils/uploadUtils';
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+export function useFileUpload(props) {
+    const { sviva, system, uploadParams = {}, uploadMethod, maxFileSizeMB = 10, onBeforeSave, onSaveSuccess, onSaveError, } = props;
+    const [files, setFiles] = useState([]);
+    const [loading, setLoading] = useState(false);
+    // ─── addFiles ───────────────────────────────────────────────────────────────
+    // Validates size immediately on add. Accumulates — does not replace existing.
+    const addFiles = useCallback((newFiles) => {
+        const maxBytes = maxFileSizeMB * 1024 * 1024;
+        const withMeta = newFiles.map((file) => {
+            if (file.size > maxBytes) {
+                return {
+                    file,
+                    hasError: true,
+                    errorMessage: `הקובץ חורג מהגודל המותר (${maxFileSizeMB} MB)`,
+                };
+            }
+            return { file, hasError: false };
         });
-        if (!t.ok)
-          throw new Error(`Upload failed for ${e.name}: ${t.statusText}`);
-        const B = await t.json();
-        a.push({ name: e.name, path: B.path });
-      }
-      r == null || r(a), d();
-    } catch (e) {
-      n == null || n(e);
-    } finally {
-      F(!1);
-    }
-  }, [o, u, m, p, h, c, r, n, d]), x = o.length > 0 && !o.some((a) => a.hasError) && !w;
-  return {
-    files: o,
-    addFiles: b,
-    removeFile: g,
-    clearAll: d,
-    saveFiles: v,
-    loading: w,
-    canSave: x
-  };
+        setFiles((prev) => [...prev, ...withMeta]);
+    }, [maxFileSizeMB]);
+    // ─── removeFile ─────────────────────────────────────────────────────────────
+    const removeFile = useCallback((target) => {
+        setFiles((prev) => prev.filter(({ file }) => file !== target));
+    }, []);
+    // ─── clearAll ───────────────────────────────────────────────────────────────
+    const clearAll = useCallback(() => {
+        setFiles([]);
+    }, []);
+    // ─── saveFiles ──────────────────────────────────────────────────────────────
+    const saveFiles = useCallback(async () => {
+        // 1. Pre-save validation
+        if (onBeforeSave) {
+            const isValid = await onBeforeSave();
+            if (!isValid)
+                return;
+        }
+        setLoading(true);
+        const results = [];
+        try {
+            for (const { file } of files) {
+                // 2. Build FormData
+                const formData = new FormData();
+                formData.append('file', file);
+                Object.entries(uploadParams).forEach(([k, v]) => formData.append(k, v));
+                // 3. POST to SharePoint endpoint
+                const response = await fetch(buildUploadUrl(sviva, system, uploadMethod), {
+                    method: 'POST',
+                    body: formData,
+                });
+                if (!response.ok) {
+                    throw new Error(`Upload failed for ${file.name}: ${response.statusText}`);
+                }
+                const data = await response.json();
+                results.push({ name: file.name, path: data.path });
+            }
+            // 4. Success
+            onSaveSuccess?.(results);
+            clearAll();
+        }
+        catch (error) {
+            onSaveError?.(error);
+        }
+        finally {
+            setLoading(false);
+        }
+    }, [files, uploadParams, sviva, system, uploadMethod, onBeforeSave, onSaveSuccess, onSaveError, clearAll]);
+    // ─── Derived state ───────────────────────────────────────────────────────────
+    const canSave = files.length > 0 && !files.some((f) => f.hasError) && !loading;
+    return {
+        files,
+        addFiles,
+        removeFile,
+        clearAll,
+        saveFiles,
+        loading,
+        canSave,
+    };
 }
-export {
-  z as useFileUpload
-};

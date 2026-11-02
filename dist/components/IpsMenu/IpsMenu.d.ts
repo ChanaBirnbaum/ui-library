@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { IpsMenuProps } from './IpsMenu.types';
-
+import React from 'react';
+import type { IpsMenuProps } from './IpsMenu.types';
 /**
  * A menu button: an icon button (e.g. ⋮) that opens a list of actions.
  * The menu opens below the trigger, aligned to its end side (left in RTL), so it grows into the content.

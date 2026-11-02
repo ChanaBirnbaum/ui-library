@@ -1,52 +1,30 @@
-import { jsxs as n, jsx as e } from "react/jsx-runtime";
-import r from "@mui/material/Box";
-import s from "@mui/material/IconButton";
-import l from "@mui/material/Typography";
-import m from "@mui/icons-material/Close";
-const c = 24, i = `calc(100vw - ${c * 2}px)`;
-function g({ toast: o, onClose: t, closeButtonLabel: a }) {
-  return /* @__PURE__ */ n(
-    r,
-    {
-      className: "ips-toast",
-      role: "alert",
-      sx: {
-        display: "flex",
-        alignItems: "center",
-        gap: 1.5,
-        px: 2,
-        py: 1.5,
-        mb: 1,
-        borderRadius: 2,
-        backgroundColor: o.bgColor,
-        color: "white",
-        boxShadow: 4,
-        minWidth: `min(22em, ${i})`,
-        maxWidth: `min(32em, ${i})`,
-        animation: "ips-toast-enter 0.3s ease forwards",
-        "@keyframes ips-toast-enter": {
-          from: { transform: "translateX(100%)", opacity: 0 },
-          to: { transform: "translateX(0)", opacity: 1 }
-        }
-      },
-      children: [
-        /* @__PURE__ */ e(r, { sx: { flexShrink: 0, display: "flex", alignItems: "center" }, children: o.icon }),
-        /* @__PURE__ */ e(l, { variant: "body2", sx: { flex: 1, fontWeight: 500, lineHeight: 1.4 }, children: o.message }),
-        /* @__PURE__ */ e(
-          s,
-          {
-            size: "small",
-            onClick: () => t(o.id),
-            sx: { color: "white", ml: 0.5, flexShrink: 0 },
-            "aria-label": a,
-            children: /* @__PURE__ */ e(m, { fontSize: "small" })
-          }
-        )
-      ]
-    }
-  );
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import CloseIcon from '@mui/icons-material/Close';
+/** Distance of the toasts from the screen edges (the provider's container offset) */
+export const TOAST_EDGE_OFFSET_PX = 24;
+// On a narrow phone the toast never grows past the screen: at most the screen width minus both edge offsets
+const MAX_WIDTH_ON_SCREEN = `calc(100vw - ${TOAST_EDGE_OFFSET_PX * 2}px)`;
+export function IpsToastItem({ toast, onClose, closeButtonLabel }) {
+    return (_jsxs(Box, { className: "ips-toast", role: "alert", sx: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+            px: 2,
+            py: 1.5,
+            mb: 1,
+            borderRadius: 2,
+            backgroundColor: toast.bgColor,
+            color: 'white',
+            boxShadow: 4,
+            minWidth: `min(22em, ${MAX_WIDTH_ON_SCREEN})`,
+            maxWidth: `min(32em, ${MAX_WIDTH_ON_SCREEN})`,
+            animation: 'ips-toast-enter 0.3s ease forwards',
+            '@keyframes ips-toast-enter': {
+                from: { transform: 'translateX(100%)', opacity: 0 },
+                to: { transform: 'translateX(0)', opacity: 1 },
+            },
+        }, children: [_jsx(Box, { sx: { flexShrink: 0, display: 'flex', alignItems: 'center' }, children: toast.icon }), _jsx(Typography, { variant: "body2", sx: { flex: 1, fontWeight: 500, lineHeight: 1.4 }, children: toast.message }), _jsx(IconButton, { size: "small", onClick: () => onClose(toast.id), sx: { color: 'white', ml: 0.5, flexShrink: 0 }, "aria-label": closeButtonLabel, children: _jsx(CloseIcon, { fontSize: "small" }) })] }));
 }
-export {
-  g as IpsToastItem,
-  c as TOAST_EDGE_OFFSET_PX
-};

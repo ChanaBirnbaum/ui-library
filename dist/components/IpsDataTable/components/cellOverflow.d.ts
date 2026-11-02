@@ -1,6 +1,5 @@
-import { ColumnMeta, RowData } from '@tanstack/react-table';
-import { CellOverflow } from '../IpsDataTable.types';
-
+import type { ColumnMeta, RowData } from '@tanstack/react-table';
+import type { CellOverflow } from '../IpsDataTable.types';
 type Meta<T extends RowData> = ColumnMeta<T, unknown> | undefined;
 /** Plain style object, spreadable into an MUI `sx` prop. */
 type CellSx = Record<string, string | number | undefined>;

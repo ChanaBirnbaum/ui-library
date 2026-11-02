@@ -1,5 +1,4 @@
-import { CSSProperties } from 'react';
-
+import type { CSSProperties } from 'react';
 export interface IpsThemeCustom {
     spacing: {
         /** MUI spacing factor (8). theme.spacing(1) === 8px */

@@ -1,239 +1,184 @@
-import { jsxs as U, jsx as o } from "react/jsx-runtime";
-import pe, { forwardRef as fe, useState as I, useRef as M, useCallback as $, useEffect as me } from "react";
-import n from "@mui/material/Box";
-import V from "@mui/material/IconButton";
-import w from "@mui/material/SvgIcon";
-import { useTheme as he, alpha as ve } from "@mui/material/styles";
-const G = () => /* @__PURE__ */ o(w, { children: /* @__PURE__ */ o("path", { d: "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" }) }), W = () => /* @__PURE__ */ o(w, { children: /* @__PURE__ */ o("path", { d: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" }) }), we = () => /* @__PURE__ */ o(w, { children: /* @__PURE__ */ o("path", { d: "M8 5v14l11-7z" }) }), be = () => /* @__PURE__ */ o(w, { children: /* @__PURE__ */ o("path", { d: "M6 19h4V5H6v14zm8-14v14h4V5h-4z" }) }), xe = 40, ye = fe((q, J) => {
-  const {
-    items: p = [],
-    activeIndex: k,
-    defaultIndex: K = 0,
-    onIndexChange: s,
-    autoPlay: Q = !0,
-    respectReducedMotion: Y = !1,
-    interval: N = 5e3,
-    loop: a = !0,
-    pauseOnHover: f = !0,
-    swipeable: R = !0,
-    showArrows: S = !1,
-    showDots: z = !0,
-    dotsClickable: b = !0,
-    showPlayPause: C = !1,
-    transition: Z = "slide",
-    height: D,
-    aspectRatio: L,
-    rtl: ee,
-    idPrefix: x = "ips-carousel",
-    renderDot: E,
-    renderArrow: H,
-    sx: re
-  } = q, A = he(), y = ee ?? A.direction === "rtl", d = k !== void 0, [oe, F] = I(K), i = d ? k : oe, t = p.length, _ = M(
-    typeof window < "u" && typeof window.matchMedia == "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
-  ).current, [te, m] = I(!1), [P, se] = I(!1), u = Q && (!Y || !_) && t > 1, j = u && !te && !P, h = M(i);
-  h.current = i;
-  const l = $(
-    (e) => {
-      d || F(e), s == null || s(e);
-    },
-    [d, s]
-  ), B = $(() => {
-    const e = h.current - 1;
-    e < 0 ? a && l(t - 1) : l(e);
-  }, [a, t, l]), T = $(() => {
-    const e = h.current + 1;
-    e >= t ? a && l(0) : l(e);
-  }, [a, t, l]);
-  me(() => {
-    if (!j) return;
-    const e = setInterval(() => {
-      const r = h.current;
-      if (!a && r >= t - 1) return;
-      const c = r + 1 >= t ? 0 : r + 1;
-      d || F(c), s == null || s(c);
-    }, N);
-    return () => clearInterval(e);
-  }, [j, a, t, N, d, s]);
-  const v = M(null), ie = (e) => {
-    R && (v.current = e.clientX);
-  }, ne = (e) => {
-    if (!R || v.current === null) return;
-    const r = e.clientX - v.current;
-    if (v.current = null, Math.abs(r) < xe) return;
-    (y ? r > 0 : r < 0) ? T() : B();
-  }, ae = !a && i === 0, le = !a && i === t - 1, ce = y ? W : G, de = y ? G : W, X = (e) => H ? H(e) : /* @__PURE__ */ o(
-    V,
-    {
-      className: "ips-carousel-arrow",
-      onClick: e.onClick,
-      disabled: e.disabled,
-      size: "small",
-      "aria-label": e.direction === "prev" ? "Previous slide" : "Next slide",
-      sx: {
-        bgcolor: "transparent",
-        border: "none",
-        "&:hover": { bgcolor: "transparent" },
-        "&.Mui-disabled": { opacity: 0.3 }
-      },
-      children: e.direction === "prev" ? /* @__PURE__ */ o(ce, {}) : /* @__PURE__ */ o(de, {})
-    }
-  ), ue = (e) => E ? E(e) : /* @__PURE__ */ o(
-    n,
-    {
-      component: "button",
-      onClick: e.onClick,
-      disabled: !b,
-      "aria-label": `Go to slide ${e.index + 1}`,
-      "aria-current": e.active ? "true" : void 0,
-      sx: {
-        width: e.active ? 20 : 8,
-        height: 8,
-        borderRadius: 999,
-        border: "none",
-        cursor: b ? "pointer" : "default",
-        bgcolor: e.active ? "primary.main" : ve(A.palette.primary.main, 0.3),
-        p: 0,
-        flexShrink: 0,
-        transition: _ ? "none" : "all 0.2s ease"
-      }
-    }
-  ), O = 500, g = { overflow: "hidden", position: "relative" };
-  return D !== void 0 && (g.height = D), L !== void 0 && (g.aspectRatio = String(L)), t === 0 ? null : /* @__PURE__ */ U(
-    n,
-    {
-      ref: J,
-      role: "region",
-      "aria-roledescription": "carousel",
-      "aria-label": x,
-      className: "ips-carousel",
-      onMouseEnter: f && u ? () => m(!0) : void 0,
-      onMouseLeave: f && u ? () => m(!1) : void 0,
-      onFocus: f && u ? () => m(!0) : void 0,
-      onBlur: f && u ? () => m(!1) : void 0,
-      onPointerDown: ie,
-      onPointerUp: ne,
-      sx: {
-        position: "relative",
-        userSelect: "none",
-        "&:hover .ips-carousel-arrow-wrap, &:focus-within .ips-carousel-arrow-wrap": { opacity: 1 },
-        ...re
-      },
-      children: [
-        /* @__PURE__ */ o(n, { className: "ips-carousel-viewport", sx: g, children: Z === "slide" ? (
-          // Slide: a track wide enough to hold all slides, translated to show current
-          /* @__PURE__ */ o(
-            n,
-            {
-              sx: {
-                display: "flex",
-                width: `${t * 100}%`,
-                // translateX(-i * slideWidth) where slideWidth = 100%/count of track
-                transform: `translateX(-${i * (100 / t)}%)`,
-                transition: `transform ${O}ms ease-in-out`
-              },
-              children: p.map((e, r) => /* @__PURE__ */ o(
-                n,
-                {
-                  role: "group",
-                  "aria-roledescription": "slide",
-                  "aria-label": `${r + 1} of ${t}`,
-                  id: `${x}-slide-${r}`,
-                  className: "ips-carousel-slide",
-                  sx: { width: `${100 / t}%`, flexShrink: 0 },
-                  children: e
-                },
-                r
-              ))
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import React, { forwardRef, useState, useRef, useCallback, useEffect } from 'react';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import SvgIcon from '@mui/material/SvgIcon';
+import { useTheme, alpha } from '@mui/material/styles';
+const ChevronLeftIcon = () => (_jsx(SvgIcon, { children: _jsx("path", { d: "M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" }) }));
+const ChevronRightIcon = () => (_jsx(SvgIcon, { children: _jsx("path", { d: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" }) }));
+const PlayIcon = () => _jsx(SvgIcon, { children: _jsx("path", { d: "M8 5v14l11-7z" }) });
+const PauseIcon = () => _jsx(SvgIcon, { children: _jsx("path", { d: "M6 19h4V5H6v14zm8-14v14h4V5h-4z" }) });
+const SWIPE_THRESHOLD = 40;
+export const IpsCarousel = forwardRef((props, ref) => {
+    const { items = [], activeIndex: controlledIndex, defaultIndex = 0, onIndexChange, autoPlay = true, respectReducedMotion = false, interval = 5000, loop = true, pauseOnHover = true, swipeable = true, showArrows = false, showDots = true, dotsClickable = true, showPlayPause = false, transition = 'slide', height, aspectRatio, rtl, idPrefix = 'ips-carousel', renderDot, renderArrow, sx, } = props;
+    const theme = useTheme();
+    const isRtl = rtl ?? (theme.direction === 'rtl');
+    const isControlled = controlledIndex !== undefined;
+    const [internalIndex, setInternalIndex] = useState(defaultIndex);
+    const current = isControlled ? controlledIndex : internalIndex;
+    const count = items.length;
+    // Capture at mount — does not change across renders
+    const prefersReducedMotion = useRef(typeof window !== 'undefined' &&
+        typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches).current;
+    const [hoverPaused, setHoverPaused] = useState(false);
+    const [manualPaused, setManualPaused] = useState(false);
+    const canAutoPlay = autoPlay && (!respectReducedMotion || !prefersReducedMotion) && count > 1;
+    const playing = canAutoPlay && !hoverPaused && !manualPaused;
+    // Ref so the auto-play interval always reads the latest index without being
+    // recreated on every index change.
+    const currentRef = useRef(current);
+    currentRef.current = current;
+    const goTo = useCallback((next) => {
+        if (isControlled) {
+            onIndexChange?.(next);
+        }
+        else {
+            setInternalIndex(next);
+            onIndexChange?.(next);
+        }
+    }, [isControlled, onIndexChange]);
+    const goPrev = useCallback(() => {
+        const prev = currentRef.current - 1;
+        if (prev < 0) {
+            if (loop)
+                goTo(count - 1);
+        }
+        else {
+            goTo(prev);
+        }
+    }, [loop, count, goTo]);
+    const goNext = useCallback(() => {
+        const next = currentRef.current + 1;
+        if (next >= count) {
+            if (loop)
+                goTo(0);
+        }
+        else {
+            goTo(next);
+        }
+    }, [loop, count, goTo]);
+    // Auto-play: start/clear based on whether we should be playing
+    useEffect(() => {
+        if (!playing)
+            return;
+        const timer = setInterval(() => {
+            const idx = currentRef.current;
+            if (!loop && idx >= count - 1)
+                return;
+            const next = idx + 1 >= count ? 0 : idx + 1;
+            if (isControlled) {
+                onIndexChange?.(next);
             }
-          )
-        ) : (
-          // Fade: all slides stacked, only the current one is opaque
-          /* @__PURE__ */ o(n, { sx: { position: "relative" }, children: p.map((e, r) => /* @__PURE__ */ o(
-            n,
-            {
-              role: "group",
-              "aria-roledescription": "slide",
-              "aria-label": `${r + 1} of ${t}`,
-              id: `${x}-slide-${r}`,
-              className: "ips-carousel-slide",
-              sx: {
-                position: r === i ? "relative" : "absolute",
-                inset: r === i ? "auto" : 0,
-                width: "100%",
-                opacity: r === i ? 1 : 0,
-                transition: `opacity ${O}ms ease-in-out`,
-                pointerEvents: r === i ? "auto" : "none"
-              },
-              children: e
-            },
-            r
-          )) })
-        ) }),
-        S && t > 1 && /* @__PURE__ */ o(
-          n,
-          {
-            className: "ips-carousel-arrow-wrap",
-            sx: {
-              position: "absolute",
-              top: "50%",
-              left: 0,
-              transform: "translate(-100%, -50%)",
-              zIndex: 1,
-              opacity: 0,
-              transition: "opacity 0.2s ease"
-            },
-            children: X({ direction: "prev", disabled: ae, onClick: B })
-          }
-        ),
-        S && t > 1 && /* @__PURE__ */ o(
-          n,
-          {
-            className: "ips-carousel-arrow-wrap",
-            sx: {
-              position: "absolute",
-              top: "50%",
-              right: 0,
-              transform: "translate(100%, -50%)",
-              zIndex: 1,
-              opacity: 0,
-              transition: "opacity 0.2s ease"
-            },
-            children: X({ direction: "next", disabled: le, onClick: T })
-          }
-        ),
-        (z || C) && t > 1 && /* @__PURE__ */ U(
-          n,
-          {
-            className: "ips-carousel-dots",
-            sx: { display: "flex", justifyContent: "center", alignItems: "center", mt: 1, gap: 0.5 },
-            children: [
-              C && /* @__PURE__ */ o(
-                V,
-                {
-                  size: "small",
-                  onClick: () => se((e) => !e),
-                  "aria-label": P ? "Play" : "Pause",
-                  children: P ? /* @__PURE__ */ o(we, {}) : /* @__PURE__ */ o(be, {})
-                }
-              ),
-              z && p.map((e, r) => {
-                const c = {
-                  index: r,
-                  active: r === i,
-                  onClick: () => {
-                    b && l(r);
-                  }
-                };
-                return /* @__PURE__ */ o(pe.Fragment, { children: ue(c) }, r);
-              })
-            ]
-          }
-        )
-      ]
-    }
-  );
+            else {
+                setInternalIndex(next);
+                onIndexChange?.(next);
+            }
+        }, interval);
+        return () => clearInterval(timer);
+    }, [playing, loop, count, interval, isControlled, onIndexChange]);
+    // Swipe / drag support
+    const swipeStart = useRef(null);
+    const handlePointerDown = (e) => {
+        if (!swipeable)
+            return;
+        swipeStart.current = e.clientX;
+    };
+    const handlePointerUp = (e) => {
+        if (!swipeable || swipeStart.current === null)
+            return;
+        const delta = e.clientX - swipeStart.current;
+        swipeStart.current = null;
+        if (Math.abs(delta) < SWIPE_THRESHOLD)
+            return;
+        // In RTL the swipe direction is mirrored
+        const goForward = isRtl ? delta > 0 : delta < 0;
+        if (goForward)
+            goNext();
+        else
+            goPrev();
+    };
+    const prevDisabled = !loop && current === 0;
+    const nextDisabled = !loop && current === count - 1;
+    // Arrow icons flip in RTL so ← always means "back" and → always means "forward"
+    const PrevIcon = isRtl ? ChevronRightIcon : ChevronLeftIcon;
+    const NextIcon = isRtl ? ChevronLeftIcon : ChevronRightIcon;
+    const buildArrow = (ctx) => renderArrow ? (renderArrow(ctx)) : (_jsx(IconButton, { className: "ips-carousel-arrow", onClick: ctx.onClick, disabled: ctx.disabled, size: "small", "aria-label": ctx.direction === 'prev' ? 'Previous slide' : 'Next slide', sx: {
+            bgcolor: 'transparent',
+            border: 'none',
+            '&:hover': { bgcolor: 'transparent' },
+            '&.Mui-disabled': { opacity: 0.3 },
+        }, children: ctx.direction === 'prev' ? _jsx(PrevIcon, {}) : _jsx(NextIcon, {}) }));
+    const buildDot = (ctx) => renderDot ? (renderDot(ctx)) : (_jsx(Box, { component: "button", onClick: ctx.onClick, disabled: !dotsClickable, "aria-label": `Go to slide ${ctx.index + 1}`, "aria-current": ctx.active ? 'true' : undefined, sx: {
+            width: ctx.active ? 20 : 8,
+            height: 8,
+            borderRadius: 999,
+            border: 'none',
+            cursor: dotsClickable ? 'pointer' : 'default',
+            bgcolor: ctx.active
+                ? 'primary.main'
+                : alpha(theme.palette.primary.main, 0.3),
+            p: 0,
+            flexShrink: 0,
+            transition: prefersReducedMotion ? 'none' : 'all 0.2s ease',
+        } }));
+    // Always transition — never jump straight to the next slide.
+    const animMs = 500;
+    // Viewport size constraints
+    const viewportSx = { overflow: 'hidden', position: 'relative' };
+    if (height !== undefined)
+        viewportSx.height = height;
+    if (aspectRatio !== undefined)
+        viewportSx.aspectRatio = String(aspectRatio);
+    if (count === 0)
+        return null;
+    return (_jsxs(Box, { ref: ref, role: "region", "aria-roledescription": "carousel", "aria-label": idPrefix, className: "ips-carousel", onMouseEnter: pauseOnHover && canAutoPlay ? () => setHoverPaused(true) : undefined, onMouseLeave: pauseOnHover && canAutoPlay ? () => setHoverPaused(false) : undefined, onFocus: pauseOnHover && canAutoPlay ? () => setHoverPaused(true) : undefined, onBlur: pauseOnHover && canAutoPlay ? () => setHoverPaused(false) : undefined, onPointerDown: handlePointerDown, onPointerUp: handlePointerUp, sx: {
+            position: 'relative',
+            userSelect: 'none',
+            '&:hover .ips-carousel-arrow-wrap, &:focus-within .ips-carousel-arrow-wrap': { opacity: 1 },
+            ...sx,
+        }, children: [_jsx(Box, { className: "ips-carousel-viewport", sx: viewportSx, children: transition === 'slide' ? (
+                // Slide: a track wide enough to hold all slides, translated to show current
+                _jsx(Box, { sx: {
+                        display: 'flex',
+                        width: `${count * 100}%`,
+                        // translateX(-i * slideWidth) where slideWidth = 100%/count of track
+                        transform: `translateX(-${current * (100 / count)}%)`,
+                        transition: animMs ? `transform ${animMs}ms ease-in-out` : 'none',
+                    }, children: items.map((item, i) => (_jsx(Box, { role: "group", "aria-roledescription": "slide", "aria-label": `${i + 1} of ${count}`, id: `${idPrefix}-slide-${i}`, className: "ips-carousel-slide", sx: { width: `${100 / count}%`, flexShrink: 0 }, children: item }, i))) })) : (
+                // Fade: all slides stacked, only the current one is opaque
+                _jsx(Box, { sx: { position: 'relative' }, children: items.map((item, i) => (_jsx(Box, { role: "group", "aria-roledescription": "slide", "aria-label": `${i + 1} of ${count}`, id: `${idPrefix}-slide-${i}`, className: "ips-carousel-slide", sx: {
+                            position: i === current ? 'relative' : 'absolute',
+                            inset: i === current ? 'auto' : 0,
+                            width: '100%',
+                            opacity: i === current ? 1 : 0,
+                            transition: animMs ? `opacity ${animMs}ms ease-in-out` : 'none',
+                            pointerEvents: i === current ? 'auto' : 'none',
+                        }, children: item }, i))) })) }), showArrows && count > 1 && (_jsx(Box, { className: "ips-carousel-arrow-wrap", sx: {
+                    position: 'absolute',
+                    top: '50%',
+                    left: 0,
+                    transform: 'translate(-100%, -50%)',
+                    zIndex: 1,
+                    opacity: 0,
+                    transition: 'opacity 0.2s ease',
+                }, children: buildArrow({ direction: 'prev', disabled: prevDisabled, onClick: goPrev }) })), showArrows && count > 1 && (_jsx(Box, { className: "ips-carousel-arrow-wrap", sx: {
+                    position: 'absolute',
+                    top: '50%',
+                    right: 0,
+                    transform: 'translate(100%, -50%)',
+                    zIndex: 1,
+                    opacity: 0,
+                    transition: 'opacity 0.2s ease',
+                }, children: buildArrow({ direction: 'next', disabled: nextDisabled, onClick: goNext }) })), (showDots || showPlayPause) && count > 1 && (_jsxs(Box, { className: "ips-carousel-dots", sx: { display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 1, gap: 0.5 }, children: [showPlayPause && (_jsx(IconButton, { size: "small", onClick: () => setManualPaused((p) => !p), "aria-label": manualPaused ? 'Play' : 'Pause', children: manualPaused ? _jsx(PlayIcon, {}) : _jsx(PauseIcon, {}) })), showDots &&
+                        items.map((_, i) => {
+                            const ctx = {
+                                index: i,
+                                active: i === current,
+                                onClick: () => { if (dotsClickable)
+                                    goTo(i); },
+                            };
+                            return _jsx(React.Fragment, { children: buildDot(ctx) }, i);
+                        })] }))] }));
 });
-ye.displayName = "IpsCarousel";
-export {
-  ye as IpsCarousel
-};
+IpsCarousel.displayName = 'IpsCarousel';

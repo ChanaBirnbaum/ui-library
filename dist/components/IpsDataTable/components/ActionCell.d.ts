@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { ActionDef } from '../IpsDataTable.types';
-
+import React from 'react';
+import type { ActionDef } from '../IpsDataTable.types';
 export interface ActionCellProps<T> {
     row: T;
     /** External edit handler (no inline edit) */

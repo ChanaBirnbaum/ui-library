@@ -1,5 +1,4 @@
-import { default as React } from 'react';
-
+import React from 'react';
 export type NavItem = {
     id: string;
     label: string;

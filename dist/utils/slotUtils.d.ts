@@ -1,5 +1,4 @@
-import { SxProps, Theme } from '@mui/material/styles';
-
+import type { SxProps, Theme } from '@mui/material/styles';
 /**
  * Normalises an `sx` value into an array so component defaults can be merged
  * with a consumer's `sx` instead of one silently overwriting the other.

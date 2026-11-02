@@ -1,5 +1,4 @@
-import { SxProps, Theme } from '@mui/material';
-
+import type { SxProps, Theme } from '@mui/material';
 export interface UploadResult {
     name: string;
     path: string;

@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { IpsTableProps, IpsTableRow } from './IpsTable.types';
-
+import React from 'react';
+import type { IpsTableProps, IpsTableRow } from './IpsTable.types';
 /** Generic interface that preserves Row type parameter and exposes displayName */
 interface IpsTableComponent {
     <Row extends IpsTableRow>(props: IpsTableProps<Row> & {

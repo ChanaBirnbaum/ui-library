@@ -1,5 +1,4 @@
-import { EmotionCache } from '@emotion/cache';
-
+import type { EmotionCache } from '@emotion/cache';
 /** Emotion cache key used for the RTL (CSS-flipping) cache. */
 export declare const RTL_CACHE_KEY = "muirtl";
 /** Emotion cache key used for the plain LTR cache. */

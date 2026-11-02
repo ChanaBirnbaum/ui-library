@@ -1,53 +1,26 @@
-import { jsx as i } from "react/jsx-runtime";
-import { forwardRef as v } from "react";
-import y from "@mui/material/Box";
-import { DateTimePicker as k } from "@mui/x-date-pickers/DateTimePicker";
-import { LocalizationProvider as x } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDateFns as D } from "@mui/x-date-pickers/AdapterDateFns";
-const g = v(
-  ({
-    format: m = "dd/MM/yyyy HH:mm",
-    rtl: d = !1,
-    error: r,
-    helperText: t,
-    slotProps: e,
-    sx: n,
-    className: c,
-    readOnly: o,
-    onChange: a,
-    ...f
-  }, l) => {
-    const p = ["ips-date-time-picker", c].filter(Boolean).join(" "), s = {
-      ...e,
-      textField: {
-        ...e == null ? void 0 : e.textField,
-        ...r !== void 0 ? { error: r } : {},
-        ...t !== void 0 ? { helperText: t } : {},
-        ...o ? { readOnly: !0 } : {}
-      }
+import { jsx as _jsx } from "react/jsx-runtime";
+import { forwardRef } from 'react';
+import Box from '@mui/material/Box';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+export const IpsDateTimePicker = forwardRef(({ format = 'dd/MM/yyyy HH:mm', rtl = false, error, helperText, slotProps, sx, className, readOnly, onChange, ...props }, ref) => {
+    const rootClassName = ['ips-date-time-picker', className].filter(Boolean).join(' ');
+    // Merge error/helperText/readOnly into slotProps.textField
+    const mergedSlotProps = {
+        ...slotProps,
+        textField: {
+            ...slotProps?.textField,
+            ...(error !== undefined ? { error } : {}),
+            ...(helperText !== undefined ? { helperText } : {}),
+            ...(readOnly ? { readOnly: true } : {}),
+        },
     };
-    return /* @__PURE__ */ i(
-      y,
-      {
-        ref: l,
-        className: p,
-        dir: d ? "rtl" : void 0,
-        sx: n,
-        children: /* @__PURE__ */ i(x, { dateAdapter: D, children: /* @__PURE__ */ i(
-          k,
-          {
-            format: m,
-            ...f,
-            readOnly: o,
-            onChange: a ? (h) => a(h) : void 0,
-            slotProps: s
-          }
-        ) })
-      }
-    );
-  }
-);
-g.displayName = "IpsDateTimePicker";
-export {
-  g as IpsDateTimePicker
-};
+    // @date-io/moment augments global PickerValue to Moment; wrap onChange to keep
+    // our public API as (Date | null) => void regardless of the active adapter type.
+    const handleChange = onChange
+        ? (value) => onChange(value)
+        : undefined;
+    return (_jsx(Box, { ref: ref, className: rootClassName, dir: rtl ? 'rtl' : undefined, sx: sx, children: _jsx(LocalizationProvider, { dateAdapter: AdapterDateFns, children: _jsx(DateTimePicker, { format: format, ...props, readOnly: readOnly, onChange: handleChange, slotProps: mergedSlotProps }) }) }));
+});
+IpsDateTimePicker.displayName = 'IpsDateTimePicker';

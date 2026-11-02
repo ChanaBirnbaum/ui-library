@@ -1,6 +1,5 @@
-import { ReactNode } from 'react';
-import { TabsProps } from '@mui/material/Tabs';
-
+import type { ReactNode } from 'react';
+import type { TabsProps } from '@mui/material/Tabs';
 export interface IpsTabItem {
     /** Stable identifier — drives selection and aria wiring (required) */
     value: string | number;

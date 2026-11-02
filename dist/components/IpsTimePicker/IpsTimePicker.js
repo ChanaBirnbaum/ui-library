@@ -1,41 +1,31 @@
-import { jsx as i } from "react/jsx-runtime";
-import { forwardRef as l } from "react";
-import s from "@mui/material/Box";
-import { TimePicker as h } from "@mui/x-date-pickers/TimePicker";
-import { LocalizationProvider as k } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterMoment as v } from "@mui/x-date-pickers/AdapterMoment";
-import "../../node_modules/moment/locale/he.js";
-const x = l(
-  ({
-    mask: g,
-    // legacy — no-op in v7+
-    sx: a,
-    className: t,
-    error: o,
-    helperText: r,
-    slotProps: e,
-    onChange: m,
-    ...d
-  }, n) => {
-    const c = ["ips-time-picker", t].filter(Boolean).join(" "), p = {
-      ...e,
-      textField: {
-        ...e == null ? void 0 : e.textField,
-        ...o !== void 0 ? { error: o } : {},
-        ...r !== void 0 ? { helperText: r } : {}
-      }
+import { jsx as _jsx } from "react/jsx-runtime";
+import { forwardRef } from 'react';
+import Box from '@mui/material/Box';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+// Registers the 'he' locale in moment's registry — required by the
+// `adapterLocale="he"` below. This is a side-effect-only import with no
+// bindings, so do NOT add `"sideEffects": false` to package.json: webpack
+// would be free to drop this line and the picker would fall back to English.
+// If that flag is ever wanted, register the locale explicitly first.
+import 'moment/locale/he';
+export const IpsTimePicker = forwardRef(({ mask: _mask, // legacy — no-op in v7+
+sx, className, error, helperText, slotProps, onChange, ...props }, ref) => {
+    const rootClassName = ['ips-time-picker', className].filter(Boolean).join(' ');
+    // Merge error/helperText into slotProps.textField so IpsTextField receives them
+    const mergedSlotProps = {
+        ...slotProps,
+        textField: {
+            ...slotProps?.textField,
+            ...(error !== undefined ? { error } : {}),
+            ...(helperText !== undefined ? { helperText } : {}),
+        },
     };
-    return /* @__PURE__ */ i(s, { ref: n, className: c, sx: a, children: /* @__PURE__ */ i(k, { dateAdapter: v, adapterLocale: "he", children: /* @__PURE__ */ i(
-      h,
-      {
-        ...d,
-        onChange: m ? (f) => m(f) : void 0,
-        slotProps: p
-      }
-    ) }) });
-  }
-);
-x.displayName = "IpsTimePicker";
-export {
-  x as IpsTimePicker
-};
+    // Wrap onChange: PickerValue (Moment | Date | ...) → Moment | null
+    const handleChange = onChange
+        ? (value) => onChange(value)
+        : undefined;
+    return (_jsx(Box, { ref: ref, className: rootClassName, sx: sx, children: _jsx(LocalizationProvider, { dateAdapter: AdapterMoment, adapterLocale: "he", children: _jsx(TimePicker, { ...props, onChange: handleChange, slotProps: mergedSlotProps }) }) }));
+});
+IpsTimePicker.displayName = 'IpsTimePicker';

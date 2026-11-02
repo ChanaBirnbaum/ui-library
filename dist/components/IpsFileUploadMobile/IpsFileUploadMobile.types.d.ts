@@ -1,5 +1,4 @@
-import { IpsFileUploadProps } from '../IpsFileUpload/IpsFileUpload.types';
-
+import type { IpsFileUploadProps } from '../IpsFileUpload/IpsFileUpload.types';
 /**
  * The upload props are those of IpsFileUpload, and they behave exactly the same
  * (the same upload hook sends the file to SharePoint). One file only.

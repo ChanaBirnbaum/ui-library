@@ -1,7 +1,6 @@
-import { default as React } from 'react';
-import { Editor } from '@tiptap/core';
-import { IpsRteToolbarConfig } from './IpsRteToolbar.types';
-
+import React from 'react';
+import type { Editor } from '@tiptap/core';
+import type { IpsRteToolbarConfig } from './IpsRteToolbar.types';
 export interface IpsRteToolbarProps {
     /** Tiptap Editor instance from useEditor(). Render only when non-null. */
     editor: Editor;

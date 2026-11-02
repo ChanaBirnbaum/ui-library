@@ -1,4 +1,3 @@
-import { default as React } from 'react';
-import { IpsDialogProps } from './IpsDialog.types';
-
+import React from 'react';
+import type { IpsDialogProps } from './IpsDialog.types';
 export declare const IpsDialog: React.ForwardRefExoticComponent<Omit<IpsDialogProps, "ref"> & React.RefAttributes<HTMLDivElement>>;

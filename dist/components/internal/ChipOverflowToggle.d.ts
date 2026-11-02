@@ -1,5 +1,4 @@
-import { default as React } from 'react';
-
+import React from 'react';
 export interface ChipOverflowToggleProps {
     /** Labels of the chips currently hidden behind the toggle */
     hiddenLabels: string[];

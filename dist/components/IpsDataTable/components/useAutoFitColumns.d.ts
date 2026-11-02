@@ -1,5 +1,4 @@
-import { RefObject } from 'react';
-
+import type { RefObject } from 'react';
 /** A clipped column never shrinks below this, even if the table then overflows. */
 export declare const MIN_AUTO_COLUMN_WIDTH = 64;
 export interface AutoFitOptions {

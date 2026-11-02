@@ -1,35 +1,18 @@
-import { jsx as m } from "react/jsx-runtime";
-import { forwardRef as f } from "react";
-import c from "@mui/material/Tooltip";
-const n = f(
-  (r, p) => {
-    var t;
-    const {
-      arrow: s = !0,
-      placement: e = "top",
-      className: i,
-      componentsProps: o,
-      ...l
-    } = r, a = {
-      ...o,
-      tooltip: {
-        ...(o == null ? void 0 : o.tooltip) || {},
-        className: ["ips-tooltip", (t = o == null ? void 0 : o.tooltip) == null ? void 0 : t.className, i].filter(Boolean).join(" ")
-      }
+import { jsx as _jsx } from "react/jsx-runtime";
+import { forwardRef } from 'react';
+import Tooltip from '@mui/material/Tooltip';
+export const IpsToolTips = forwardRef((props, ref) => {
+    const { arrow = true, placement = 'top', className, componentsProps, ...rest } = props;
+    const mergedComponentsProps = {
+        ...componentsProps,
+        tooltip: {
+            ...(componentsProps?.tooltip || {}),
+            className: ['ips-tooltip', componentsProps?.tooltip?.className, className]
+                .filter(Boolean)
+                .join(' '),
+        },
     };
-    return /* @__PURE__ */ m(
-      c,
-      {
-        ref: p,
-        arrow: s,
-        placement: e,
-        componentsProps: a,
-        ...l
-      }
-    );
-  }
-);
-n.displayName = "IpsToolTips";
-export {
-  n as IpsToolTips
-};
+    return (_jsx(Tooltip, { ref: ref, arrow: arrow, placement: placement, componentsProps: mergedComponentsProps, ...rest }));
+});
+IpsToolTips.displayName = 'IpsToolTips';
+export default IpsToolTips;

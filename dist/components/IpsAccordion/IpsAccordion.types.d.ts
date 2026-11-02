@@ -1,6 +1,5 @@
 import { AccordionProps } from '@mui/material/Accordion';
 import { ReactNode } from 'react';
-
 export interface IpsAccordionProps extends Omit<AccordionProps, 'children'> {
     /**
      * Content shown in the accordion header (required)

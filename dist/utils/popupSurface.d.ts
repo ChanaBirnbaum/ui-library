@@ -1,5 +1,4 @@
-import { SxProps, Theme } from '@mui/material/styles';
-
+import type { SxProps, Theme } from '@mui/material/styles';
 /**
  * The dropdown surface shared by IpsAutocomplete's listbox popper and
  * IpsChipSelect's menu, so the two open identically: a list that continues

@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { IpsFileUploadMobileProps } from './IpsFileUploadMobile.types';
-
+import React from 'react';
+import type { IpsFileUploadMobileProps } from './IpsFileUploadMobile.types';
 export declare function IpsFileUploadMobile(props: IpsFileUploadMobileProps): React.JSX.Element;
 export declare namespace IpsFileUploadMobile {
     var displayName: string;

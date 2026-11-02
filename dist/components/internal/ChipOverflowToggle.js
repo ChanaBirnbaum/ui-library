@@ -1,44 +1,29 @@
-import { jsxs as a, jsx as o } from "react/jsx-runtime";
-import f from "@mui/material/Box";
-import g from "@mui/material/Tooltip";
-import h from "@mui/material/IconButton";
-import S from "@mui/icons-material/Add";
-import w from "@mui/icons-material/Remove";
-const x = 15, I = {
-  width: 24,
-  height: 24,
-  p: 0,
-  fontSize: 16,
-  alignSelf: "center"
-}, P = ({
-  hiddenLabels: n,
-  expanded: t,
-  disabled: s = !1,
-  collapseTooltip: r,
-  moreItemsLabel: c,
-  onToggle: p
-}) => {
-  const e = n.slice(0, x), l = n.length - e.length, m = t ? r : /* @__PURE__ */ a(f, { component: "span", sx: { display: "block", whiteSpace: "pre-line" }, children: [
-    e.join(`
-`),
-    l > 0 ? `
-${c(l)}` : ""
-  ] });
-  return /* @__PURE__ */ o(g, { title: m, arrow: !0, children: /* @__PURE__ */ o("span", { children: /* @__PURE__ */ o(
-    h,
-    {
-      size: "small",
-      "aria-label": t ? r : `+${n.length}`,
-      "aria-expanded": t,
-      disabled: s,
-      onMouseDown: (i) => i.stopPropagation(),
-      onClick: p,
-      onKeyDown: (i) => i.stopPropagation(),
-      sx: I,
-      children: t ? /* @__PURE__ */ o(w, { fontSize: "inherit" }) : /* @__PURE__ */ o(S, { fontSize: "inherit" })
-    }
-  ) }) });
+import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+// A tooltip listing hundreds of hidden labels is as unusable as an uncapped
+// popup: cap the list and count the rest.
+const TOOLTIP_MAX_ITEMS = 15;
+// Sized to sit level with the 24px chips rather than the 30px an IconButton
+// would take at size="small".
+const toggleSx = {
+    width: 24,
+    height: 24,
+    p: 0,
+    fontSize: 16,
+    alignSelf: 'center',
 };
-export {
-  P as ChipOverflowToggle
+/**
+ * Expand/collapse control for chip lists that outgrow their field, shared by
+ * IpsChipSelect and IpsAutocomplete so the two behave and look identical.
+ */
+export const ChipOverflowToggle = ({ hiddenLabels, expanded, disabled = false, collapseTooltip, moreItemsLabel, onToggle, }) => {
+    const listed = hiddenLabels.slice(0, TOOLTIP_MAX_ITEMS);
+    const remaining = hiddenLabels.length - listed.length;
+    const tooltip = expanded ? (collapseTooltip) : (_jsxs(Box, { component: "span", sx: { display: 'block', whiteSpace: 'pre-line' }, children: [listed.join('\n'), remaining > 0 ? `\n${moreItemsLabel(remaining)}` : ''] }));
+    return (_jsx(Tooltip, { title: tooltip, arrow: true, children: _jsx("span", { children: _jsx(IconButton, { size: "small", "aria-label": expanded ? collapseTooltip : `+${hiddenLabels.length}`, "aria-expanded": expanded, disabled: disabled, onMouseDown: (event) => event.stopPropagation(), onClick: onToggle, onKeyDown: (event) => event.stopPropagation(), sx: toggleSx, children: expanded ? (_jsx(RemoveIcon, { fontSize: "inherit" })) : (_jsx(AddIcon, { fontSize: "inherit" })) }) }) }));
 };
+export default ChipOverflowToggle;

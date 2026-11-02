@@ -1,63 +1,54 @@
-import { jsxs as p, Fragment as O, jsx as r } from "react/jsx-runtime";
-import { forwardRef as R, useId as S, useState as T, useRef as $ } from "react";
-import k from "@mui/material/Divider";
-import L from "@mui/material/ListItemIcon";
-import V from "@mui/material/ListItemText";
-import w from "@mui/material/Menu";
-import y from "@mui/material/MenuItem";
-import { useTheme as A } from "@mui/material/styles";
-import { IpsIconButton as D } from "../IpsIconButton/IpsIconButton.js";
-const X = R(function(t, o) {
-  const { icon: f, label: h, items: g, onSelect: I, size: v = "medium", disabled: b = !1, id: x, className: C, sx: M } = t, E = A(), N = S(), i = x ?? `ips-menu-${N}`, a = `${i}-trigger`, [c, u] = T(null), s = c !== null, l = $(null), d = E.direction === "rtl" ? "left" : "right", m = () => u(null), j = (n) => {
-    l.current = { value: n }, m();
-  }, z = () => {
-    const n = l.current;
-    l.current = null, n && I(n.value);
-  }, B = ["ips-menu-trigger", C].filter(Boolean).join(" ");
-  return /* @__PURE__ */ p(O, { children: [
-    /* @__PURE__ */ r(
-      D,
-      {
-        ref: o,
-        id: a,
-        icon: f,
-        size: v,
-        disabled: b,
-        className: B,
-        sx: M,
-        "aria-label": h,
-        "aria-haspopup": "menu",
-        "aria-expanded": s ? "true" : void 0,
-        "aria-controls": s ? i : void 0,
-        onClick: (n) => u(n.currentTarget)
-      }
-    ),
-    /* @__PURE__ */ r(
-      w,
-      {
-        className: "ips-menu",
-        anchorEl: c,
-        open: s,
-        onClose: m,
-        anchorOrigin: { vertical: "bottom", horizontal: d },
-        transformOrigin: { vertical: "top", horizontal: d },
-        slotProps: {
-          // The id is on the list (role="menu"), the element the trigger's aria-controls refers to
-          list: { id: i, "aria-labelledby": a },
-          transition: { onExited: z }
-        },
-        children: g.flatMap((n) => F(n, j))
-      }
-    )
-  ] });
+import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
+import { forwardRef, useId, useRef, useState } from 'react';
+import Divider from '@mui/material/Divider';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { useTheme } from '@mui/material/styles';
+import { IpsIconButton } from '../IpsIconButton';
+/**
+ * A menu button: an icon button (e.g. ⋮) that opens a list of actions.
+ * The menu opens below the trigger, aligned to its end side (left in RTL), so it grows into the content.
+ * Arrow keys move between the items, Escape and a click outside close it, and focus returns to the trigger.
+ */
+export const IpsMenu = forwardRef(function IpsMenu(props, ref) {
+    const { icon, label, items, onSelect, size = 'medium', disabled = false, id, className, sx } = props;
+    const theme = useTheme();
+    const generatedId = useId();
+    const menuId = id ?? `ips-menu-${generatedId}`;
+    const triggerId = `${menuId}-trigger`;
+    const [anchorElement, setAnchorElement] = useState(null);
+    const isOpen = anchorElement !== null;
+    // The chosen value waits for the end of the closing transition: by then focus is back on the trigger
+    const chosenValueRef = useRef(null);
+    // anchorOrigin is physical; the end side of the trigger is its left edge in RTL
+    const endSide = theme.direction === 'rtl' ? 'left' : 'right';
+    const close = () => setAnchorElement(null);
+    const choose = (value) => {
+        chosenValueRef.current = { value };
+        close();
+    };
+    const reportChosenValue = () => {
+        const chosen = chosenValueRef.current;
+        chosenValueRef.current = null;
+        if (chosen) {
+            onSelect(chosen.value);
+        }
+    };
+    const triggerClassName = ['ips-menu-trigger', className].filter(Boolean).join(' ');
+    return (_jsxs(_Fragment, { children: [_jsx(IpsIconButton, { ref: ref, id: triggerId, icon: icon, size: size, disabled: disabled, className: triggerClassName, sx: sx, "aria-label": label, "aria-haspopup": "menu", "aria-expanded": isOpen ? 'true' : undefined, "aria-controls": isOpen ? menuId : undefined, onClick: (event) => setAnchorElement(event.currentTarget) }), _jsx(Menu, { className: "ips-menu", anchorEl: anchorElement, open: isOpen, onClose: close, anchorOrigin: { vertical: 'bottom', horizontal: endSide }, transformOrigin: { vertical: 'top', horizontal: endSide }, slotProps: {
+                    // The id is on the list (role="menu"), the element the trigger's aria-controls refers to
+                    list: { id: menuId, 'aria-labelledby': triggerId },
+                    transition: { onExited: reportChosenValue },
+                }, children: items.flatMap((item) => renderItem(item, choose)) })] }));
 });
-function F(e, t) {
-  const o = /* @__PURE__ */ p(y, { disabled: e.disabled, onClick: () => t(e.value), children: [
-    e.icon && /* @__PURE__ */ r(L, { children: e.icon }),
-    /* @__PURE__ */ r(V, { children: e.label })
-  ] }, e.value);
-  return e.dividerBefore ? [/* @__PURE__ */ r(k, {}, `${e.value}-divider`), o] : [o];
+// MUI Menu does not accept a Fragment as a child, so a divider and its item are returned as an array
+function renderItem(item, choose) {
+    const menuItem = (_jsxs(MenuItem, { disabled: item.disabled, onClick: () => choose(item.value), children: [item.icon && _jsx(ListItemIcon, { children: item.icon }), _jsx(ListItemText, { children: item.label })] }, item.value));
+    if (!item.dividerBefore) {
+        return [menuItem];
+    }
+    return [_jsx(Divider, {}, `${item.value}-divider`), menuItem];
 }
-export {
-  X as IpsMenu
-};
+export default IpsMenu;

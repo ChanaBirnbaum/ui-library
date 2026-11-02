@@ -1,5 +1,4 @@
-import { InputHTMLAttributes } from 'react';
-
+import type { InputHTMLAttributes } from 'react';
 export type IpsSearchFieldMobileProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'type' | 'size'> & {
     /** Controlled search text */
     value: string;

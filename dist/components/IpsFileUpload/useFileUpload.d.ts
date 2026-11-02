@@ -1,5 +1,4 @@
-import { IpsFileUploadProps, FileWithMeta } from './IpsFileUpload.types';
-
+import type { IpsFileUploadProps, FileWithMeta } from './IpsFileUpload.types';
 export declare function useFileUpload(props: IpsFileUploadProps): {
     files: FileWithMeta[];
     addFiles: (newFiles: File[]) => void;

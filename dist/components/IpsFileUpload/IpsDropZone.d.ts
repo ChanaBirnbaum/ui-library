@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { IpsDropZoneProps } from './IpsFileUpload.types';
-
+import React from 'react';
+import type { IpsDropZoneProps } from './IpsFileUpload.types';
 export declare function IpsDropZone({ onFilesAdded, camera, screenshot, scan, accept, multiple, disabled, containerId, separatorLabel, }: IpsDropZoneProps & {
     containerId?: string;
     screenshot?: boolean;

@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { TextFieldProps } from '@mui/material/TextField';
-
+import React from 'react';
+import type { TextFieldProps } from '@mui/material/TextField';
 export type IpsTextFieldProps = TextFieldProps & {
     /** Content to render inside a start adornment */
     startAdornment?: React.ReactNode;

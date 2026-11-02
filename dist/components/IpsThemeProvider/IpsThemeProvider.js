@@ -1,29 +1,54 @@
-import { jsx as t, jsxs as l } from "react/jsx-runtime";
-import { useMemo as a } from "react";
-import { __unsafe_useEmotionCache as f, CacheProvider as C } from "@emotion/react";
-import { createTheme as T, ThemeProvider as u, CssBaseline as _ } from "@mui/material";
-import { createRtlCache as v, createLtrCache as d, RTL_CACHE_KEY as E, LTR_CACHE_KEY as x } from "../../utils/rtlUtils.js";
-import { createIpsTheme as P } from "../../theme/createIpsTheme.js";
-import { ipsTheme as k } from "../../theme/ipsTheme.js";
-const y = ({
-  children: c,
-  direction: e = "rtl",
-  mode: o = "light",
-  theme: m
-}) => {
-  const r = f(), p = e === "rtl" ? E : x, h = a(
-    () => e === "rtl" ? v() : d(),
-    [e]
-  ), n = a(() => {
-    const i = m ?? (o === "dark" ? P("dark") : k);
-    return T(i, { direction: e });
-  }, [m, o, e]), s = /* @__PURE__ */ l(u, { theme: n, children: [
-    /* @__PURE__ */ t(_, {}),
-    /* @__PURE__ */ t("div", { dir: e, children: c })
-  ] });
-  return (r == null ? void 0 : r.key) === p ? s : /* @__PURE__ */ t(C, { value: h, children: s });
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useMemo } from 'react';
+import { CacheProvider, __unsafe_useEmotionCache } from '@emotion/react';
+import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
+import { createRtlCache, createLtrCache, RTL_CACHE_KEY, LTR_CACHE_KEY, } from '../../utils/rtlUtils';
+import { createIpsTheme } from '../../theme/createIpsTheme';
+import { ipsTheme } from '../../theme/ipsTheme';
+/**
+ * IpsThemeProvider
+ *
+ * One-stop app-root wrapper: sets up the Emotion RTL cache, the IPS MUI
+ * theme (with `direction` applied), `CssBaseline`, and `dir` on a root
+ * element — so consumers get "our theme + our RTL" without assembling
+ * `IpsRtlProvider` + `ThemeProvider` + `dir` by hand.
+ *
+ * Safe to nest: when the cache inherited from an ancestor already matches the
+ * requested `direction`, no second `CacheProvider` is rendered. That matters
+ * in a host + MFE setup, where every app wraps its own subtree — an MFE
+ * providing its own cache under the same key would override the host's and
+ * break style insertion for everything below it. Passing a `direction` that
+ * differs from the ancestor's still creates the cache it needs.
+ *
+ * Defaults to `direction="rtl"` since this is the primary use case for
+ * consumers of this library. Pass `direction="ltr"` to opt out.
+ *
+ * For advanced cases (e.g. only part of the tree needs a different cache),
+ * use the lower-level `IpsRtlProvider` / `createRtlCache` / `createLtrCache`
+ * building blocks directly instead.
+ *
+ * @example
+ * ```tsx
+ * <IpsThemeProvider>
+ *   <App />
+ * </IpsThemeProvider>
+ *
+ * <IpsThemeProvider direction="ltr" mode="dark">
+ *   <App />
+ * </IpsThemeProvider>
+ * ```
+ */
+export const IpsThemeProvider = ({ children, direction = 'rtl', mode = 'light', theme, }) => {
+    const inheritedCache = __unsafe_useEmotionCache();
+    const expectedKey = direction === 'rtl' ? RTL_CACHE_KEY : LTR_CACHE_KEY;
+    const ownCache = useMemo(() => (direction === 'rtl' ? createRtlCache() : createLtrCache()), [direction]);
+    const muiTheme = useMemo(() => {
+        const base = theme ?? (mode === 'dark' ? createIpsTheme('dark') : ipsTheme);
+        return createTheme(base, { direction });
+    }, [theme, mode, direction]);
+    const content = (_jsxs(ThemeProvider, { theme: muiTheme, children: [_jsx(CssBaseline, {}), _jsx("div", { dir: direction, children: children })] }));
+    if (inheritedCache?.key === expectedKey)
+        return content;
+    return _jsx(CacheProvider, { value: ownCache, children: content });
 };
-y.displayName = "IpsThemeProvider";
-export {
-  y as IpsThemeProvider
-};
+IpsThemeProvider.displayName = 'IpsThemeProvider';

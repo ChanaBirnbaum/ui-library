@@ -1,7 +1,6 @@
-import { ColumnDef, RowData, SortingState, Row, Table } from '@tanstack/react-table';
-import { ReactNode, MouseEvent } from 'react';
-import { SxProps, Theme } from '@mui/material/styles';
-
+import type { ColumnDef, RowData, SortingState, Row, Table } from '@tanstack/react-table';
+import type { ReactNode, MouseEvent } from 'react';
+import type { SxProps, Theme } from '@mui/material/styles';
 declare module '@tanstack/react-table' {
     interface ColumnMeta<TData extends RowData, TValue> {
         /** Enable inline editing for this column */

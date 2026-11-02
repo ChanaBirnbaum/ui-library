@@ -1,7 +1,6 @@
-import { Moment } from 'moment';
-import { TimePickerProps } from '@mui/x-date-pickers/TimePicker';
-import { SxProps, Theme } from '@mui/material/styles';
-
+import type { Moment } from 'moment';
+import type { TimePickerProps } from '@mui/x-date-pickers/TimePicker';
+import type { SxProps, Theme } from '@mui/material/styles';
 /**
  * @deprecated `mask` was removed in @mui/x-date-pickers v7+.
  * Kept for API compatibility — has no effect.

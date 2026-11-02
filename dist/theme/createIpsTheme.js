@@ -1,290 +1,294 @@
-import { createTheme as s } from "@mui/material/styles";
-import { lightPalette as l, radiusTokens as a, typographyStyles as o, lightCharts as c, spacingTokens as u, darkPalette as p, darkCharts as b } from "./tokens/generated/index.js";
-function e(t, r) {
-  const n = parseInt(t.slice(1, 3), 16), i = parseInt(t.slice(3, 5), 16), d = parseInt(t.slice(5, 7), 16);
-  return `rgba(${n}, ${i}, ${d}, ${r})`;
+import { createTheme } from '@mui/material/styles';
+import { lightPalette, darkPalette, spacingTokens, radiusTokens, typographyStyles, lightCharts, darkCharts, } from './tokens/generated';
+/** Convert a solid hex colour + alpha to an rgba() string. */
+function hexToRgba(hex, alpha) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
-function h(t) {
-  const r = t === "light" ? l : p, n = t === "light" ? c : b, i = r.actionBase, d = {
-    spacing: u,
-    radius: a,
-    charts: { mono: [...n.mono], categorical: [...n.categorical] }
-  };
-  return s({
-    palette: {
-      mode: t,
-      primary: { ...r.primary },
-      secondary: { ...r.secondary },
-      error: { main: r.error.main },
-      warning: { main: r.warning.main },
-      success: { main: r.success.main },
-      info: { main: r.info.main },
-      text: { ...r.text },
-      background: { ...r.background },
-      divider: r.divider,
-      grey: {
-        50: r.grey[50],
-        100: r.grey[100],
-        200: r.grey[200],
-        300: r.grey[300],
-        400: r.grey[400],
-        500: r.grey[500],
-        600: r.grey[600],
-        700: r.grey[700],
-        800: r.grey[800],
-        900: r.grey[900]
-      },
-      action: {
-        hover: e(i, 0.08),
-        selected: e(i, 0.12),
-        focus: e(i, 0.12),
-        disabled: r.text.disabled,
-        disabledBackground: e(i, 0.12)
-      }
-    },
-    /** spacing-base = 8; theme.spacing(1) === 8px */
-    spacing: u.base,
-    shape: {
-      /** radius-base token */
-      borderRadius: a.base
-    },
-    typography: {
-      /**
-       * fontFamily is NOT in the Figma tokens; set explicitly. Rubik carries
-       * both Latin and Hebrew, so it leads, with Heebo/Inter behind it for
-       * hosts that have not loaded it. The library ships no font file - the
-       * host page is what loads Rubik.
-       *
-       * This single value governs every component: the typography tokens carry
-       * no family of their own, and MUI stamps `theme.typography.fontFamily`
-       * onto the parts that do not inherit (Chip labels above all).
-       */
-      fontFamily: '"Rubik", "Heebo", "Inter", sans-serif',
-      fontSize: 14,
-      display: { ...o.display },
-      h1: { ...o.h1 },
-      h2: { ...o.h2 },
-      h3: { ...o.h3 },
-      h4: { ...o.h4 },
-      subtitle1: { ...o.subtitle1 },
-      subtitle2: { ...o.subtitle2 },
-      body1: { ...o.body1 },
-      body2: { ...o.body2 },
-      button: { ...o.button },
-      caption: { ...o.caption },
-      overline: { ...o.overline }
-    },
-    custom: d,
-    components: {
-      MuiOutlinedInput: {
-        styleOverrides: {
-          root: {
-            backgroundColor: r.background.paper,
-            borderRadius: a.input,
-            // radius-input token
-            "&:hover:not(.Mui-disabled):not(.Mui-error):not(.Mui-focused) .MuiOutlinedInput-notchedOutline": {
-              borderColor: r.text.primary
+/**
+ * Creates the IPS MUI v7 theme for the requested colour mode.
+ *
+ * Palette comes from Figma theme/Light or theme/Dark tokens.
+ * Spacing, radius, and typography are mode-independent.
+ * Chart palettes are exposed under `theme.custom.charts`.
+ */
+export function createIpsTheme(mode) {
+    const p = mode === 'light' ? lightPalette : darkPalette;
+    const charts = mode === 'light' ? lightCharts : darkCharts;
+    // The Figma action tokens export the primary colour at several alpha values
+    // (0.08 / 0.12 / 0.24 / 0.38). We normalise to canonical MUI overlay opacities
+    // so that interactive states stay visually consistent across colour schemes:
+    //   hover              → rgba(base, 0.08)
+    //   selected / focus   → rgba(base, 0.12)   [Figma focus was 0.24 — clamped down]
+    //   disabledBackground → rgba(base, 0.12)
+    //   disabled (text)    → text.disabled colour from the same mode's palette
+    // See THEME_NOTES.md for the full rationale.
+    const ab = p.actionBase;
+    const custom = {
+        spacing: spacingTokens,
+        radius: radiusTokens,
+        charts: { mono: [...charts.mono], categorical: [...charts.categorical] },
+    };
+    return createTheme({
+        palette: {
+            mode,
+            primary: { ...p.primary },
+            secondary: { ...p.secondary },
+            error: { main: p.error.main },
+            warning: { main: p.warning.main },
+            success: { main: p.success.main },
+            info: { main: p.info.main },
+            text: { ...p.text },
+            background: { ...p.background },
+            divider: p.divider,
+            grey: {
+                50: p.grey[50], 100: p.grey[100], 200: p.grey[200],
+                300: p.grey[300], 400: p.grey[400], 500: p.grey[500],
+                600: p.grey[600], 700: p.grey[700], 800: p.grey[800],
+                900: p.grey[900],
             },
-            "&.Mui-focused:not(.Mui-error) .MuiOutlinedInput-notchedOutline": {
-              borderColor: r.primary.main,
-              borderWidth: "2px"
+            action: {
+                hover: hexToRgba(ab, 0.08),
+                selected: hexToRgba(ab, 0.12),
+                focus: hexToRgba(ab, 0.12),
+                disabled: p.text.disabled,
+                disabledBackground: hexToRgba(ab, 0.12),
             },
-            "&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
-              borderColor: r.grey[200]
-            },
-            "&.Mui-disabled": {
-              backgroundColor: t === "light" ? r.grey[50] : r.background.default
-            }
-          },
-          input: {
-            padding: "8px 14px"
-          },
-          notchedOutline: {
-            borderColor: r.grey[300]
-          }
-        }
-      },
-      MuiTextField: {
-        styleOverrides: {
-          // 288px is the design width, but it is a preferred width and not a
-          // floor: without the cap the field keeps its 288px inside a narrower
-          // container and overflows it instead of shrinking with it.
-          //
-          // Emotion folds FormControl's own `fullWidth` variant and these
-          // overrides into a single class, and the overrides are serialised
-          // last - so plain `width` here silently beats `fullWidth`. The
-          // two-class selector is what lets an explicit `fullWidth` win back.
-          root: {
-            width: "288px",
-            maxWidth: "100%",
-            "&.MuiFormControl-fullWidth": { width: "100%" }
-          }
-        }
-      },
-      // MUI's Autocomplete bakes its own padding onto the outlined input
-      // (root: 9px + input: 7.5px 4px 7.5px 5px) which stacks with the
-      // MuiOutlinedInput override above and makes IpsAutocomplete render
-      // ~17px taller than IpsTextField. Reset both to zero and give the
-      // input the same 8px 14px padding as IpsTextField; MuiOutlinedInput's
-      // own endAdornment variants (unchanged) then take care of the
-      // dropdown/clear icon clearance, exactly as they already do for an
-      // IpsTextField with an end adornment.
-      MuiAutocomplete: {
-        styleOverrides: {
-          root: {
-            "& .MuiOutlinedInput-root": {
-              padding: 0,
-              "& .MuiAutocomplete-input": {
-                padding: "8px 14px"
-              }
-            }
-          }
-        }
-      },
-      MuiButton: {
-        defaultProps: {
-          disableElevation: !0
         },
-        styleOverrides: {
-          root: {
-            borderRadius: a.button,
-            // radius-button token
-            textTransform: "none",
-            // not in tokens; design preference
-            fontWeight: o.button.fontWeight,
-            fontSize: o.button.fontSize,
-            lineHeight: o.button.lineHeight,
-            letterSpacing: o.button.letterSpacing
-          },
-          sizeSmall: { padding: "6px 16px" },
-          sizeMedium: { padding: "10px 20px" },
-          // 48px: the primary action height on mobile (full-width sheet and form buttons)
-          sizeLarge: { padding: "12px 24px", minHeight: 48 },
-          outlined: {
-            borderWidth: "1.5px",
-            "&:hover": { borderWidth: "1.5px" }
-          },
-          outlinedPrimary: {
-            borderColor: r.primary.main,
-            color: r.primary.main,
-            "&:hover": {
-              backgroundColor: e(r.primary.main, 0.08),
-              borderColor: r.primary.main
-            }
-          },
-          containedPrimary: {
-            backgroundColor: r.primary.main,
-            color: r.primary.contrastText,
-            "&:hover": { backgroundColor: r.primary.dark }
-          }
-        }
-      },
-      MuiSwitch: {
-        styleOverrides: {
-          root: {
-            width: 44,
-            height: 20,
-            padding: 0,
-            "& .MuiSwitch-switchBase": {
-              padding: 0,
-              margin: 2,
-              transitionDuration: "200ms",
-              "&.Mui-checked": {
-                transform: "translateX(24px)",
-                color: "#FFFFFF",
-                // backgroundColor on .MuiSwitch-track is set unconditionally below (grey),
-                // so we must explicitly override it in the checked state.
-                "& + .MuiSwitch-track": { opacity: 1, backgroundColor: r.primary.main }
-              },
-              "&.Mui-disabled": { opacity: 0.5 },
-              "&.Mui-disabled + .MuiSwitch-track": { opacity: 0.5 }
+        /** spacing-base = 8; theme.spacing(1) === 8px */
+        spacing: spacingTokens.base,
+        shape: {
+            /** radius-base token */
+            borderRadius: radiusTokens.base,
+        },
+        typography: {
+            /**
+             * fontFamily is NOT in the Figma tokens; set explicitly. Rubik carries
+             * both Latin and Hebrew, so it leads, with Heebo/Inter behind it for
+             * hosts that have not loaded it. The library ships no font file - the
+             * host page is what loads Rubik.
+             *
+             * This single value governs every component: the typography tokens carry
+             * no family of their own, and MUI stamps `theme.typography.fontFamily`
+             * onto the parts that do not inherit (Chip labels above all).
+             */
+            fontFamily: '"Rubik", "Heebo", "Inter", sans-serif',
+            fontSize: 14,
+            display: { ...typographyStyles.display },
+            h1: { ...typographyStyles.h1 },
+            h2: { ...typographyStyles.h2 },
+            h3: { ...typographyStyles.h3 },
+            h4: { ...typographyStyles.h4 },
+            subtitle1: { ...typographyStyles.subtitle1 },
+            subtitle2: { ...typographyStyles.subtitle2 },
+            body1: { ...typographyStyles.body1 },
+            body2: { ...typographyStyles.body2 },
+            button: { ...typographyStyles.button },
+            caption: { ...typographyStyles.caption },
+            overline: { ...typographyStyles.overline },
+        },
+        custom,
+        components: {
+            MuiOutlinedInput: {
+                styleOverrides: {
+                    root: {
+                        backgroundColor: p.background.paper,
+                        borderRadius: radiusTokens.input, // radius-input token
+                        '&:hover:not(.Mui-disabled):not(.Mui-error):not(.Mui-focused) .MuiOutlinedInput-notchedOutline': {
+                            borderColor: p.text.primary,
+                        },
+                        '&.Mui-focused:not(.Mui-error) .MuiOutlinedInput-notchedOutline': {
+                            borderColor: p.primary.main,
+                            borderWidth: '2px',
+                        },
+                        '&.Mui-disabled .MuiOutlinedInput-notchedOutline': {
+                            borderColor: p.grey[200],
+                        },
+                        '&.Mui-disabled': {
+                            backgroundColor: mode === 'light' ? p.grey[50] : p.background.default,
+                        },
+                    },
+                    input: {
+                        padding: '8px 14px',
+                    },
+                    notchedOutline: {
+                        borderColor: p.grey[300],
+                    },
+                },
             },
-            "& .MuiSwitch-thumb": {
-              width: 16,
-              height: 16,
-              backgroundColor: "#FFFFFF",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.2)"
+            MuiTextField: {
+                styleOverrides: {
+                    // 288px is the design width, but it is a preferred width and not a
+                    // floor: without the cap the field keeps its 288px inside a narrower
+                    // container and overflows it instead of shrinking with it.
+                    //
+                    // Emotion folds FormControl's own `fullWidth` variant and these
+                    // overrides into a single class, and the overrides are serialised
+                    // last - so plain `width` here silently beats `fullWidth`. The
+                    // two-class selector is what lets an explicit `fullWidth` win back.
+                    root: {
+                        width: '288px',
+                        maxWidth: '100%',
+                        '&.MuiFormControl-fullWidth': { width: '100%' },
+                    },
+                },
             },
-            "& .MuiSwitch-track": {
-              borderRadius: 10,
-              backgroundColor: r.grey[400],
-              opacity: 1
-            }
-          }
-        }
-      },
-      MuiFormLabel: {
-        styleOverrides: {
-          asterisk: { color: r.error.main },
-          root: {
-            color: r.text.secondary,
-            "&.Mui-error": { color: r.error.main }
-          }
-        }
-      },
-      // radius-card and radius-chip applied via theme.components (not touching component files).
-      // The same values are also available under theme.custom.radius for direct access.
-      MuiCard: {
-        styleOverrides: {
-          root: { borderRadius: a.card }
-        }
-      },
-      MuiChip: {
-        styleOverrides: {
-          root: { borderRadius: a.chip }
-        }
-      },
-      MuiCheckbox: {
-        styleOverrides: {
-          root: {
-            color: r.grey[400],
-            "&:hover": { backgroundColor: e(i, 0.08) },
-            "&.Mui-checked": { color: r.primary.main },
-            "&.Mui-disabled": { color: r.grey[300] }
-          }
-        }
-      },
-      MuiRadio: {
-        styleOverrides: {
-          root: {
-            color: r.grey[400],
-            "&:hover": { backgroundColor: e(i, 0.08) },
-            "&.Mui-checked": { color: r.primary.main },
-            "&.Mui-disabled": { color: r.grey[300] }
-          }
-        }
-      },
-      MuiMenu: {
-        styleOverrides: {
-          paper: {
-            backgroundColor: r.background.paper,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-            borderRadius: a.base
-          }
-        }
-      },
-      MuiMenuItem: {
-        styleOverrides: {
-          root: {
-            "&:hover": { backgroundColor: e(i, 0.08) },
-            "&.Mui-selected": {
-              backgroundColor: e(r.primary.main, 0.12),
-              "&:hover": { backgroundColor: e(r.primary.main, 0.16) }
-            }
-          }
-        }
-      },
-      MuiFormHelperText: {
-        styleOverrides: {
-          root: {
-            color: r.text.secondary,
-            "&.Mui-error": { color: r.error.main }
-          }
-        }
-      }
-    }
-  });
+            // MUI's Autocomplete bakes its own padding onto the outlined input
+            // (root: 9px + input: 7.5px 4px 7.5px 5px) which stacks with the
+            // MuiOutlinedInput override above and makes IpsAutocomplete render
+            // ~17px taller than IpsTextField. Reset both to zero and give the
+            // input the same 8px 14px padding as IpsTextField; MuiOutlinedInput's
+            // own endAdornment variants (unchanged) then take care of the
+            // dropdown/clear icon clearance, exactly as they already do for an
+            // IpsTextField with an end adornment.
+            MuiAutocomplete: {
+                styleOverrides: {
+                    root: {
+                        '& .MuiOutlinedInput-root': {
+                            padding: 0,
+                            '& .MuiAutocomplete-input': {
+                                padding: '8px 14px',
+                            },
+                        },
+                    },
+                },
+            },
+            MuiButton: {
+                defaultProps: {
+                    disableElevation: true,
+                },
+                styleOverrides: {
+                    root: {
+                        borderRadius: radiusTokens.button, // radius-button token
+                        textTransform: 'none', // not in tokens; design preference
+                        fontWeight: typographyStyles.button.fontWeight,
+                        fontSize: typographyStyles.button.fontSize,
+                        lineHeight: typographyStyles.button.lineHeight,
+                        letterSpacing: typographyStyles.button.letterSpacing,
+                    },
+                    sizeSmall: { padding: '6px 16px' },
+                    sizeMedium: { padding: '10px 20px' },
+                    // 48px: the primary action height on mobile (full-width sheet and form buttons)
+                    sizeLarge: { padding: '12px 24px', minHeight: 48 },
+                    outlined: {
+                        borderWidth: '1.5px',
+                        '&:hover': { borderWidth: '1.5px' },
+                    },
+                    outlinedPrimary: {
+                        borderColor: p.primary.main,
+                        color: p.primary.main,
+                        '&:hover': {
+                            backgroundColor: hexToRgba(p.primary.main, 0.08),
+                            borderColor: p.primary.main,
+                        },
+                    },
+                    containedPrimary: {
+                        backgroundColor: p.primary.main,
+                        color: p.primary.contrastText,
+                        '&:hover': { backgroundColor: p.primary.dark },
+                    },
+                },
+            },
+            MuiSwitch: {
+                styleOverrides: {
+                    root: {
+                        width: 44, height: 20, padding: 0,
+                        '& .MuiSwitch-switchBase': {
+                            padding: 0, margin: 2, transitionDuration: '200ms',
+                            '&.Mui-checked': {
+                                transform: 'translateX(24px)',
+                                color: '#FFFFFF',
+                                // backgroundColor on .MuiSwitch-track is set unconditionally below (grey),
+                                // so we must explicitly override it in the checked state.
+                                '& + .MuiSwitch-track': { opacity: 1, backgroundColor: p.primary.main },
+                            },
+                            '&.Mui-disabled': { opacity: 0.5 },
+                            '&.Mui-disabled + .MuiSwitch-track': { opacity: 0.5 },
+                        },
+                        '& .MuiSwitch-thumb': {
+                            width: 16, height: 16,
+                            backgroundColor: '#FFFFFF',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                        },
+                        '& .MuiSwitch-track': {
+                            borderRadius: 10,
+                            backgroundColor: p.grey[400],
+                            opacity: 1,
+                        },
+                    },
+                },
+            },
+            MuiFormLabel: {
+                styleOverrides: {
+                    asterisk: { color: p.error.main },
+                    root: {
+                        color: p.text.secondary,
+                        '&.Mui-error': { color: p.error.main },
+                    },
+                },
+            },
+            // radius-card and radius-chip applied via theme.components (not touching component files).
+            // The same values are also available under theme.custom.radius for direct access.
+            MuiCard: {
+                styleOverrides: {
+                    root: { borderRadius: radiusTokens.card },
+                },
+            },
+            MuiChip: {
+                styleOverrides: {
+                    root: { borderRadius: radiusTokens.chip },
+                },
+            },
+            MuiCheckbox: {
+                styleOverrides: {
+                    root: {
+                        color: p.grey[400],
+                        '&:hover': { backgroundColor: hexToRgba(ab, 0.08) },
+                        '&.Mui-checked': { color: p.primary.main },
+                        '&.Mui-disabled': { color: p.grey[300] },
+                    },
+                },
+            },
+            MuiRadio: {
+                styleOverrides: {
+                    root: {
+                        color: p.grey[400],
+                        '&:hover': { backgroundColor: hexToRgba(ab, 0.08) },
+                        '&.Mui-checked': { color: p.primary.main },
+                        '&.Mui-disabled': { color: p.grey[300] },
+                    },
+                },
+            },
+            MuiMenu: {
+                styleOverrides: {
+                    paper: {
+                        backgroundColor: p.background.paper,
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                        borderRadius: radiusTokens.base,
+                    },
+                },
+            },
+            MuiMenuItem: {
+                styleOverrides: {
+                    root: {
+                        '&:hover': { backgroundColor: hexToRgba(ab, 0.08) },
+                        '&.Mui-selected': {
+                            backgroundColor: hexToRgba(p.primary.main, 0.12),
+                            '&:hover': { backgroundColor: hexToRgba(p.primary.main, 0.16) },
+                        },
+                    },
+                },
+            },
+            MuiFormHelperText: {
+                styleOverrides: {
+                    root: {
+                        color: p.text.secondary,
+                        '&.Mui-error': { color: p.error.main },
+                    },
+                },
+            },
+        },
+    });
 }
-export {
-  h as createIpsTheme
-};

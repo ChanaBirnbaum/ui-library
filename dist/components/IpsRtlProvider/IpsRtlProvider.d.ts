@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { IpsRtlProviderProps } from './IpsRtlProvider.types';
-
+import React from 'react';
+import type { IpsRtlProviderProps } from './IpsRtlProvider.types';
 /**
  * IpsRtlProvider
  *

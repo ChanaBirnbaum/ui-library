@@ -1,12 +1,43 @@
-import { jsx as e, Fragment as m } from "react/jsx-runtime";
-import { useMemo as s } from "react";
-import { __unsafe_useEmotionCache as a, CacheProvider as p } from "@emotion/react";
-import { createRtlCache as i, RTL_CACHE_KEY as n } from "../../utils/rtlUtils.js";
-const c = ({ children: r }) => {
-  const o = a(), t = s(() => i(), []);
-  return (o == null ? void 0 : o.key) === n ? /* @__PURE__ */ e(m, { children: r }) : /* @__PURE__ */ e(p, { value: t, children: r });
+import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+import { useMemo } from 'react';
+import { CacheProvider, __unsafe_useEmotionCache } from '@emotion/react';
+import { createRtlCache, RTL_CACHE_KEY } from '../../utils/rtlUtils';
+/**
+ * IpsRtlProvider
+ *
+ * Wraps the application (or a section of it) with an Emotion CacheProvider
+ * that uses `stylis-plugin-rtl` to automatically flip **all** CSS physical
+ * properties (left ↔ right, margin-left ↔ margin-right, padding-left ↔
+ * padding-right, border-radius corners, etc.) for RTL languages.
+ *
+ * If an RTL cache is already provided higher up the tree — e.g. by
+ * `IpsThemeProvider` at the host root — this renders nothing of its own and
+ * lets the existing cache flow down. A second `CacheProvider` would override
+ * the inherited context with a different cache under the same key, which
+ * breaks RTL for everything below it.
+ *
+ * Pair this with `createTheme({ direction: 'rtl' })` and `dir="rtl"` on the
+ * root element for full RTL support.
+ *
+ * @example
+ * ```tsx
+ * const rtlTheme = createTheme({ direction: 'rtl', ... })
+ *
+ * <IpsRtlProvider>
+ *   <ThemeProvider theme={rtlTheme}>
+ *     <div dir="rtl">
+ *       <App />
+ *     </div>
+ *   </ThemeProvider>
+ * </IpsRtlProvider>
+ * ```
+ */
+export const IpsRtlProvider = ({ children }) => {
+    const inheritedCache = __unsafe_useEmotionCache();
+    // Memoize so the cache is looked up only once per mount.
+    const ownCache = useMemo(() => createRtlCache(), []);
+    if (inheritedCache?.key === RTL_CACHE_KEY)
+        return _jsx(_Fragment, { children: children });
+    return _jsx(CacheProvider, { value: ownCache, children: children });
 };
-c.displayName = "IpsRtlProvider";
-export {
-  c as IpsRtlProvider
-};
+IpsRtlProvider.displayName = 'IpsRtlProvider';

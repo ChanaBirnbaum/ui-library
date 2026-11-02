@@ -1,7 +1,6 @@
-import { default as React } from 'react';
-import { SxProps, Theme } from '@mui/material/styles';
-import { IpsRteToolbarConfig } from './IpsRteToolbar.types';
-
+import type React from 'react';
+import type { SxProps, Theme } from '@mui/material/styles';
+import type { IpsRteToolbarConfig } from './IpsRteToolbar.types';
 export interface IpsRichTextEditorProps {
     /** Full HTML string (controlled mode). Sync with state externally. */
     value?: string;

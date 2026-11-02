@@ -1,106 +1,66 @@
-import { jsxs as m, jsx as i } from "react/jsx-runtime";
-import { forwardRef as I, useId as x } from "react";
-import { styled as r } from "@mui/material/styles";
-const _ = 56, N = 16, b = 20, w = 600, E = r("div")({
-  display: "flex",
-  flexDirection: "column",
-  width: "100%"
-}), R = r("span")(({ theme: e }) => ({
-  marginBottom: 4,
-  fontSize: "0.875rem",
-  fontWeight: 500,
-  color: e.palette.text.secondary
-})), S = r("label", {
-  shouldForwardProp: (e) => e !== "isSelected" && e !== "isDisabled"
-})(({ theme: e, isSelected: o, isDisabled: a }) => ({
-  position: "relative",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 12,
-  minHeight: _,
-  fontSize: N,
-  fontWeight: o ? w : 400,
-  color: a ? e.palette.text.disabled : o ? e.palette.primary.main : e.palette.text.primary,
-  borderBottom: `1px solid ${e.palette.divider}`,
-  cursor: a ? "default" : "pointer",
-  // The radio comes first in the row, so keyboard focus can ring the option text after it
-  "& input:focus-visible + span": {
-    outline: `2px solid ${e.palette.primary.main}`,
-    outlineOffset: 4,
-    borderRadius: 2
-  }
-})), C = r("input")({
-  position: "absolute",
-  width: 1,
-  height: 1,
-  margin: 0,
-  opacity: 0,
-  pointerEvents: "none"
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { forwardRef, useId } from 'react';
+import { styled } from '@mui/material/styles';
+// Single choice from a list, one full-width row per option (e.g. sort options in a bottom sheet).
+// Built on native radio inputs: they keep the semantics, keyboard arrows and screen-reader support,
+// and are only hidden visually. No MUI components.
+const ROW_MIN_HEIGHT_PX = 56;
+const ROW_FONT_SIZE_PX = 16;
+const CHECK_ICON_SIZE_PX = 20;
+const SELECTED_FONT_WEIGHT = 600;
+const Root = styled('div')({
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
 });
-function $() {
-  return /* @__PURE__ */ i(
-    "svg",
-    {
-      "aria-hidden": "true",
-      width: b,
-      height: b,
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: 2,
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      children: /* @__PURE__ */ i("path", { d: "M20 6 9 17l-5-5" })
-    }
-  );
+const GroupLabel = styled('span')(({ theme }) => ({
+    marginBottom: 4,
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    color: theme.palette.text.secondary,
+}));
+const Row = styled('label', {
+    shouldForwardProp: (prop) => prop !== 'isSelected' && prop !== 'isDisabled',
+})(({ theme, isSelected, isDisabled }) => ({
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    minHeight: ROW_MIN_HEIGHT_PX,
+    fontSize: ROW_FONT_SIZE_PX,
+    fontWeight: isSelected ? SELECTED_FONT_WEIGHT : 400,
+    color: isDisabled ? theme.palette.text.disabled : isSelected ? theme.palette.primary.main : theme.palette.text.primary,
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    cursor: isDisabled ? 'default' : 'pointer',
+    // The radio comes first in the row, so keyboard focus can ring the option text after it
+    '& input:focus-visible + span': {
+        outline: `2px solid ${theme.palette.primary.main}`,
+        outlineOffset: 4,
+        borderRadius: 2,
+    },
+}));
+const VisuallyHiddenRadio = styled('input')({
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    margin: 0,
+    opacity: 0,
+    pointerEvents: 'none',
+});
+function CheckIcon() {
+    return (_jsx("svg", { "aria-hidden": "true", width: CHECK_ICON_SIZE_PX, height: CHECK_ICON_SIZE_PX, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round", strokeLinejoin: "round", children: _jsx("path", { d: "M20 6 9 17l-5-5" }) }));
 }
-const L = I(
-  (e, o) => {
-    const {
-      options: a,
-      value: d,
-      onChange: n,
-      label: l,
-      "aria-label": f,
-      name: h,
-      disabled: c = !1,
-      className: g
-    } = e, p = x(), v = h ?? p, u = `${p}-label`, y = ["ips-radio-list-mobile", g].filter(Boolean).join(" ");
-    return /* @__PURE__ */ m(
-      E,
-      {
-        ref: o,
-        role: "radiogroup",
-        "aria-labelledby": l ? u : void 0,
-        "aria-label": l ? void 0 : f,
-        className: y,
-        children: [
-          l && /* @__PURE__ */ i(R, { id: u, children: l }),
-          a.map((t) => {
-            const s = d !== null && String(t.value) === String(d);
-            return /* @__PURE__ */ m(S, { className: "ips-radio-list-row", isSelected: s, isDisabled: c, children: [
-              /* @__PURE__ */ i(
-                C,
-                {
-                  type: "radio",
-                  name: v,
-                  value: String(t.value),
-                  checked: s,
-                  disabled: c,
-                  onChange: () => n == null ? void 0 : n(t.value)
-                }
-              ),
-              /* @__PURE__ */ i("span", { children: t.label }),
-              s && /* @__PURE__ */ i($, {})
-            ] }, t.value);
-          })
-        ]
-      }
-    );
-  }
-);
-L.displayName = "IpsRadioListMobile";
-export {
-  L as IpsRadioListMobile
-};
+export const IpsRadioListMobile = forwardRef((props, ref) => {
+    const { options, value, onChange, label, 'aria-label': ariaLabel, name, disabled = false, className, } = props;
+    const generatedId = useId();
+    const groupName = name ?? generatedId;
+    const labelId = `${generatedId}-label`;
+    const rootClassName = ['ips-radio-list-mobile', className].filter(Boolean).join(' ');
+    return (_jsxs(Root, { ref: ref, role: "radiogroup", "aria-labelledby": label ? labelId : undefined, "aria-label": label ? undefined : ariaLabel, className: rootClassName, children: [label && _jsx(GroupLabel, { id: labelId, children: label }), options.map((option) => {
+                const isSelected = value !== null && String(option.value) === String(value);
+                return (_jsxs(Row, { className: "ips-radio-list-row", isSelected: isSelected, isDisabled: disabled, children: [_jsx(VisuallyHiddenRadio, { type: "radio", name: groupName, value: String(option.value), checked: isSelected, disabled: disabled, onChange: () => onChange?.(option.value) }), _jsx("span", { children: option.label }), isSelected && _jsx(CheckIcon, {})] }, option.value));
+            })] }));
+});
+IpsRadioListMobile.displayName = 'IpsRadioListMobile';
+export default IpsRadioListMobile;

@@ -1,5 +1,4 @@
-import { InputHTMLAttributes, ReactNode } from 'react';
-
+import type { InputHTMLAttributes, ReactNode } from 'react';
 export type IpsTextFieldMobileProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'size' | 'prefix'> & {
     /** Controlled text */
     value: string;

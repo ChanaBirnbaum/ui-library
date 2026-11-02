@@ -1,6 +1,5 @@
-import { DrawerProps } from '@mui/material/Drawer';
-import { ReactNode } from 'react';
-
+import type { DrawerProps } from '@mui/material/Drawer';
+import type { ReactNode } from 'react';
 export type IpsDrawerCloseReason = 'backdropClick' | 'escapeKeyDown' | 'closeButton'
 /** Bottom sheet dragged down (anchor="bottom", temporary) */
  | 'swipe';

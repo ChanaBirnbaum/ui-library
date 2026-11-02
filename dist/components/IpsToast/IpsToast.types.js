@@ -1,9 +1,7 @@
-const n = {
-  SUCCESS: "success",
-  INFO: "info",
-  WARNING: "warning",
-  DANGER: "danger"
-};
-export {
-  n as TOAST_TYPES
+// ─── Toast type constants ─────────────────────────────────────────────────────
+export const TOAST_TYPES = {
+    SUCCESS: 'success',
+    INFO: 'info',
+    WARNING: 'warning',
+    DANGER: 'danger',
 };

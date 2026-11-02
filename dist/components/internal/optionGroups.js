@@ -1,19 +1,21 @@
-function t(s) {
-  const u = [], n = /* @__PURE__ */ new Map();
-  s.forEach((o) => {
-    if (!o.group) {
-      u.push(o);
-      return;
-    }
-    const r = n.get(o.group) ?? [];
-    r.push(o), n.set(o.group, r);
-  });
-  const p = Array.from(n, ([o, r]) => ({
-    group: o,
-    options: r
-  }));
-  return u.length > 0 ? [{ group: null, options: u }, ...p] : p;
+// Shared grouping for the select controls: options carry an optional `group`,
+// and every control (native <optgroup> or menu subheaders) shows the same order.
+/** Ungrouped options first, then one section per distinct group, in order of first appearance */
+export function groupOptions(options) {
+    const ungrouped = [];
+    const optionsByGroup = new Map();
+    options.forEach((option) => {
+        if (!option.group) {
+            ungrouped.push(option);
+            return;
+        }
+        const groupOptionsList = optionsByGroup.get(option.group) ?? [];
+        groupOptionsList.push(option);
+        optionsByGroup.set(option.group, groupOptionsList);
+    });
+    const groupedSections = Array.from(optionsByGroup, ([group, groupedOptions]) => ({
+        group,
+        options: groupedOptions,
+    }));
+    return ungrouped.length > 0 ? [{ group: null, options: ungrouped }, ...groupedSections] : groupedSections;
 }
-export {
-  t as groupOptions
-};

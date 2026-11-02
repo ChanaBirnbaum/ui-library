@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { Table, RowData } from '@tanstack/react-table';
-
+import React from 'react';
+import type { Table, RowData } from '@tanstack/react-table';
 export interface TableFooterProps<T extends RowData> {
     table: Table<T>;
     totalRows: number;

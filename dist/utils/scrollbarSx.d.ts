@@ -1,5 +1,4 @@
-import { Theme } from '@mui/material/styles';
-
+import type { Theme } from '@mui/material/styles';
 /**
  * Thin, light-grey scrollbar for the Ips popup lists. The platform default bar
  * is wide and high-contrast, which is far too heavy next to a 32px option row.

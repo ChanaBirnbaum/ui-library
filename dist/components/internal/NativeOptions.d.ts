@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { IpsSelectOption } from '../IpsSelect/IpsSelect.types';
-
+import React from 'react';
+import type { IpsSelectOption } from '../IpsSelect/IpsSelect.types';
 interface NativeOptionsProps {
     options: IpsSelectOption[];
 }

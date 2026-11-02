@@ -1,7 +1,6 @@
-import { default as React } from 'react';
+import React from 'react';
 import { ipsTheme } from './ipsTheme';
-
-export declare const ThemeContext: React.Context<import('@mui/material').Theme>;
+export declare const ThemeContext: React.Context<import("@mui/material").Theme>;
 export declare const ThemeProvider: React.FC<{
     children?: React.ReactNode;
 }>;

@@ -1,102 +1,132 @@
-import { jsxs as i, jsx as n } from "react/jsx-runtime";
-import { useState as u, useRef as E, useEffect as _ } from "react";
-import v from "@mui/material/Dialog";
-import O from "@mui/material/DialogTitle";
-import N from "@mui/material/DialogContent";
-import R from "@mui/material/DialogActions";
-import D from "@mui/material/Button";
-import g from "@mui/material/Box";
-import o from "@mui/material/Typography";
-import B from "@mui/material/CircularProgress";
-import W from "@mui/icons-material/Scanner";
-function J({ open: f, onClose: w, onScan: I, containerId: y = "dwtcontrolContainer" }) {
-  const [p, s] = u("מאתחל..."), [a, r] = u(null), [h, t] = u(!1), x = E(null);
-  _(() => {
-    f && (r(null), b());
-  }, [f]);
-  function T() {
-    var e;
-    return ((e = window.Dynamsoft) == null ? void 0 : e.DWT.GetWebTwain(y)) ?? null;
-  }
-  async function b() {
-    t(!0), s("מאתחל Web TWAIN...");
-    try {
-      if (!window.Dynamsoft)
-        throw new Error("NO_DWT");
-      window.Dynamsoft.DWT.RegisterEvent("OnWebTwainReady", () => {
-        x.current = T(), s("מוכן לסריקה"), t(!1);
-      }), window.Dynamsoft.DWT.Load();
-    } catch (e) {
-      const l = e instanceof Error ? e.message : "";
-      r(l === "NO_DWT" ? "NO_DWT" : e instanceof Error ? e.message : "שגיאה באתחול סורק"), t(!1);
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+/**
+ * ScanDialog — Dynamsoft Web TWAIN integration
+ *
+ * ## הוראות התקנה למפתחים
+ *
+ * ### 1. התקנת הספרייה
+ * ```bash
+ * npm install dwt
+ * ```
+ * או הוספת script tag ל-index.html:
+ * ```html
+ * <script src="https://unpkg.com/dwt/dist/dynamsoft.webtwain.min.js"></script>
+ * ```
+ *
+ * ### 2. הגדרת Product Key
+ * ```ts
+ * // ב-index.tsx / main.tsx לפני ReactDOM.render:
+ * window.Dynamsoft.DWT.ProductKey = 'YOUR_PRODUCT_KEY'
+ * window.Dynamsoft.DWT.ResourcesPath = '/node_modules/dwt/dist'
+ * ```
+ *
+ * ### 3. שימוש בקומפוננטה
+ * ```tsx
+ * <IpsFileUpload
+ *   sviva="prod"
+ *   system="my-site"
+ *   scan                          // מציג כפתור סריקה
+ *   containerId="dwt-container"   // ID ייחודי לכל instance של DWT
+ * />
+ * ```
+ *
+ * ### 4. דרישות סביבה
+ * - Windows בלבד (DWT תומך בסורקי TWAIN/WIA)
+ * - Chrome / Edge מומלצים
+ * - HTTPS בסביבת production
+ *
+ * @see https://www.dynamsoft.com/web-twain/docs/
+ */
+import { useRef, useState, useEffect } from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import ScannerIcon from '@mui/icons-material/Scanner';
+export function ScanDialog({ open, onClose, onScan, containerId = 'dwtcontrolContainer' }) {
+    const [status, setStatus] = useState('מאתחל...');
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const dwtRef = useRef(null);
+    useEffect(() => {
+        if (!open)
+            return;
+        setError(null);
+        initDWT();
+    }, [open]);
+    function getDWT() {
+        return window.Dynamsoft?.DWT.GetWebTwain(containerId) ?? null;
     }
-  }
-  async function S() {
-    const e = x.current ?? T();
-    if (!e) {
-      r("Web TWAIN לא מוכן");
-      return;
-    }
-    t(!0), r(null);
-    try {
-      await e.SelectSourceAsync(), e.OpenSource(), e.RegisterEvent("OnPostTransfer", () => {
-        s(`נסרקו ${e.HowManyImagesInBuffer} עמודים`);
-      }), e.RegisterEvent("OnPostAllTransfers", () => {
-        e.CloseSource(), A(e);
-      }), e.AcquireImage();
-    } catch {
-      r("שגיאה בבחירת סורק"), t(!1);
-    }
-  }
-  function A(e) {
-    const l = Array.from({ length: e.HowManyImagesInBuffer }, (d, c) => c);
-    e.ConvertToBlob(
-      l,
-      e.EnumDWT_ImageType.IT_PNG,
-      (d) => {
-        const c = new File([d], `scan-${Date.now()}.png`, { type: "image/png" });
-        I(c), m();
-      },
-      (d, c, C) => {
-        r(`שגיאת המרה: ${C}`), t(!1);
-      }
-    );
-  }
-  function m() {
-    r(null), s("מאתחל..."), t(!1), w();
-  }
-  return /* @__PURE__ */ i(v, { open: f, onClose: m, maxWidth: "xs", fullWidth: !0, children: [
-    /* @__PURE__ */ i(O, { sx: { display: "flex", alignItems: "center", gap: 1 }, children: [
-      /* @__PURE__ */ n(W, {}),
-      " סריקת מסמך"
-    ] }),
-    /* @__PURE__ */ i(N, { children: [
-      /* @__PURE__ */ n(g, { id: y, sx: { display: "none" } }),
-      a === "NO_DWT" ? /* @__PURE__ */ i(g, { sx: { py: 1, textAlign: "center" }, children: [
-        /* @__PURE__ */ n(o, { fontSize: 40, sx: { mb: 1 }, children: "🖨️" }),
-        /* @__PURE__ */ n(o, { fontWeight: 600, gutterBottom: !0, children: "לא נמצא סורק זמין" }),
-        /* @__PURE__ */ n(o, { variant: "body2", color: "text.secondary", children: "ודא שהסורק מחובר למחשב ומופעל, ונסה שוב." }),
-        /* @__PURE__ */ n(o, { variant: "body2", color: "text.secondary", sx: { mt: 0.5 }, children: "לתמיכה פנה למנהל המערכת." })
-      ] }) : a ? /* @__PURE__ */ n(o, { color: "error", children: a }) : h ? /* @__PURE__ */ i(g, { sx: { display: "flex", alignItems: "center", gap: 2, py: 2 }, children: [
-        /* @__PURE__ */ n(B, { size: 24 }),
-        /* @__PURE__ */ n(o, { children: p })
-      ] }) : /* @__PURE__ */ n(o, { color: "text.secondary", children: p })
-    ] }),
-    /* @__PURE__ */ i(R, { sx: { px: 3, pb: 2 }, children: [
-      /* @__PURE__ */ n(D, { onClick: m, color: "inherit", children: "ביטול" }),
-      /* @__PURE__ */ n(
-        D,
-        {
-          variant: "contained",
-          startIcon: /* @__PURE__ */ n(W, {}),
-          onClick: S,
-          disabled: h || !!a,
-          children: "סרוק"
+    async function initDWT() {
+        setLoading(true);
+        setStatus('מאתחל Web TWAIN...');
+        try {
+            if (!window.Dynamsoft) {
+                throw new Error('NO_DWT');
+            }
+            window.Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', () => {
+                dwtRef.current = getDWT();
+                setStatus('מוכן לסריקה');
+                setLoading(false);
+            });
+            window.Dynamsoft.DWT.Load();
         }
-      )
-    ] })
-  ] });
+        catch (e) {
+            const msg = e instanceof Error ? e.message : '';
+            if (msg === 'NO_DWT') {
+                setError('NO_DWT');
+            }
+            else {
+                setError(e instanceof Error ? e.message : 'שגיאה באתחול סורק');
+            }
+            setLoading(false);
+        }
+    }
+    async function startScan() {
+        const dwt = dwtRef.current ?? getDWT();
+        if (!dwt) {
+            setError('Web TWAIN לא מוכן');
+            return;
+        }
+        setLoading(true);
+        setError(null);
+        try {
+            await dwt.SelectSourceAsync();
+            dwt.OpenSource();
+            dwt.RegisterEvent('OnPostTransfer', () => {
+                setStatus(`נסרקו ${dwt.HowManyImagesInBuffer} עמודים`);
+            });
+            dwt.RegisterEvent('OnPostAllTransfers', () => {
+                dwt.CloseSource();
+                convertAndReturn(dwt);
+            });
+            dwt.AcquireImage();
+        }
+        catch (e) {
+            setError('שגיאה בבחירת סורק');
+            setLoading(false);
+        }
+    }
+    function convertAndReturn(dwt) {
+        const indices = Array.from({ length: dwt.HowManyImagesInBuffer }, (_, i) => i);
+        dwt.ConvertToBlob(indices, dwt.EnumDWT_ImageType.IT_PNG, (blob) => {
+            const file = new File([blob], `scan-${Date.now()}.png`, { type: 'image/png' });
+            onScan(file);
+            handleClose();
+        }, (_idx, _type, msg) => {
+            setError(`שגיאת המרה: ${msg}`);
+            setLoading(false);
+        });
+    }
+    function handleClose() {
+        setError(null);
+        setStatus('מאתחל...');
+        setLoading(false);
+        onClose();
+    }
+    return (_jsxs(Dialog, { open: open, onClose: handleClose, maxWidth: "xs", fullWidth: true, children: [_jsxs(DialogTitle, { sx: { display: 'flex', alignItems: 'center', gap: 1 }, children: [_jsx(ScannerIcon, {}), " \u05E1\u05E8\u05D9\u05E7\u05EA \u05DE\u05E1\u05DE\u05DA"] }), _jsxs(DialogContent, { children: [_jsx(Box, { id: containerId, sx: { display: 'none' } }), error === 'NO_DWT' ? (_jsxs(Box, { sx: { py: 1, textAlign: 'center' }, children: [_jsx(Typography, { fontSize: 40, sx: { mb: 1 }, children: "\uD83D\uDDA8\uFE0F" }), _jsx(Typography, { fontWeight: 600, gutterBottom: true, children: "\u05DC\u05D0 \u05E0\u05DE\u05E6\u05D0 \u05E1\u05D5\u05E8\u05E7 \u05D6\u05DE\u05D9\u05DF" }), _jsx(Typography, { variant: "body2", color: "text.secondary", children: "\u05D5\u05D3\u05D0 \u05E9\u05D4\u05E1\u05D5\u05E8\u05E7 \u05DE\u05D7\u05D5\u05D1\u05E8 \u05DC\u05DE\u05D7\u05E9\u05D1 \u05D5\u05DE\u05D5\u05E4\u05E2\u05DC, \u05D5\u05E0\u05E1\u05D4 \u05E9\u05D5\u05D1." }), _jsx(Typography, { variant: "body2", color: "text.secondary", sx: { mt: 0.5 }, children: "\u05DC\u05EA\u05DE\u05D9\u05DB\u05D4 \u05E4\u05E0\u05D4 \u05DC\u05DE\u05E0\u05D4\u05DC \u05D4\u05DE\u05E2\u05E8\u05DB\u05EA." })] })) : error ? (_jsx(Typography, { color: "error", children: error })) : loading ? (_jsxs(Box, { sx: { display: 'flex', alignItems: 'center', gap: 2, py: 2 }, children: [_jsx(CircularProgress, { size: 24 }), _jsx(Typography, { children: status })] })) : (_jsx(Typography, { color: "text.secondary", children: status }))] }), _jsxs(DialogActions, { sx: { px: 3, pb: 2 }, children: [_jsx(Button, { onClick: handleClose, color: "inherit", children: "\u05D1\u05D9\u05D8\u05D5\u05DC" }), _jsx(Button, { variant: "contained", startIcon: _jsx(ScannerIcon, {}), onClick: startScan, disabled: loading || !!error, children: "\u05E1\u05E8\u05D5\u05E7" })] })] }));
 }
-export {
-  J as ScanDialog
-};

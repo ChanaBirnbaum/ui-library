@@ -1,5 +1,4 @@
-import { default as React } from 'react';
-
+import React from 'react';
 export declare const IpsTextAreaMobile: React.ForwardRefExoticComponent<Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "value" | "defaultValue" | "onChange"> & {
     value: string;
     onChange?: (value: string) => void;

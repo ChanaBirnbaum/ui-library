@@ -1,5 +1,4 @@
-import { default as React, InputHTMLAttributes, ReactNode } from 'react';
-
+import React, { type InputHTMLAttributes, type ReactNode } from 'react';
 export type NativePickerInputType = 'date' | 'time';
 export type NativePickerFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'type' | 'size'> & {
     inputType: NativePickerInputType;

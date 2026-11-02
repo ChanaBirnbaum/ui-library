@@ -1,442 +1,380 @@
-import { jsxs as v, jsx as e } from "react/jsx-runtime";
-import ee, { useRef as h, useState as w, useCallback as te, useLayoutEffect as oe } from "react";
-import ie from "@mui/material/Paper";
-import q from "@mui/material/IconButton";
-import ne from "@mui/material/Divider";
-import N from "@mui/material/Tooltip";
-import X from "@mui/material/Typography";
-import P from "@mui/material/Popover";
-import p from "@mui/material/Box";
-import { useTheme as re, alpha as k } from "@mui/material/styles";
-import le from "@mui/icons-material/ExpandMore";
-import ae from "@mui/icons-material/FormatBold";
-import ce from "@mui/icons-material/FormatItalic";
-import se from "@mui/icons-material/FormatUnderlined";
-import me from "@mui/icons-material/StrikethroughS";
-import ue from "@mui/icons-material/FormatListBulleted";
-import pe from "@mui/icons-material/FormatListNumbered";
-import fe from "@mui/icons-material/FormatQuote";
-import ge from "@mui/icons-material/Link";
-import de from "@mui/icons-material/Image";
-import he from "@mui/icons-material/FormatAlignLeft";
-import ve from "@mui/icons-material/FormatAlignCenter";
-import be from "@mui/icons-material/FormatAlignRight";
-import Ae from "@mui/icons-material/FormatAlignJustify";
-import xe from "@mui/icons-material/FormatColorText";
-import Ie from "@mui/icons-material/FormatColorFill";
-import we from "@mui/icons-material/FormatTextdirectionRToL";
-import ye from "@mui/icons-material/FormatTextdirectionLToR";
-import Re from "@mui/icons-material/Undo";
-import Se from "@mui/icons-material/Redo";
-import Ce from "@mui/icons-material/FormatClear";
-import ze from "@mui/icons-material/AttachFile";
-import Te from "@mui/icons-material/TableChart";
-function L({ level: i }) {
-  return /* @__PURE__ */ v(
-    X,
-    {
-      component: "span",
-      sx: { fontSize: "0.7rem", fontWeight: 800, lineHeight: 1, letterSpacing: 0 },
-      children: [
-        "H",
-        i
-      ]
-    }
-  );
+import { jsxs as _jsxs, jsx as _jsx } from "react/jsx-runtime";
+import React, { useRef, useState, useLayoutEffect, useCallback } from 'react';
+import Paper from '@mui/material/Paper';
+import IconButton from '@mui/material/IconButton';
+import Divider from '@mui/material/Divider';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import Popover from '@mui/material/Popover';
+import Box from '@mui/material/Box';
+import { useTheme, alpha } from '@mui/material/styles';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+// ─── MUI Icons ────────────────────────────────────────────────────────────────
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import FormatItalicIcon from '@mui/icons-material/FormatItalic';
+import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
+import StrikethroughSIcon from '@mui/icons-material/StrikethroughS';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
+import LinkIcon from '@mui/icons-material/Link';
+import ImageIcon from '@mui/icons-material/Image';
+import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
+import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
+import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
+import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
+import FormatColorTextIcon from '@mui/icons-material/FormatColorText';
+import FormatColorFillIcon from '@mui/icons-material/FormatColorFill';
+import FormatTextdirectionRToLIcon from '@mui/icons-material/FormatTextdirectionRToL';
+import FormatTextdirectionLToRIcon from '@mui/icons-material/FormatTextdirectionLToR';
+import UndoIcon from '@mui/icons-material/Undo';
+import RedoIcon from '@mui/icons-material/Redo';
+import FormatClearIcon from '@mui/icons-material/FormatClear';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import TableChartIcon from '@mui/icons-material/TableChart';
+// ─── H1 / H2 / H3 text label (no MUI heading icon exists) ────────────────────
+function HeadingIcon({ level }) {
+    return (_jsxs(Typography, { component: "span", sx: { fontSize: '0.7rem', fontWeight: 800, lineHeight: 1, letterSpacing: 0 }, children: ["H", level] }));
 }
-function ct({ editor: i, config: F }) {
-  const f = re(), B = h(null), O = h(null), b = h(null), A = h(null), G = k(f.palette.primary.main, 0.15), J = k(f.palette.primary.main, 0.25), [H, y] = w(null), [m, R] = w({ rows: 0, cols: 0 }), Z = 8, M = 8, n = () => i.chain().focus(), U = i.can(), E = ["link", "image", "file", "insertTable", "textColor", "bgColor", "rtl", "ltr"], Q = F.groups.map((t) => ({ items: t.items.filter((o) => !E.includes(o)) })).filter((t) => t.items.length > 0), _ = F.groups.map((t) => ({ items: t.items.filter((o) => E.includes(o)) })).filter((t) => t.items.length > 0), x = h(null), [g, V] = w([]), [W, $] = w(null), d = Q.flatMap((t) => t.items), S = te(() => {
-    const t = x.current;
-    if (!t) return;
-    const o = 30, r = 4, l = t.offsetWidth - 34, c = Math.max(1, Math.floor(l / (o + r)));
-    V(d.slice(c));
-  }, [d.join(",")]);
-  oe(() => {
-    S();
-    const t = new ResizeObserver(S);
-    return x.current && t.observe(x.current), () => t.disconnect();
-  }, [S]);
-  const K = g.length > 0 ? d.slice(0, d.length - g.length) : d;
-  function C(t) {
-    const { icon: o, label: r, action: a, isActive: l, disabled: c } = Y(t);
-    return /* @__PURE__ */ e(N, { title: r, placement: "top", children: /* @__PURE__ */ e("span", { children: /* @__PURE__ */ e(
-      q,
-      {
-        size: "small",
-        onClick: (u) => a(u),
-        disabled: c ?? !1,
-        "aria-pressed": l,
-        "aria-label": r,
-        sx: {
-          borderRadius: 1,
-          p: 0.5,
-          bgcolor: l ? G : "transparent",
-          "&:hover": { bgcolor: l ? J : void 0 }
-        },
-        children: o
-      }
-    ) }) }, t);
-  }
-  function Y(t) {
-    switch (t) {
-      case "bold":
-        return {
-          icon: /* @__PURE__ */ e(ae, { fontSize: "small" }),
-          label: "Bold (Ctrl+B)",
-          action: () => n().toggleBold().run(),
-          isActive: i.isActive("bold")
-        };
-      case "italic":
-        return {
-          icon: /* @__PURE__ */ e(ce, { fontSize: "small" }),
-          label: "Italic (Ctrl+I)",
-          action: () => n().toggleItalic().run(),
-          isActive: i.isActive("italic")
-        };
-      case "underline":
-        return {
-          icon: /* @__PURE__ */ e(se, { fontSize: "small" }),
-          label: "Underline (Ctrl+U)",
-          action: () => n().toggleUnderline().run(),
-          isActive: i.isActive("underline")
-        };
-      case "strike":
-        return {
-          icon: /* @__PURE__ */ e(me, { fontSize: "small" }),
-          label: "Strikethrough",
-          action: () => n().toggleStrike().run(),
-          isActive: i.isActive("strike")
-        };
-      case "h1":
-        return {
-          icon: /* @__PURE__ */ e(L, { level: 1 }),
-          label: "Heading 1",
-          action: () => n().toggleHeading({ level: 1 }).run(),
-          isActive: i.isActive("heading", { level: 1 })
-        };
-      case "h2":
-        return {
-          icon: /* @__PURE__ */ e(L, { level: 2 }),
-          label: "Heading 2",
-          action: () => n().toggleHeading({ level: 2 }).run(),
-          isActive: i.isActive("heading", { level: 2 })
-        };
-      case "h3":
-        return {
-          icon: /* @__PURE__ */ e(L, { level: 3 }),
-          label: "Heading 3",
-          action: () => n().toggleHeading({ level: 3 }).run(),
-          isActive: i.isActive("heading", { level: 3 })
-        };
-      case "bulletList":
-        return {
-          icon: /* @__PURE__ */ e(ue, { fontSize: "small" }),
-          label: "Bullet list",
-          action: () => n().toggleBulletList().run(),
-          isActive: i.isActive("bulletList")
-        };
-      case "orderedList":
-        return {
-          icon: /* @__PURE__ */ e(pe, { fontSize: "small" }),
-          label: "Ordered list",
-          action: () => n().toggleOrderedList().run(),
-          isActive: i.isActive("orderedList")
-        };
-      case "blockquote":
-        return {
-          icon: /* @__PURE__ */ e(fe, { fontSize: "small" }),
-          label: "Blockquote",
-          action: () => n().toggleBlockquote().run(),
-          isActive: i.isActive("blockquote")
-        };
-      case "link":
-        return {
-          icon: /* @__PURE__ */ e(ge, { fontSize: "small" }),
-          label: "Insert link",
-          action: () => {
-            const o = i.getAttributes("link").href, r = window.prompt("URL:", o ?? "https://");
-            r !== null && (r === "" ? n().unsetLink().run() : n().setLink({ href: r }).run());
-          },
-          isActive: i.isActive("link")
-        };
-      case "image":
-        return {
-          icon: /* @__PURE__ */ e(de, { fontSize: "small" }),
-          label: "Insert image",
-          action: () => {
-            b.current && (b.current.value = "", b.current.click());
-          },
-          isActive: !1
-        };
-      case "file":
-        return {
-          icon: /* @__PURE__ */ e(ze, { fontSize: "small" }),
-          label: "Attach file",
-          action: () => {
-            A.current && (A.current.value = "", A.current.click());
-          },
-          isActive: !1
-        };
-      case "alignLeft":
-        return {
-          icon: /* @__PURE__ */ e(he, { fontSize: "small" }),
-          label: "Align left",
-          action: () => n().setTextAlign("left").run(),
-          isActive: i.isActive({ textAlign: "left" })
-        };
-      case "alignCenter":
-        return {
-          icon: /* @__PURE__ */ e(ve, { fontSize: "small" }),
-          label: "Align center",
-          action: () => n().setTextAlign("center").run(),
-          isActive: i.isActive({ textAlign: "center" })
-        };
-      case "alignRight":
-        return {
-          icon: /* @__PURE__ */ e(be, { fontSize: "small" }),
-          label: "Align right",
-          action: () => n().setTextAlign("right").run(),
-          isActive: i.isActive({ textAlign: "right" })
-        };
-      case "alignJustify":
-        return {
-          icon: /* @__PURE__ */ e(Ae, { fontSize: "small" }),
-          label: "Justify",
-          action: () => n().setTextAlign("justify").run(),
-          isActive: i.isActive({ textAlign: "justify" })
-        };
-      case "textColor":
-        return {
-          icon: /* @__PURE__ */ e(xe, { fontSize: "small" }),
-          label: "Text color",
-          action: () => {
-            var o;
-            return (o = B.current) == null ? void 0 : o.click();
-          },
-          isActive: !1
-        };
-      case "bgColor":
-        return {
-          icon: /* @__PURE__ */ e(Ie, { fontSize: "small" }),
-          label: "Background color",
-          action: () => {
-            var o;
-            return (o = O.current) == null ? void 0 : o.click();
-          },
-          isActive: !1
-        };
-      case "rtl":
-        return {
-          icon: /* @__PURE__ */ e(we, { fontSize: "small" }),
-          label: "RTL direction",
-          action: () => n().updateAttributes("paragraph", { dir: "rtl" }).run(),
-          isActive: i.isActive("paragraph", { dir: "rtl" })
-        };
-      case "ltr":
-        return {
-          icon: /* @__PURE__ */ e(ye, { fontSize: "small" }),
-          label: "LTR direction",
-          action: () => n().updateAttributes("paragraph", { dir: "ltr" }).run(),
-          isActive: i.isActive("paragraph", { dir: "ltr" })
-        };
-      case "undo":
-        return {
-          icon: /* @__PURE__ */ e(Re, { fontSize: "small" }),
-          label: "Undo (Ctrl+Z)",
-          action: () => n().undo().run(),
-          isActive: !1,
-          disabled: !U.undo()
-        };
-      case "redo":
-        return {
-          icon: /* @__PURE__ */ e(Se, { fontSize: "small" }),
-          label: "Redo (Ctrl+Shift+Z)",
-          action: () => n().redo().run(),
-          isActive: !1,
-          disabled: !U.redo()
-        };
-      case "clearFormat":
-        return {
-          icon: /* @__PURE__ */ e(Ce, { fontSize: "small" }),
-          label: "Clear formatting",
-          action: () => n().unsetAllMarks().clearNodes().run(),
-          isActive: !1
-        };
-      case "insertTable":
-        return {
-          icon: /* @__PURE__ */ e(Te, { fontSize: "small" }),
-          label: "הוסף טבלה",
-          action: (o) => {
-            o && y(o.currentTarget);
-          },
-          isActive: i.isActive("table")
-        };
-      default:
-        return { icon: null, label: String(t), action: () => {
-        }, isActive: !1 };
+// ─── Component ────────────────────────────────────────────────────────────────
+export function IpsRteToolbar({ editor, config }) {
+    const theme = useTheme();
+    const textColorRef = useRef(null);
+    const bgColorRef = useRef(null);
+    const imageFileRef = useRef(null);
+    const fileRef = useRef(null);
+    const activeBg = alpha(theme.palette.primary.main, 0.15);
+    const activeHoverBg = alpha(theme.palette.primary.main, 0.25);
+    // ── Table picker state ──────────────────────────────────────────────────────
+    const [tableAnchor, setTableAnchor] = useState(null);
+    const [hovered, setHovered] = useState({ rows: 0, cols: 0 });
+    const MAX_ROWS = 8;
+    const MAX_COLS = 8;
+    // Extension commands (setColor, setHighlight, setTextAlign, setLink, etc.)
+    // are augmented into @tiptap/core by each extension package at import time.
+    // Cast to `any` once here so individual cases stay readable without per-line casts.
+    const c = () => editor.chain().focus();
+    const can = editor.can();
+    // ─── Split groups into top (text formatting) and bottom (insert/actions) ───
+    const BOTTOM_ITEMS = ['link', 'image', 'file', 'insertTable', 'textColor', 'bgColor', 'rtl', 'ltr'];
+    const topGroups = config.groups
+        .map(g => ({ items: g.items.filter(i => !BOTTOM_ITEMS.includes(i)) }))
+        .filter(g => g.items.length > 0);
+    const bottomGroups = config.groups
+        .map(g => ({ items: g.items.filter(i => BOTTOM_ITEMS.includes(i)) }))
+        .filter(g => g.items.length > 0);
+    // ─── Overflow logic for top row ──────────────────────────────────────────────
+    const topRowRef = useRef(null);
+    const [overflowItems, setOverflowItems] = useState([]);
+    const [overflowAnchor, setOverflowAnchor] = useState(null);
+    const allTopItems = topGroups.flatMap(g => g.items);
+    const measureOverflow = useCallback(() => {
+        const row = topRowRef.current;
+        if (!row)
+            return;
+        const BTN_W = 30; // approx button width px
+        const GAP = 4;
+        const ARROW = 34; // reserve space for the "▾" button
+        const available = row.offsetWidth - ARROW;
+        const maxVisible = Math.max(1, Math.floor(available / (BTN_W + GAP)));
+        setOverflowItems(allTopItems.slice(maxVisible));
+    }, [allTopItems.join(',')]);
+    useLayoutEffect(() => {
+        measureOverflow();
+        const ro = new ResizeObserver(measureOverflow);
+        if (topRowRef.current)
+            ro.observe(topRowRef.current);
+        return () => ro.disconnect();
+    }, [measureOverflow]);
+    const visibleTopItems = overflowItems.length > 0
+        ? allTopItems.slice(0, allTopItems.length - overflowItems.length)
+        : allTopItems;
+    // helper — render a single toolbar button
+    function renderBtn(item) {
+        const { icon, label, action, isActive, disabled } = getItemDef(item);
+        return (_jsx(Tooltip, { title: label, placement: "top", children: _jsx("span", { children: _jsx(IconButton, { size: "small", onClick: (e) => action(e), disabled: disabled ?? false, "aria-pressed": isActive, "aria-label": label, sx: {
+                        borderRadius: 1,
+                        p: 0.5,
+                        bgcolor: isActive ? activeBg : 'transparent',
+                        '&:hover': { bgcolor: isActive ? activeHoverBg : undefined },
+                    }, children: icon }) }) }, item));
     }
-  }
-  return /* @__PURE__ */ v(
-    ie,
-    {
-      elevation: 0,
-      className: "ips-rte-toolbar",
-      sx: {
-        display: "flex",
-        flexDirection: "column",
-        position: "sticky",
-        bottom: 0,
-        zIndex: 1,
-        borderRadius: "0 0 4px 4px",
-        borderTop: `1px solid ${f.palette.divider}`,
-        bgcolor: "transparent"
-      },
-      children: [
-        /* @__PURE__ */ e(
-          "input",
-          {
-            type: "color",
-            ref: B,
-            style: { position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0 },
-            onChange: (t) => n().setColor(t.target.value).run()
-          }
-        ),
-        /* @__PURE__ */ e(
-          "input",
-          {
-            type: "color",
-            ref: O,
-            style: { position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0 },
-            onChange: (t) => n().setHighlight({ color: t.target.value }).run()
-          }
-        ),
-        /* @__PURE__ */ e(
-          "input",
-          {
-            type: "file",
-            ref: b,
-            accept: "image/*",
-            style: { position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0 },
-            onChange: (t) => {
-              var l;
-              const o = (l = t.target.files) == null ? void 0 : l[0];
-              if (!o) return;
-              const r = 400, a = new FileReader();
-              a.onload = (c) => {
-                var j;
-                const u = (j = c.target) == null ? void 0 : j.result, s = new window.Image();
-                s.onload = () => {
-                  const D = s.width > r ? r / s.width : 1, z = Math.round(s.width * D), T = Math.round(s.height * D), I = document.createElement("canvas");
-                  I.width = z, I.height = T, I.getContext("2d").drawImage(s, 0, 0, z, T), i.chain().focus().setImage({ src: I.toDataURL(o.type || "image/png"), width: z, height: T }).run();
-                }, s.src = u;
-              }, a.readAsDataURL(o);
-            }
-          }
-        ),
-        /* @__PURE__ */ e(
-          "input",
-          {
-            type: "file",
-            ref: A,
-            style: { position: "absolute", opacity: 0, pointerEvents: "none", width: 0, height: 0 },
-            onChange: (t) => {
-              var a;
-              const o = (a = t.target.files) == null ? void 0 : a[0];
-              if (!o) return;
-              const r = URL.createObjectURL(o);
-              i.chain().focus().insertContent(`<a href="${r}" download="${o.name}">📎 ${o.name}</a>`).run();
-            }
-          }
-        ),
-        /* @__PURE__ */ v(
-          p,
-          {
-            ref: x,
-            sx: {
-              display: "flex",
-              alignItems: "center",
-              flexWrap: "nowrap",
-              overflow: "hidden",
-              px: 1,
-              py: 0.5,
-              gap: 0.5,
-              bgcolor: f.palette.grey[100],
-              borderRadius: "0 0 0 0"
-            },
-            children: [
-              K.map(C),
-              /* @__PURE__ */ e(N, { title: "עוד אפשרויות", placement: "top", children: /* @__PURE__ */ e("span", { children: /* @__PURE__ */ e(
-                q,
-                {
-                  size: "small",
-                  onClick: (t) => $(t.currentTarget),
-                  sx: { borderRadius: 1, p: 0.5, ml: "auto", opacity: g.length > 0 ? 1 : 0, pointerEvents: g.length > 0 ? "auto" : "none" },
-                  children: /* @__PURE__ */ e(le, { fontSize: "small" })
-                }
-              ) }) })
-            ]
-          }
-        ),
-        /* @__PURE__ */ e(
-          P,
-          {
-            open: !!W,
-            anchorEl: W,
-            onClose: () => $(null),
-            anchorOrigin: { vertical: "bottom", horizontal: "left" },
-            transformOrigin: { vertical: "top", horizontal: "left" },
-            children: /* @__PURE__ */ e(p, { sx: { display: "flex", flexWrap: "wrap", p: 0.5, gap: 0.5, maxWidth: 240 }, children: g.map(C) })
-          }
-        ),
-        _.length > 0 && /* @__PURE__ */ e(p, { sx: { display: "flex", alignItems: "center", flexWrap: "wrap", px: 1, py: 0.5, gap: 0.5, bgcolor: "transparent" }, children: _.map((t, o) => /* @__PURE__ */ v(ee.Fragment, { children: [
-          o > 0 && /* @__PURE__ */ e(ne, { orientation: "vertical", flexItem: !0, sx: { mx: 0.5, my: 0.25 } }),
-          t.items.map(C)
-        ] }, o)) }),
-        /* @__PURE__ */ e(
-          P,
-          {
-            open: !!H,
-            anchorEl: H,
-            onClose: () => {
-              y(null), R({ rows: 0, cols: 0 });
-            },
-            anchorOrigin: { vertical: "bottom", horizontal: "left" },
-            transformOrigin: { vertical: "top", horizontal: "left" },
-            children: /* @__PURE__ */ v(p, { sx: { p: 1.5 }, children: [
-              /* @__PURE__ */ e(X, { variant: "caption", sx: { display: "block", mb: 1, color: "text.secondary", textAlign: "center" }, children: m.rows > 0 && m.cols > 0 ? `${m.rows} × ${m.cols}` : "בחר גודל טבלה" }),
-              /* @__PURE__ */ e(p, { sx: { display: "grid", gridTemplateColumns: `repeat(${M}, 20px)`, gap: "3px" }, children: Array.from(
-                { length: Z },
-                (t, o) => Array.from({ length: M }, (r, a) => {
-                  const l = o + 1, c = a + 1, u = l <= m.rows && c <= m.cols;
-                  return /* @__PURE__ */ e(
-                    p,
-                    {
-                      onMouseEnter: () => R({ rows: l, cols: c }),
-                      onClick: () => {
-                        n().insertTable({ rows: l, cols: c, withHeaderRow: !0 }).run(), y(null), R({ rows: 0, cols: 0 });
-                      },
-                      sx: {
-                        width: 20,
-                        height: 20,
-                        border: "1px solid",
-                        borderRadius: "2px",
-                        cursor: "pointer",
-                        transition: "all 0.1s",
-                        borderColor: u ? "primary.main" : "divider",
-                        bgcolor: u ? k(f.palette.primary.main, 0.15) : "background.paper"
-                      }
+    function getItemDef(item) {
+        switch (item) {
+            // ── Inline marks ────────────────────────────────────────────────────────
+            case 'bold':
+                return {
+                    icon: _jsx(FormatBoldIcon, { fontSize: "small" }),
+                    label: 'Bold (Ctrl+B)',
+                    action: () => c().toggleBold().run(),
+                    isActive: editor.isActive('bold'),
+                };
+            case 'italic':
+                return {
+                    icon: _jsx(FormatItalicIcon, { fontSize: "small" }),
+                    label: 'Italic (Ctrl+I)',
+                    action: () => c().toggleItalic().run(),
+                    isActive: editor.isActive('italic'),
+                };
+            case 'underline':
+                return {
+                    icon: _jsx(FormatUnderlinedIcon, { fontSize: "small" }),
+                    label: 'Underline (Ctrl+U)',
+                    action: () => c().toggleUnderline().run(),
+                    isActive: editor.isActive('underline'),
+                };
+            case 'strike':
+                return {
+                    icon: _jsx(StrikethroughSIcon, { fontSize: "small" }),
+                    label: 'Strikethrough',
+                    action: () => c().toggleStrike().run(),
+                    isActive: editor.isActive('strike'),
+                };
+            // ── Headings ────────────────────────────────────────────────────────────
+            case 'h1':
+                return {
+                    icon: _jsx(HeadingIcon, { level: 1 }),
+                    label: 'Heading 1',
+                    action: () => c().toggleHeading({ level: 1 }).run(),
+                    isActive: editor.isActive('heading', { level: 1 }),
+                };
+            case 'h2':
+                return {
+                    icon: _jsx(HeadingIcon, { level: 2 }),
+                    label: 'Heading 2',
+                    action: () => c().toggleHeading({ level: 2 }).run(),
+                    isActive: editor.isActive('heading', { level: 2 }),
+                };
+            case 'h3':
+                return {
+                    icon: _jsx(HeadingIcon, { level: 3 }),
+                    label: 'Heading 3',
+                    action: () => c().toggleHeading({ level: 3 }).run(),
+                    isActive: editor.isActive('heading', { level: 3 }),
+                };
+            // ── Lists & blockquote ──────────────────────────────────────────────────
+            case 'bulletList':
+                return {
+                    icon: _jsx(FormatListBulletedIcon, { fontSize: "small" }),
+                    label: 'Bullet list',
+                    action: () => c().toggleBulletList().run(),
+                    isActive: editor.isActive('bulletList'),
+                };
+            case 'orderedList':
+                return {
+                    icon: _jsx(FormatListNumberedIcon, { fontSize: "small" }),
+                    label: 'Ordered list',
+                    action: () => c().toggleOrderedList().run(),
+                    isActive: editor.isActive('orderedList'),
+                };
+            case 'blockquote':
+                return {
+                    icon: _jsx(FormatQuoteIcon, { fontSize: "small" }),
+                    label: 'Blockquote',
+                    action: () => c().toggleBlockquote().run(),
+                    isActive: editor.isActive('blockquote'),
+                };
+            // ── Link / image ────────────────────────────────────────────────────────
+            case 'link':
+                return {
+                    icon: _jsx(LinkIcon, { fontSize: "small" }),
+                    label: 'Insert link',
+                    action: () => {
+                        const prev = editor.getAttributes('link').href;
+                        const url = window.prompt('URL:', prev ?? 'https://');
+                        if (url === null)
+                            return;
+                        if (url === '') {
+                            c().unsetLink().run();
+                        }
+                        else {
+                            c().setLink({ href: url }).run();
+                        }
                     },
-                    `${l}-${c}`
-                  );
-                })
-              ) })
-            ] })
-          }
-        )
-      ]
+                    isActive: editor.isActive('link'),
+                };
+            case 'image':
+                return {
+                    icon: _jsx(ImageIcon, { fontSize: "small" }),
+                    label: 'Insert image',
+                    action: () => {
+                        if (imageFileRef.current) {
+                            imageFileRef.current.value = '';
+                            imageFileRef.current.click();
+                        }
+                    },
+                    isActive: false,
+                };
+            case 'file':
+                return {
+                    icon: _jsx(AttachFileIcon, { fontSize: "small" }),
+                    label: 'Attach file',
+                    action: () => {
+                        if (fileRef.current) {
+                            fileRef.current.value = '';
+                            fileRef.current.click();
+                        }
+                    },
+                    isActive: false,
+                };
+            // ── Text alignment ──────────────────────────────────────────────────────
+            case 'alignLeft':
+                return {
+                    icon: _jsx(FormatAlignLeftIcon, { fontSize: "small" }),
+                    label: 'Align left',
+                    action: () => c().setTextAlign('left').run(),
+                    isActive: editor.isActive({ textAlign: 'left' }),
+                };
+            case 'alignCenter':
+                return {
+                    icon: _jsx(FormatAlignCenterIcon, { fontSize: "small" }),
+                    label: 'Align center',
+                    action: () => c().setTextAlign('center').run(),
+                    isActive: editor.isActive({ textAlign: 'center' }),
+                };
+            case 'alignRight':
+                return {
+                    icon: _jsx(FormatAlignRightIcon, { fontSize: "small" }),
+                    label: 'Align right',
+                    action: () => c().setTextAlign('right').run(),
+                    isActive: editor.isActive({ textAlign: 'right' }),
+                };
+            case 'alignJustify':
+                return {
+                    icon: _jsx(FormatAlignJustifyIcon, { fontSize: "small" }),
+                    label: 'Justify',
+                    action: () => c().setTextAlign('justify').run(),
+                    isActive: editor.isActive({ textAlign: 'justify' }),
+                };
+            // ── Colors ──────────────────────────────────────────────────────────────
+            // Native <input type="color"> is hidden and triggered via ref click.
+            // The onChange handler applies the chosen color to the current selection.
+            case 'textColor':
+                return {
+                    icon: _jsx(FormatColorTextIcon, { fontSize: "small" }),
+                    label: 'Text color',
+                    action: () => textColorRef.current?.click(),
+                    isActive: false,
+                };
+            case 'bgColor':
+                return {
+                    icon: _jsx(FormatColorFillIcon, { fontSize: "small" }),
+                    label: 'Background color',
+                    action: () => bgColorRef.current?.click(),
+                    isActive: false,
+                };
+            // ── Paragraph direction ──────────────────────────────────────────────────
+            // Sets the `dir` attribute on the current paragraph node.
+            // Requires the paragraph node to have `dir` in its attribute schema
+            // (configure via a custom Paragraph extension in IpsRichTextEditor.tsx).
+            case 'rtl':
+                return {
+                    icon: _jsx(FormatTextdirectionRToLIcon, { fontSize: "small" }),
+                    label: 'RTL direction',
+                    action: () => c().updateAttributes('paragraph', { dir: 'rtl' }).run(),
+                    isActive: editor.isActive('paragraph', { dir: 'rtl' }),
+                };
+            case 'ltr':
+                return {
+                    icon: _jsx(FormatTextdirectionLToRIcon, { fontSize: "small" }),
+                    label: 'LTR direction',
+                    action: () => c().updateAttributes('paragraph', { dir: 'ltr' }).run(),
+                    isActive: editor.isActive('paragraph', { dir: 'ltr' }),
+                };
+            // ── History ─────────────────────────────────────────────────────────────
+            case 'undo':
+                return {
+                    icon: _jsx(UndoIcon, { fontSize: "small" }),
+                    label: 'Undo (Ctrl+Z)',
+                    action: () => c().undo().run(),
+                    isActive: false,
+                    disabled: !can.undo(),
+                };
+            case 'redo':
+                return {
+                    icon: _jsx(RedoIcon, { fontSize: "small" }),
+                    label: 'Redo (Ctrl+Shift+Z)',
+                    action: () => c().redo().run(),
+                    isActive: false,
+                    disabled: !can.redo(),
+                };
+            // ── Clear formatting ─────────────────────────────────────────────────────
+            case 'clearFormat':
+                return {
+                    icon: _jsx(FormatClearIcon, { fontSize: "small" }),
+                    label: 'Clear formatting',
+                    action: () => c().unsetAllMarks().clearNodes().run(),
+                    isActive: false,
+                };
+            // ── Table ────────────────────────────────────────────────────────────────
+            case 'insertTable':
+                return {
+                    icon: _jsx(TableChartIcon, { fontSize: "small" }),
+                    label: 'הוסף טבלה',
+                    action: (e) => {
+                        if (e)
+                            setTableAnchor(e.currentTarget);
+                    },
+                    isActive: editor.isActive('table'),
+                };
+            // ── Exhaustive guard ─────────────────────────────────────────────────────
+            default: {
+                const _exhaustive = item;
+                return { icon: null, label: String(_exhaustive), action: () => { }, isActive: false };
+            }
+        }
     }
-  );
+    // ─── Render ──────────────────────────────────────────────────────────────────
+    return (_jsxs(Paper, { elevation: 0, className: "ips-rte-toolbar", sx: {
+            display: 'flex',
+            flexDirection: 'column',
+            position: 'sticky',
+            bottom: 0,
+            zIndex: 1,
+            borderRadius: '0 0 4px 4px',
+            borderTop: `1px solid ${theme.palette.divider}`,
+            bgcolor: 'transparent',
+        }, children: [_jsx("input", { type: "color", ref: textColorRef, style: { position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }, onChange: (e) => c().setColor(e.target.value).run() }), _jsx("input", { type: "color", ref: bgColorRef, style: { position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }, onChange: (e) => c().setHighlight({ color: e.target.value }).run() }), _jsx("input", { type: "file", ref: imageFileRef, accept: "image/*", style: { position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }, onChange: (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file)
+                        return;
+                    const MAX_PX = 400;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        const dataUrl = ev.target?.result;
+                        const img = new window.Image();
+                        img.onload = () => {
+                            const scale = img.width > MAX_PX ? MAX_PX / img.width : 1;
+                            const w = Math.round(img.width * scale);
+                            const h = Math.round(img.height * scale);
+                            const canvas = document.createElement('canvas');
+                            canvas.width = w;
+                            canvas.height = h;
+                            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                            editor.chain().focus().setImage({ src: canvas.toDataURL(file.type || 'image/png'), width: w, height: h }).run();
+                        };
+                        img.src = dataUrl;
+                    };
+                    reader.readAsDataURL(file);
+                } }), _jsx("input", { type: "file", ref: fileRef, style: { position: 'absolute', opacity: 0, pointerEvents: 'none', width: 0, height: 0 }, onChange: (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file)
+                        return;
+                    const objectUrl = URL.createObjectURL(file);
+                    editor.chain().focus().insertContent(`<a href="${objectUrl}" download="${file.name}">📎 ${file.name}</a>`).run();
+                } }), _jsxs(Box, { ref: topRowRef, sx: {
+                    display: 'flex', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden',
+                    px: 1, py: 0.5, gap: 0.5,
+                    bgcolor: theme.palette.grey[100],
+                    borderRadius: '0 0 0 0',
+                }, children: [visibleTopItems.map(renderBtn), _jsx(Tooltip, { title: "\u05E2\u05D5\u05D3 \u05D0\u05E4\u05E9\u05E8\u05D5\u05D9\u05D5\u05EA", placement: "top", children: _jsx("span", { children: _jsx(IconButton, { size: "small", onClick: (e) => setOverflowAnchor(e.currentTarget), sx: { borderRadius: 1, p: 0.5, ml: 'auto', opacity: overflowItems.length > 0 ? 1 : 0, pointerEvents: overflowItems.length > 0 ? 'auto' : 'none' }, children: _jsx(ExpandMoreIcon, { fontSize: "small" }) }) }) })] }), _jsx(Popover, { open: Boolean(overflowAnchor), anchorEl: overflowAnchor, onClose: () => setOverflowAnchor(null), anchorOrigin: { vertical: 'bottom', horizontal: 'left' }, transformOrigin: { vertical: 'top', horizontal: 'left' }, children: _jsx(Box, { sx: { display: 'flex', flexWrap: 'wrap', p: 0.5, gap: 0.5, maxWidth: 240 }, children: overflowItems.map(renderBtn) }) }), bottomGroups.length > 0 && (_jsx(Box, { sx: { display: 'flex', alignItems: 'center', flexWrap: 'wrap', px: 1, py: 0.5, gap: 0.5, bgcolor: 'transparent' }, children: bottomGroups.map((group, gi) => (_jsxs(React.Fragment, { children: [gi > 0 && _jsx(Divider, { orientation: "vertical", flexItem: true, sx: { mx: 0.5, my: 0.25 } }), group.items.map(renderBtn)] }, gi))) })), _jsx(Popover, { open: Boolean(tableAnchor), anchorEl: tableAnchor, onClose: () => { setTableAnchor(null); setHovered({ rows: 0, cols: 0 }); }, anchorOrigin: { vertical: 'bottom', horizontal: 'left' }, transformOrigin: { vertical: 'top', horizontal: 'left' }, children: _jsxs(Box, { sx: { p: 1.5 }, children: [_jsx(Typography, { variant: "caption", sx: { display: 'block', mb: 1, color: 'text.secondary', textAlign: 'center' }, children: hovered.rows > 0 && hovered.cols > 0 ? `${hovered.rows} × ${hovered.cols}` : 'בחר גודל טבלה' }), _jsx(Box, { sx: { display: 'grid', gridTemplateColumns: `repeat(${MAX_COLS}, 20px)`, gap: '3px' }, children: Array.from({ length: MAX_ROWS }, (_, r) => Array.from({ length: MAX_COLS }, (_, col) => {
+                                const row = r + 1;
+                                const c2 = col + 1;
+                                const isHighlighted = row <= hovered.rows && c2 <= hovered.cols;
+                                return (_jsx(Box, { onMouseEnter: () => setHovered({ rows: row, cols: c2 }), onClick: () => { c().insertTable({ rows: row, cols: c2, withHeaderRow: true }).run(); setTableAnchor(null); setHovered({ rows: 0, cols: 0 }); }, sx: {
+                                        width: 20, height: 20, border: '1px solid', borderRadius: '2px', cursor: 'pointer', transition: 'all 0.1s',
+                                        borderColor: isHighlighted ? 'primary.main' : 'divider',
+                                        bgcolor: isHighlighted ? alpha(theme.palette.primary.main, 0.15) : 'background.paper',
+                                    } }, `${row}-${c2}`));
+                            })) })] }) })] }));
 }
-export {
-  ct as IpsRteToolbar
-};

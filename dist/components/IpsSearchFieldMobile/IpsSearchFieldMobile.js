@@ -1,142 +1,108 @@
-import { jsxs as s, jsx as t } from "react/jsx-runtime";
-import { forwardRef as m, useRef as k } from "react";
-import { styled as r } from "@mui/material/styles";
-import { MOBILE_FIELD as C, outlinedFieldDisabledStyles as L, outlinedFieldFocusStyles as v, mobileFieldRadius as h } from "../internal/mobileFieldParts.js";
-const b = 44, a = 20, f = 18, I = 14, N = I + a + 8, l = b, R = "Clear", T = "search", w = r("div")({
-  position: "relative",
-  width: "100%",
-  minWidth: 0
-}), A = r("input")(({ theme: e }) => ({
-  appearance: "none",
-  WebkitAppearance: "none",
-  boxSizing: "border-box",
-  width: "100%",
-  height: b,
-  margin: 0,
-  paddingInlineStart: N,
-  paddingInlineEnd: l,
-  fontFamily: "inherit",
-  fontSize: C.fontSizePx,
-  color: e.palette.text.primary,
-  backgroundColor: e.palette.background.paper,
-  border: `1px solid ${e.palette.grey[300]}`,
-  borderRadius: h(e),
-  outline: "none",
-  textOverflow: "ellipsis",
-  "&::placeholder": {
-    color: e.palette.text.secondary,
-    opacity: 1
-  },
-  // The browser's own clear button differs per platform, so the field draws its own
-  "&::-webkit-search-cancel-button, &::-webkit-search-decoration": {
-    WebkitAppearance: "none",
-    display: "none"
-  },
-  "&:focus": v(e, !1),
-  "&:disabled": L(e)
-})), F = r("span")(({ theme: e }) => ({
-  position: "absolute",
-  top: "50%",
-  insetInlineStart: I,
-  display: "flex",
-  transform: "translateY(-50%)",
-  pointerEvents: "none",
-  color: e.palette.text.secondary
-})), B = r("button")(({ theme: e }) => ({
-  position: "absolute",
-  top: 0,
-  insetInlineEnd: 0,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: l,
-  height: l,
-  margin: 0,
-  padding: 0,
-  border: "none",
-  borderRadius: h(e),
-  background: "transparent",
-  color: e.palette.text.secondary,
-  cursor: "pointer",
-  "&:focus-visible": {
-    outline: `2px solid ${e.palette.primary.main}`,
-    outlineOffset: -4
-  }
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { forwardRef, useRef } from 'react';
+import { styled } from '@mui/material/styles';
+import { MOBILE_FIELD, mobileFieldRadius, outlinedFieldDisabledStyles, outlinedFieldFocusStyles, } from '../internal/mobileFieldParts';
+// Mobile search field built on the native <input type="search">: the keyboard shows a search key.
+// It looks like the other mobile fields (outlined box, field radius token), only touch-sized. No MUI components.
+const FIELD_HEIGHT_PX = 44;
+const ICON_SIZE_PX = 20;
+const CLEAR_ICON_SIZE_PX = 18;
+const ICON_INSET_PX = 14;
+const TEXT_START_PADDING_PX = ICON_INSET_PX + ICON_SIZE_PX + 8;
+// The clear button is a full touch target at the end of the field
+const CLEAR_BUTTON_SIZE_PX = FIELD_HEIGHT_PX;
+const DEFAULT_CLEAR_BUTTON_LABEL = 'Clear';
+const SEARCH_KEY_HINT = 'search';
+const Root = styled('div')({
+    position: 'relative',
+    width: '100%',
+    minWidth: 0,
+});
+const NativeSearchInput = styled('input')(({ theme }) => ({
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    boxSizing: 'border-box',
+    width: '100%',
+    height: FIELD_HEIGHT_PX,
+    margin: 0,
+    paddingInlineStart: TEXT_START_PADDING_PX,
+    paddingInlineEnd: CLEAR_BUTTON_SIZE_PX,
+    fontFamily: 'inherit',
+    fontSize: MOBILE_FIELD.fontSizePx,
+    color: theme.palette.text.primary,
+    backgroundColor: theme.palette.background.paper,
+    border: `1px solid ${theme.palette.grey[300]}`,
+    borderRadius: mobileFieldRadius(theme),
+    outline: 'none',
+    textOverflow: 'ellipsis',
+    '&::placeholder': {
+        color: theme.palette.text.secondary,
+        opacity: 1,
+    },
+    // The browser's own clear button differs per platform, so the field draws its own
+    '&::-webkit-search-cancel-button, &::-webkit-search-decoration': {
+        WebkitAppearance: 'none',
+        display: 'none',
+    },
+    '&:focus': outlinedFieldFocusStyles(theme, false),
+    '&:disabled': outlinedFieldDisabledStyles(theme),
 }));
-function P() {
-  return /* @__PURE__ */ s(
-    "svg",
-    {
-      "aria-hidden": "true",
-      width: a,
-      height: a,
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: 1.5,
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      children: [
-        /* @__PURE__ */ t("circle", { cx: "11", cy: "11", r: "7" }),
-        /* @__PURE__ */ t("path", { d: "m21 21-4.35-4.35" })
-      ]
-    }
-  );
+const SearchIconSlot = styled('span')(({ theme }) => ({
+    position: 'absolute',
+    top: '50%',
+    insetInlineStart: ICON_INSET_PX,
+    display: 'flex',
+    transform: 'translateY(-50%)',
+    pointerEvents: 'none',
+    color: theme.palette.text.secondary,
+}));
+const ClearButton = styled('button')(({ theme }) => ({
+    position: 'absolute',
+    top: 0,
+    insetInlineEnd: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: CLEAR_BUTTON_SIZE_PX,
+    height: CLEAR_BUTTON_SIZE_PX,
+    margin: 0,
+    padding: 0,
+    border: 'none',
+    borderRadius: mobileFieldRadius(theme),
+    background: 'transparent',
+    color: theme.palette.text.secondary,
+    cursor: 'pointer',
+    '&:focus-visible': {
+        outline: `2px solid ${theme.palette.primary.main}`,
+        outlineOffset: -4,
+    },
+}));
+function SearchIcon() {
+    return (_jsxs("svg", { "aria-hidden": "true", width: ICON_SIZE_PX, height: ICON_SIZE_PX, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round", children: [_jsx("circle", { cx: "11", cy: "11", r: "7" }), _jsx("path", { d: "m21 21-4.35-4.35" })] }));
 }
-function O() {
-  return /* @__PURE__ */ s(
-    "svg",
-    {
-      "aria-hidden": "true",
-      width: f,
-      height: f,
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: 1.5,
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      children: [
-        /* @__PURE__ */ t("path", { d: "M18 6 6 18" }),
-        /* @__PURE__ */ t("path", { d: "m6 6 12 12" })
-      ]
-    }
-  );
+function ClearIcon() {
+    return (_jsxs("svg", { "aria-hidden": "true", width: CLEAR_ICON_SIZE_PX, height: CLEAR_ICON_SIZE_PX, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round", children: [_jsx("path", { d: "M18 6 6 18" }), _jsx("path", { d: "m6 6 12 12" })] }));
 }
-const X = m(
-  (e, i) => {
-    const {
-      value: c,
-      onChange: o,
-      clearButtonLabel: y = R,
-      disabled: d = !1,
-      className: _,
-      ...p
-    } = e, u = k(null), E = c.length > 0, S = (n) => {
-      u.current = n, typeof i == "function" ? i(n) : i && (i.current = n);
-    }, x = () => {
-      var n;
-      o == null || o(""), (n = u.current) == null || n.focus();
-    }, g = ["ips-search-field-mobile", _].filter(Boolean).join(" ");
-    return /* @__PURE__ */ s(w, { className: g, children: [
-      /* @__PURE__ */ t(F, { children: /* @__PURE__ */ t(P, {}) }),
-      /* @__PURE__ */ t(
-        A,
-        {
-          ...p,
-          ref: S,
-          type: "search",
-          enterKeyHint: p.enterKeyHint ?? T,
-          value: c,
-          onChange: (n) => o == null ? void 0 : o(n.target.value),
-          disabled: d
+export const IpsSearchFieldMobile = forwardRef((props, ref) => {
+    const { value, onChange, clearButtonLabel = DEFAULT_CLEAR_BUTTON_LABEL, disabled = false, className, ...nativeInputProps } = props;
+    const inputRef = useRef(null);
+    const hasValue = value.length > 0;
+    // The consumer's ref and the internal one (used to return focus after clearing) both get the input
+    const setInputRef = (node) => {
+        inputRef.current = node;
+        if (typeof ref === 'function') {
+            ref(node);
         }
-      ),
-      E && !d && /* @__PURE__ */ t(B, { type: "button", "aria-label": y, onClick: x, children: /* @__PURE__ */ t(O, {}) })
-    ] });
-  }
-);
-X.displayName = "IpsSearchFieldMobile";
-export {
-  X as IpsSearchFieldMobile
-};
+        else if (ref) {
+            ref.current = node;
+        }
+    };
+    const handleClear = () => {
+        onChange?.('');
+        inputRef.current?.focus();
+    };
+    const rootClassName = ['ips-search-field-mobile', className].filter(Boolean).join(' ');
+    return (_jsxs(Root, { className: rootClassName, children: [_jsx(SearchIconSlot, { children: _jsx(SearchIcon, {}) }), _jsx(NativeSearchInput, { ...nativeInputProps, ref: setInputRef, type: "search", enterKeyHint: nativeInputProps.enterKeyHint ?? SEARCH_KEY_HINT, value: value, onChange: (event) => onChange?.(event.target.value), disabled: disabled }), hasValue && !disabled && (_jsx(ClearButton, { type: "button", "aria-label": clearButtonLabel, onClick: handleClear, children: _jsx(ClearIcon, {}) }))] }));
+});
+IpsSearchFieldMobile.displayName = 'IpsSearchFieldMobile';
+export default IpsSearchFieldMobile;

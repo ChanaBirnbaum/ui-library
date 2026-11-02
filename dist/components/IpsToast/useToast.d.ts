@@ -1,5 +1,4 @@
-import { IpsToastContextType } from './IpsToast.types';
-
+import type { IpsToastContextType } from './IpsToast.types';
 /**
  * Returns the `addToast(type, message)` function from the nearest
  * `IpsToastProvider` ancestor.

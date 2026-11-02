@@ -1,5 +1,4 @@
-import { IpsToastContextType } from './IpsToast.types';
-
+import type { IpsToastContextType } from './IpsToast.types';
 /**
  * Context that exposes the `addToast(type, message)` function.
  * Consuming components should use the `useToast` hook instead of reading
@@ -8,4 +7,4 @@ import { IpsToastContextType } from './IpsToast.types';
  * Default no-op so the app doesn't crash if someone calls addToast outside
  * an IpsToastProvider.
  */
-export declare const IpsToastContext: import('react').Context<IpsToastContextType>;
+export declare const IpsToastContext: import("react").Context<IpsToastContextType>;

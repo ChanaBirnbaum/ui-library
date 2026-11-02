@@ -1,5 +1,4 @@
-import { default as React } from 'react';
-
+import React from 'react';
 interface ScreenCropOverlayProps {
     onCrop: (file: File) => void;
     onCancel: () => void;

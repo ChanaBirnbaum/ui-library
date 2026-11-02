@@ -1,6 +1,5 @@
-import { ReactNode } from 'react';
-import { DialogProps } from '@mui/material/Dialog';
-
+import type { ReactNode } from 'react';
+import type { DialogProps } from '@mui/material/Dialog';
 export type IpsDialogCloseReason = 'backdropClick' | 'escapeKeyDown' | 'closeButton';
 /** Context passed to header/footer render-prop slots */
 export interface IpsDialogRenderContext {

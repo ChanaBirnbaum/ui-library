@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { EditableConfig } from '../IpsDataTable.types';
-
+import React from 'react';
+import type { EditableConfig } from '../IpsDataTable.types';
 export interface EditableCellProps {
     config?: EditableConfig;
     value: unknown;

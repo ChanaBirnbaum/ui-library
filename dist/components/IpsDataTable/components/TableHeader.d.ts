@@ -1,7 +1,6 @@
-import { default as React } from 'react';
-import { Table, RowData } from '@tanstack/react-table';
-import { CellOverflow } from '../IpsDataTable.types';
-
+import React from 'react';
+import type { Table, RowData } from '@tanstack/react-table';
+import type { CellOverflow } from '../IpsDataTable.types';
 export interface TableHeaderProps<T extends RowData> {
     table: Table<T>;
     showPerColumnFilter: boolean;

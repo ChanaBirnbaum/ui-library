@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { AutocompleteProps } from '@mui/material/Autocomplete';
-
+import React from 'react';
+import type { AutocompleteProps } from '@mui/material/Autocomplete';
 export interface IpsAutocompleteProps<T, Multiple extends boolean | undefined = undefined, DisableClearable extends boolean | undefined = undefined, FreeSolo extends boolean | undefined = undefined> extends Omit<AutocompleteProps<T, Multiple, DisableClearable, FreeSolo>, 'renderInput'> {
     /** Show checkboxes in options when multiple=true */
     showCheckboxes?: boolean;

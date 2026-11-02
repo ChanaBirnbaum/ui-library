@@ -1,5 +1,4 @@
-import { InputHTMLAttributes } from 'react';
-
+import type { InputHTMLAttributes } from 'react';
 export type IpsTimePickerMobileProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue' | 'onChange' | 'type' | 'size' | 'min' | 'max'> & {
     /** Controlled value, 'HH:mm' (24h). '' = no time (the placeholder is shown) */
     value: string;

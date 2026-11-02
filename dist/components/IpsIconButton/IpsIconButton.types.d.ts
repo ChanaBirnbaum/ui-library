@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { IconButtonProps } from '@mui/material/IconButton';
-
+import React from 'react';
+import type { IconButtonProps } from '@mui/material/IconButton';
 /**
  * plain — the default MUI icon button (transparent).
  * surface — a 44×44 touch-sized square on a paper (white) background, outlined like the mobile fields

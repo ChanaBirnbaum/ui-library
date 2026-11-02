@@ -1,5 +1,4 @@
-import { default as React } from 'react';
-
+import React from 'react';
 export declare const IpsTextFieldMobile: React.ForwardRefExoticComponent<Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "value" | "defaultValue" | "prefix" | "onChange"> & {
     value: string;
     onChange?: (value: string) => void;

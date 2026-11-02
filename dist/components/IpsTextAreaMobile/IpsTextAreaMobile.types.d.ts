@@ -1,5 +1,4 @@
-import { TextareaHTMLAttributes } from 'react';
-
+import type { TextareaHTMLAttributes } from 'react';
 export type IpsTextAreaMobileProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'value' | 'defaultValue' | 'onChange'> & {
     /** Controlled text */
     value: string;

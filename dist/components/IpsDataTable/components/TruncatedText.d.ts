@@ -1,5 +1,4 @@
-import { default as React } from 'react';
-
+import React from 'react';
 export interface TruncatedTextProps {
     /**
      * Full text for the tooltip. When omitted, the rendered text content of the

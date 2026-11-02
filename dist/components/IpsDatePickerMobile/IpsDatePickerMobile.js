@@ -1,26 +1,16 @@
-import { jsx as r } from "react/jsx-runtime";
-import { forwardRef as a } from "react";
-import { NativePickerField as m } from "../internal/NativePickerField.js";
-import { CalendarIcon as n } from "../internal/mobileFieldEndParts.js";
-const p = "-", s = "/";
-function c(o) {
-  const [e, t, i] = o.split(p);
-  return [i, t, e].join(s);
+import { jsx as _jsx } from "react/jsx-runtime";
+import { forwardRef } from 'react';
+import { NativePickerField } from '../internal/NativePickerField';
+import { CalendarIcon } from '../internal/mobileFieldEndParts';
+// Mobile date field built on the native <input type="date">: a tap anywhere opens the OS date picker,
+// which avoids the locale issues of the MUI picker. No MUI components.
+const ISO_DATE_SEPARATOR = '-';
+const DISPLAY_SEPARATOR = '/';
+/** 'YYYY-MM-DD' → 'DD/MM/YYYY' */
+function formatIsoDate(value) {
+    const [year, month, day] = value.split(ISO_DATE_SEPARATOR);
+    return [day, month, year].join(DISPLAY_SEPARATOR);
 }
-const f = a(
-  ({ formatValue: o = c, ...e }, t) => /* @__PURE__ */ r(
-    m,
-    {
-      ...e,
-      ref: t,
-      inputType: "date",
-      icon: /* @__PURE__ */ r(n, {}),
-      formatValue: o,
-      rootClassName: "ips-date-picker-mobile"
-    }
-  )
-);
-f.displayName = "IpsDatePickerMobile";
-export {
-  f as IpsDatePickerMobile
-};
+export const IpsDatePickerMobile = forwardRef(({ formatValue = formatIsoDate, ...props }, ref) => (_jsx(NativePickerField, { ...props, ref: ref, inputType: "date", icon: _jsx(CalendarIcon, {}), formatValue: formatValue, rootClassName: "ips-date-picker-mobile" })));
+IpsDatePickerMobile.displayName = 'IpsDatePickerMobile';
+export default IpsDatePickerMobile;

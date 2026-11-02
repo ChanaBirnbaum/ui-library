@@ -1,5 +1,4 @@
-import { default as React } from 'react';
-
+import type React from 'react';
 export declare const TOAST_TYPES: {
     readonly SUCCESS: "success";
     readonly INFO: "info";

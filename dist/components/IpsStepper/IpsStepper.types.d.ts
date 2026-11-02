@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { StepperProps } from '@mui/material/Stepper';
-
+import type React from 'react';
+import type { StepperProps } from '@mui/material/Stepper';
 export type IpsStepStatus = 'pending' | 'active' | 'completed' | 'warning' | 'error' | 'disabled';
 export interface IpsStepItem {
     label: React.ReactNode;

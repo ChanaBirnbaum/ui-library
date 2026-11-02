@@ -1,278 +1,227 @@
-import { jsxs as d, jsx as s } from "react/jsx-runtime";
-import { forwardRef as ve, useId as Me, useRef as Le, useState as E, useCallback as Ce, useEffect as Ee, useMemo as Ae } from "react";
-import _e from "@mui/material/FormControl";
-import Te from "@mui/material/FormLabel";
-import He from "@mui/material/Select";
-import z from "@mui/material/MenuItem";
-import B from "@mui/material/Chip";
-import N from "@mui/material/Box";
-import j from "@mui/material/Checkbox";
-import U from "@mui/material/ListItemText";
-import Fe from "@mui/material/Divider";
-import { mergeSlotProps as G, toSxArray as $ } from "../../utils/slotUtils.js";
-import { listDensity as c } from "../../utils/listDensity.js";
-import { thinScrollbarSx as Oe } from "../../utils/scrollbarSx.js";
-import { popupSurfaceSx as Ve, joinedFieldSx as De } from "../../utils/popupSurface.js";
-import { ChipOverflowToggle as Pe } from "../internal/ChipOverflowToggle.js";
-const A = "__ips-chip-select-all__", ke = 320, W = 16, X = 160, Y = {
-  minHeight: c.optionMinHeight,
-  py: c.optionPaddingY,
-  px: c.optionPaddingX
-}, q = {
-  p: c.checkboxPadding,
-  mr: c.checkboxGap
-}, Re = 3, J = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: 0.5
-}, ze = ve(
-  (K, Q) => {
-    var k, R;
-    const {
-      options: m = [],
-      value: _ = [],
-      onChange: i,
-      label: g,
-      placeholder: Z,
-      disabled: r = !1,
-      className: ee,
-      id: te,
-      required: T,
-      enableSelectAll: u = !1,
-      selectAllLabel: oe = "בחר הכל",
-      allSelectedChipLabel: ie = "הכל נבחר",
-      maxMenuHeight: h = ke,
-      maxVisibleChips: f = Re,
-      collapseChipsTooltip: le = "הצג פחות",
-      moreItemsTooltipLabel: se = (e) => `ועוד ${e}`,
-      MenuProps: n,
-      onOpen: y,
-      onClose: w,
-      ...ne
-    } = K, re = Me(), S = te ?? re, H = `${S}-label`, ae = ["ips-chip-select", ee].filter(Boolean).join(" "), I = _, v = m.map((e) => e.value), M = u && v.length > 0 && v.every((e) => I.includes(e)), F = Le(null), [L, O] = E(!1), [t, ce] = E(null), x = Ce(() => {
-      const e = F.current;
-      if (!e || typeof window > "u") return;
-      const o = e.querySelector(".MuiInputBase-root") ?? e, l = o.getBoundingClientRect(), p = window.innerHeight - l.bottom - W, b = l.top - W, a = p < X && b > p;
-      ce({
-        above: a,
-        available: Math.max(a ? b : p, X),
-        // Select only gives the paper a minWidth, so a long option would make
-        // the menu wider than the field and break the edge they share.
-        width: l.width,
-        // The menu is portalled out of the app shell and MUI stamps the theme
-        // font onto it, so the field's own family has to be carried over.
-        fontFamily: window.getComputedStyle(o).fontFamily
-      });
-    }, []);
-    Ee(() => {
-      if (!(!L || typeof window > "u"))
-        return window.addEventListener("resize", x), () => window.removeEventListener("resize", x);
-    }, [L, x]);
-    const pe = (e) => {
-      x(), O(!0), y == null || y(e);
-    }, de = (e) => {
-      O(!1), w == null || w(e);
-    }, me = t == null ? h : typeof h == "number" ? Math.min(h, t.available) : `min(${h}, ${t.available}px)`, V = (t == null ? void 0 : t.above) === !0, ue = Ve({
-      joinsAtTop: V,
-      fontFamily: t == null ? void 0 : t.fontFamily,
-      width: t == null ? void 0 : t.width
-    }), he = {
-      anchorOrigin: {
-        vertical: t != null && t.above ? "top" : "bottom",
-        horizontal: "center"
-      },
-      transformOrigin: {
-        vertical: t != null && t.above ? "bottom" : "top",
-        horizontal: "center"
-      },
-      ...n,
-      slotProps: {
-        ...n == null ? void 0 : n.slotProps,
-        paper: G((k = n == null ? void 0 : n.slotProps) == null ? void 0 : k.paper, (e) => ({
-          ...e,
-          // The paper is what scrolls here (the cap sits on it, not on the
-          // list), so the thin scrollbar belongs on it too.
-          sx: [
-            { maxHeight: me },
-            ue,
-            Oe,
-            ...$(e == null ? void 0 : e.sx)
-          ]
-        })),
-        list: G((R = n == null ? void 0 : n.slotProps) == null ? void 0 : R.list, (e) => ({
-          dense: !0,
-          ...e,
-          sx: [
-            { py: c.listPaddingY },
-            ...$(e == null ? void 0 : e.sx)
-          ]
-        }))
-      }
-    }, [C, fe] = E(!1), xe = Ae(
-      () => new Map(m.map((e) => [e.value, e.label])),
-      [m]
-    ), D = (e) => xe.get(e) ?? String(e), P = {
-      height: 24,
-      // MUI stamps theme.typography.fontFamily onto every Chip, so a selected
-      // value would keep the theme font even where the field carries another.
-      fontFamily: "inherit",
-      "& .MuiChip-deleteIcon": {
-        opacity: r ? 0.5 : 1,
-        cursor: r ? "not-allowed" : "pointer"
-      }
-    }, be = (e) => {
-      e.stopPropagation(), e.preventDefault(), !r && fe((o) => !o);
-    }, ge = (e) => {
-      if (r) return;
-      const o = I.filter((l) => l !== e);
-      i == null || i(o);
-    }, ye = () => {
-      r || i == null || i([]);
-    }, we = (e) => {
-      const o = e.target.value;
-      if (u && o.includes(A)) {
-        i == null || i(M ? [] : v);
-        return;
-      }
-      i == null || i(o.filter((l) => l !== A));
-    }, Se = (e) => {
-      const o = e;
-      if (!o || o.length === 0)
-        return /* @__PURE__ */ s("span", { style: { color: "#999" }, children: Z || "Select items..." });
-      if (M)
-        return /* @__PURE__ */ s(N, { sx: J, children: /* @__PURE__ */ s(
-          B,
-          {
-            label: ie,
-            size: "small",
-            onDelete: ye,
-            onMouseDown: (a) => a.stopPropagation(),
-            disabled: r,
-            sx: P
-          }
-        ) });
-      const l = f > 0 && o.length > f, p = l && !C ? o.slice(0, f) : o, b = l ? o.slice(f) : [];
-      return /* @__PURE__ */ d(
-        N,
-        {
-          sx: [
-            J,
-            // Expanding a large selection must not blow up the field the way an
-            // uncapped drop-down blows up the page.
-            l && C && { maxHeight: 96, overflowY: "auto" }
-          ],
-          children: [
-            p.map((a) => /* @__PURE__ */ s(
-              B,
-              {
-                label: D(a),
-                size: "small",
-                onDelete: () => ge(a),
-                onMouseDown: (Ie) => Ie.stopPropagation(),
-                disabled: r,
-                sx: P
-              },
-              a
-            )),
-            l && /* @__PURE__ */ s(
-              Pe,
-              {
-                hiddenLabels: b.map(D),
-                expanded: C,
-                disabled: r,
-                collapseTooltip: le,
-                moreItemsLabel: se,
-                onToggle: be
-              }
-            )
-          ]
-        }
-      );
-    };
-    return /* @__PURE__ */ d(
-      _e,
-      {
-        fullWidth: !0,
-        disabled: r,
-        className: ae,
-        ref: F,
-        sx: L ? De(V) : void 0,
-        children: [
-          g != null && /* @__PURE__ */ s(
-            Te,
-            {
-              id: H,
-              htmlFor: S,
-              required: T,
-              sx: { display: "block", mb: "3px", fontSize: "12px", lineHeight: 1 },
-              children: g
-            }
-          ),
-          /* @__PURE__ */ d(
-            He,
-            {
-              ref: Q,
-              id: S,
-              labelId: g != null ? H : void 0,
-              multiple: !0,
-              value: _,
-              onChange: we,
-              renderValue: Se,
-              displayEmpty: !0,
-              required: T,
-              MenuProps: he,
-              onOpen: pe,
-              onClose: de,
-              ...ne,
-              children: [
-                u && /* @__PURE__ */ d(z, { value: A, sx: Y, children: [
-                  /* @__PURE__ */ s(
-                    j,
-                    {
-                      checked: M,
-                      disableRipple: !0,
-                      tabIndex: -1,
-                      sx: q
-                    }
-                  ),
-                  /* @__PURE__ */ s(
-                    U,
-                    {
-                      primary: oe,
-                      sx: { my: 0 },
-                      slotProps: { primary: { variant: "body2" } }
-                    }
-                  )
-                ] }),
-                u && /* @__PURE__ */ s(Fe, { sx: { my: 0.5 } }),
-                m.map((e) => /* @__PURE__ */ d(z, { value: e.value, sx: Y, children: [
-                  /* @__PURE__ */ s(
-                    j,
-                    {
-                      checked: I.includes(e.value),
-                      disableRipple: !0,
-                      tabIndex: -1,
-                      sx: q
-                    }
-                  ),
-                  /* @__PURE__ */ s(
-                    U,
-                    {
-                      primary: e.label,
-                      sx: { my: 0 },
-                      slotProps: { primary: { variant: "body2" } }
-                    }
-                  )
-                ] }, e.value))
-              ]
-            }
-          )
-        ]
-      }
-    );
-  }
-);
-ze.displayName = "IpsChipSelect";
-export {
-  ze as IpsChipSelect
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { forwardRef, useCallback, useEffect, useId, useMemo, useRef, useState, } from 'react';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import Chip from '@mui/material/Chip';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import { mergeSlotProps, toSxArray } from '../../utils/slotUtils';
+import { listDensity } from '../../utils/listDensity';
+import { thinScrollbarSx } from '../../utils/scrollbarSx';
+import { joinedFieldSx, popupSurfaceSx } from '../../utils/popupSurface';
+import { ChipOverflowToggle } from '../internal/ChipOverflowToggle';
+// Sentinel value for the injected "Select All" menu item. Kept out of the
+// public value array at all times - it never reaches onChange/consumers.
+const SELECT_ALL_VALUE = '__ips-chip-select-all__';
+// Default cap for the dropdown height (~9 dense rows) so a long option list
+// scrolls inside the popup instead of stretching over the whole page.
+const DEFAULT_MAX_MENU_HEIGHT = 320;
+// Popover keeps the paper this far from the viewport edge (its own default
+// marginThreshold). Leaving the same gap free means it never has to push the
+// paper away from the field to make it fit.
+const VIEWPORT_MARGIN = 16;
+// Below this the drop-down is too cramped to be usable, so we flip it above the
+// field instead of squeezing it into the remaining space.
+const MIN_MENU_HEIGHT = 160;
+// Compact option row, shared with IpsAutocomplete's listbox.
+const optionSx = {
+    minHeight: listDensity.optionMinHeight,
+    py: listDensity.optionPaddingY,
+    px: listDensity.optionPaddingX,
 };
+const optionCheckboxSx = {
+    p: listDensity.checkboxPadding,
+    mr: listDensity.checkboxGap,
+};
+// Chips beyond this count collapse behind the expand toggle.
+const DEFAULT_MAX_VISIBLE_CHIPS = 3;
+const chipsBoxSx = {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: 0.5,
+};
+export const IpsChipSelect = forwardRef((props, ref) => {
+    const { options = [], value = [], onChange, label, placeholder, disabled = false, className, id: idProp, required, enableSelectAll = false, selectAllLabel = 'בחר הכל', allSelectedChipLabel = 'הכל נבחר', maxMenuHeight = DEFAULT_MAX_MENU_HEIGHT, maxVisibleChips = DEFAULT_MAX_VISIBLE_CHIPS, collapseChipsTooltip = 'הצג פחות', moreItemsTooltipLabel = (count) => `ועוד ${count}`, MenuProps: menuPropsProp, onOpen: onOpenProp, onClose: onCloseProp, ...rest } = props;
+    const generatedId = useId();
+    const inputId = idProp ?? generatedId;
+    const labelId = `${inputId}-label`;
+    const rootClass = ['ips-chip-select', className]
+        .filter(Boolean)
+        .join(' ');
+    const selectedValues = value;
+    const allOptionValues = options.map((option) => option.value);
+    const isAllSelected = enableSelectAll &&
+        allOptionValues.length > 0 &&
+        allOptionValues.every((v) => selectedValues.includes(v));
+    // Popover never flips: when the paper does not fit below the field it just
+    // pushes it back inside the viewport, and the popup ends up floating away
+    // from the input. So measure the room around the field on open and hand the
+    // menu a height it actually fits into - flipping above the field only when
+    // there is too little room below.
+    const anchorRef = useRef(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const [placement, setPlacement] = useState(null);
+    const updatePlacement = useCallback(() => {
+        const anchor = anchorRef.current;
+        if (!anchor || typeof window === 'undefined')
+            return;
+        // The menu anchors to the input row, not to the label sitting above it.
+        const field = anchor.querySelector('.MuiInputBase-root') ?? anchor;
+        const rect = field.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom - VIEWPORT_MARGIN;
+        const spaceAbove = rect.top - VIEWPORT_MARGIN;
+        const above = spaceBelow < MIN_MENU_HEIGHT && spaceAbove > spaceBelow;
+        setPlacement({
+            above,
+            available: Math.max(above ? spaceAbove : spaceBelow, MIN_MENU_HEIGHT),
+            // Select only gives the paper a minWidth, so a long option would make
+            // the menu wider than the field and break the edge they share.
+            width: rect.width,
+            // The menu is portalled out of the app shell and MUI stamps the theme
+            // font onto it, so the field's own family has to be carried over.
+            fontFamily: window.getComputedStyle(field).fontFamily,
+        });
+    }, []);
+    // The field can move under an open menu (window resize, zoom).
+    useEffect(() => {
+        if (!isOpen || typeof window === 'undefined')
+            return undefined;
+        window.addEventListener('resize', updatePlacement);
+        return () => window.removeEventListener('resize', updatePlacement);
+    }, [isOpen, updatePlacement]);
+    const handleOpen = (event) => {
+        updatePlacement();
+        setIsOpen(true);
+        onOpenProp?.(event);
+    };
+    const handleClose = (event) => {
+        setIsOpen(false);
+        onCloseProp?.(event);
+    };
+    // Cap the popup height. Without a maxHeight MUI sizes the paper to fit every
+    // option, which is what makes a long list span the whole page. `available`
+    // keeps that cap within the room actually left around the field.
+    const menuMaxHeight = placement == null
+        ? maxMenuHeight
+        : typeof maxMenuHeight === 'number'
+            ? Math.min(maxMenuHeight, placement.available)
+            : `min(${maxMenuHeight}, ${placement.available}px)`;
+    // Open, the field and the menu read as one control - the same surface
+    // IpsAutocomplete's list opens onto.
+    const joinsAtTop = placement?.above === true;
+    const surfaceSx = popupSurfaceSx({
+        joinsAtTop,
+        fontFamily: placement?.fontFamily,
+        width: placement?.width,
+    });
+    // Only the vertical side is ours - Select aligns horizontally on 'center',
+    // which stays correct in both LTR and RTL.
+    const menuProps = {
+        anchorOrigin: {
+            vertical: placement?.above ? 'top' : 'bottom',
+            horizontal: 'center',
+        },
+        transformOrigin: {
+            vertical: placement?.above ? 'bottom' : 'top',
+            horizontal: 'center',
+        },
+        ...menuPropsProp,
+        slotProps: {
+            ...menuPropsProp?.slotProps,
+            paper: mergeSlotProps(menuPropsProp?.slotProps?.paper, (resolved) => ({
+                ...resolved,
+                // The paper is what scrolls here (the cap sits on it, not on the
+                // list), so the thin scrollbar belongs on it too.
+                sx: [
+                    { maxHeight: menuMaxHeight },
+                    surfaceSx,
+                    thinScrollbarSx,
+                    ...toSxArray(resolved?.sx),
+                ],
+            })),
+            list: mergeSlotProps(menuPropsProp?.slotProps?.list, (resolved) => ({
+                dense: true,
+                ...resolved,
+                sx: [
+                    { py: listDensity.listPaddingY },
+                    ...toSxArray(resolved?.sx),
+                ],
+            })),
+        },
+    };
+    const [chipsExpanded, setChipsExpanded] = useState(false);
+    // Looking every chip label up with options.find() is O(selected x options),
+    // which bites exactly on the long lists this control is used with.
+    const optionLabels = useMemo(() => new Map(options.map((option) => [option.value, option.label])), [options]);
+    const getOptionLabel = (val) => optionLabels.get(val) ?? String(val);
+    const chipSx = {
+        height: 24,
+        // MUI stamps theme.typography.fontFamily onto every Chip, so a selected
+        // value would keep the theme font even where the field carries another.
+        fontFamily: 'inherit',
+        '& .MuiChip-deleteIcon': {
+            opacity: disabled ? 0.5 : 1,
+            cursor: disabled ? 'not-allowed' : 'pointer',
+        },
+    };
+    const handleToggleChips = (event) => {
+        // Without this the click reaches the select display and opens the menu.
+        event.stopPropagation();
+        event.preventDefault();
+        if (disabled)
+            return;
+        setChipsExpanded((expanded) => !expanded);
+    };
+    const handleDelete = (deletedValue) => {
+        if (disabled)
+            return;
+        const newValue = selectedValues.filter((v) => v !== deletedValue);
+        onChange?.(newValue);
+    };
+    const handleClearAll = () => {
+        if (disabled)
+            return;
+        onChange?.([]);
+    };
+    const handleChange = (event) => {
+        const rawValue = event.target.value;
+        // The "Select All" row is toggled - translate it into a select-all /
+        // clear-all action instead of forwarding the sentinel value.
+        if (enableSelectAll && rawValue.includes(SELECT_ALL_VALUE)) {
+            onChange?.(isAllSelected ? [] : allOptionValues);
+            return;
+        }
+        onChange?.(rawValue.filter((v) => v !== SELECT_ALL_VALUE));
+    };
+    // Custom renderValue to display chips
+    const renderValue = (selected) => {
+        const selectedArr = selected;
+        if (!selectedArr || selectedArr.length === 0) {
+            return (_jsx("span", { style: { color: '#999' }, children: placeholder || 'Select items...' }));
+        }
+        if (isAllSelected) {
+            return (_jsx(Box, { sx: chipsBoxSx, children: _jsx(Chip, { label: allSelectedChipLabel, size: "small", onDelete: handleClearAll, onMouseDown: (event) => event.stopPropagation(), disabled: disabled, sx: chipSx }) }));
+        }
+        const hasOverflow = maxVisibleChips > 0 && selectedArr.length > maxVisibleChips;
+        const visibleValues = hasOverflow && !chipsExpanded
+            ? selectedArr.slice(0, maxVisibleChips)
+            : selectedArr;
+        const hiddenValues = hasOverflow
+            ? selectedArr.slice(maxVisibleChips)
+            : [];
+        return (_jsxs(Box, { sx: [
+                chipsBoxSx,
+                // Expanding a large selection must not blow up the field the way an
+                // uncapped drop-down blows up the page.
+                hasOverflow &&
+                    chipsExpanded && { maxHeight: 96, overflowY: 'auto' },
+            ], children: [visibleValues.map((val) => (_jsx(Chip, { label: getOptionLabel(val), size: "small", onDelete: () => handleDelete(val), onMouseDown: (event) => event.stopPropagation(), disabled: disabled, sx: chipSx }, val))), hasOverflow && (_jsx(ChipOverflowToggle, { hiddenLabels: hiddenValues.map(getOptionLabel), expanded: chipsExpanded, disabled: disabled, collapseTooltip: collapseChipsTooltip, moreItemsLabel: moreItemsTooltipLabel, onToggle: handleToggleChips }))] }));
+    };
+    return (_jsxs(FormControl, { fullWidth: true, disabled: disabled, className: rootClass, ref: anchorRef, sx: isOpen ? joinedFieldSx(joinsAtTop) : undefined, children: [label != null && (_jsx(FormLabel, { id: labelId, htmlFor: inputId, required: required, sx: { display: 'block', mb: '3px', fontSize: '12px', lineHeight: 1 }, children: label })), _jsxs(Select, { ref: ref, id: inputId, labelId: label != null ? labelId : undefined, multiple: true, value: value, onChange: handleChange, renderValue: renderValue, displayEmpty: true, required: required, MenuProps: menuProps, onOpen: handleOpen, onClose: handleClose, ...rest, children: [enableSelectAll && (_jsxs(MenuItem, { value: SELECT_ALL_VALUE, sx: optionSx, children: [_jsx(Checkbox, { checked: isAllSelected, disableRipple: true, tabIndex: -1, sx: optionCheckboxSx }), _jsx(ListItemText, { primary: selectAllLabel, sx: { my: 0 }, slotProps: { primary: { variant: 'body2' } } })] })), enableSelectAll && _jsx(Divider, { sx: { my: 0.5 } }), options.map((option) => (_jsxs(MenuItem, { value: option.value, sx: optionSx, children: [_jsx(Checkbox, { checked: selectedValues.includes(option.value), disableRipple: true, tabIndex: -1, sx: optionCheckboxSx }), _jsx(ListItemText, { primary: option.label, sx: { my: 0 }, slotProps: { primary: { variant: 'body2' } } })] }, option.value)))] })] }));
+});
+IpsChipSelect.displayName = 'IpsChipSelect';
+export default IpsChipSelect;

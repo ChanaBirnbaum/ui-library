@@ -1,6 +1,5 @@
-import { ReactNode } from 'react';
-import { Theme } from '@mui/material/styles';
-
+import type { ReactNode } from 'react';
+import type { Theme } from '@mui/material/styles';
 export type IpsThemeDirection = 'rtl' | 'ltr';
 export interface IpsThemeProviderProps {
     /** App content to wrap. */

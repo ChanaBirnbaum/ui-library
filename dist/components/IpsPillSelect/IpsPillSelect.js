@@ -1,112 +1,84 @@
-import { jsx as l, jsxs as B } from "react/jsx-runtime";
-import { forwardRef as R, useId as W } from "react";
-import s from "@mui/material/Box";
-import j from "@mui/material/ButtonBase";
-import { useTheme as v } from "@mui/material/styles";
-const L = {
-  small: { px: 1.5, py: 0.5, fontSize: "0.75rem", minHeight: void 0 },
-  medium: { px: 2.5, py: 1, fontSize: "0.875rem", minHeight: void 0 },
-  large: { px: 2.5, py: 1, fontSize: "0.875rem", minHeight: 44 }
-}, $ = "", D = R(
-  ({
-    options: g = [],
-    value: r,
-    onChange: n,
-    multiple: p = !1,
-    allowDeselect: S = !0,
-    label: d,
-    disabled: a = !1,
-    size: b = "medium",
-    sx: m,
-    className: k
-  }, f) => {
-    const t = v(), i = t.palette.primary.main, x = W(), A = (e) => p ? Array.isArray(r) && r.includes(e) : r === e, C = (e) => {
-      if (a || !n) return;
-      if (p) {
-        const c = Array.isArray(r) ? r : [], I = c.includes(e) ? c.filter((w) => w !== e) : [...c, e];
-        n(I);
-        return;
-      }
-      const o = r === e;
-      o && !S || n(o ? $ : e);
-    }, y = ["ips-pill-select", k].filter(Boolean).join(" "), { px: E, py: N, fontSize: z, minHeight: H } = L[b], h = g.map((e) => {
-      const o = A(e.value);
-      return /* @__PURE__ */ l(
-        j,
-        {
-          className: "ips-pill",
-          "aria-pressed": o,
-          onClick: () => C(e.value),
-          disableRipple: !1,
-          sx: {
-            borderRadius: "999px",
-            px: E,
-            py: N,
-            fontSize: z,
-            minHeight: H,
-            fontWeight: 500,
-            fontFamily: "inherit",
-            lineHeight: 1.5,
-            transition: "all 0.2s ease",
-            ...o ? {
-              backgroundColor: i,
-              color: "white",
-              border: `1px solid ${i}`,
-              "&:hover": {
-                backgroundColor: t.palette.primary.dark,
-                borderColor: t.palette.primary.dark
-              }
-            } : {
-              backgroundColor: "transparent",
-              color: i,
-              border: `1px solid ${i}`,
-              "&:hover": {
-                backgroundColor: `${i}14`
-              }
-            }
-          },
-          children: e.label
-        },
-        e.value
-      );
-    }), u = {
-      opacity: a ? 0.5 : 1,
-      pointerEvents: a ? "none" : "auto"
-    };
-    return d ? /* @__PURE__ */ B(
-      s,
-      {
-        ref: f,
-        role: "group",
-        "aria-labelledby": x,
-        className: y,
-        sx: { display: "flex", flexDirection: "column", gap: 1.5, ...u, ...m },
-        children: [
-          /* @__PURE__ */ l(
-            s,
-            {
-              component: "span",
-              id: x,
-              className: "ips-pill-select-label",
-              sx: { fontSize: "0.875rem", fontWeight: 500, color: t.palette.text.secondary },
-              children: d
-            }
-          ),
-          /* @__PURE__ */ l(s, { sx: { display: "flex", flexWrap: "wrap", gap: 1 }, children: h })
-        ]
-      }
-    ) : /* @__PURE__ */ l(
-      s,
-      {
-        ref: f,
-        className: y,
-        sx: { display: "flex", flexWrap: "wrap", gap: 1, ...u, ...m },
-        children: h
-      }
-    );
-  }
-);
-D.displayName = "IpsPillSelect";
-export {
-  D as IpsPillSelect
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { forwardRef, useId } from 'react';
+import Box from '@mui/material/Box';
+import ButtonBase from '@mui/material/ButtonBase';
+import { useTheme } from '@mui/material/styles';
+// large: a 44px touch target, for mobile screens
+const SIZE_STYLES = {
+    small: { px: 1.5, py: 0.5, fontSize: '0.75rem', minHeight: undefined },
+    medium: { px: 2.5, py: 1, fontSize: '0.875rem', minHeight: undefined },
+    large: { px: 2.5, py: 1, fontSize: '0.875rem', minHeight: 44 },
 };
+const CLEARED_VALUE = '';
+export const IpsPillSelect = forwardRef(({ options = [], value, onChange, multiple = false, allowDeselect = true, label, disabled = false, size = 'medium', sx, className, }, ref) => {
+    const theme = useTheme();
+    const primary = theme.palette.primary.main;
+    const labelId = useId();
+    const isSelected = (optValue) => {
+        if (multiple) {
+            return Array.isArray(value) && value.includes(optValue);
+        }
+        return value === optValue;
+    };
+    const handleClick = (optValue) => {
+        if (disabled || !onChange)
+            return;
+        if (multiple) {
+            const current = Array.isArray(value) ? value : [];
+            const next = current.includes(optValue)
+                ? current.filter(v => v !== optValue)
+                : [...current, optValue];
+            onChange(next);
+            return;
+        }
+        const isAlreadySelected = value === optValue;
+        if (isAlreadySelected && !allowDeselect)
+            return;
+        // toggle: click on selected → deselect
+        onChange(isAlreadySelected ? CLEARED_VALUE : optValue);
+    };
+    const rootClassName = ['ips-pill-select', className].filter(Boolean).join(' ');
+    const { px, py, fontSize, minHeight } = SIZE_STYLES[size];
+    const pills = options.map((opt) => {
+        const selected = isSelected(opt.value);
+        return (_jsx(ButtonBase, { className: "ips-pill", "aria-pressed": selected, onClick: () => handleClick(opt.value), disableRipple: false, sx: {
+                borderRadius: '999px',
+                px,
+                py,
+                fontSize,
+                minHeight,
+                fontWeight: 500,
+                fontFamily: 'inherit',
+                lineHeight: 1.5,
+                transition: 'all 0.2s ease',
+                ...(selected
+                    ? {
+                        backgroundColor: primary,
+                        color: 'white',
+                        border: `1px solid ${primary}`,
+                        '&:hover': {
+                            backgroundColor: theme.palette.primary.dark,
+                            borderColor: theme.palette.primary.dark,
+                        },
+                    }
+                    : {
+                        backgroundColor: 'transparent',
+                        color: primary,
+                        border: `1px solid ${primary}`,
+                        '&:hover': {
+                            backgroundColor: `${primary}14`,
+                        },
+                    }),
+            }, children: opt.label }, opt.value));
+    });
+    const disabledSx = {
+        opacity: disabled ? 0.5 : 1,
+        pointerEvents: disabled ? 'none' : 'auto',
+    };
+    if (!label) {
+        return (_jsx(Box, { ref: ref, className: rootClassName, sx: { display: 'flex', flexWrap: 'wrap', gap: 1, ...disabledSx, ...sx }, children: pills }));
+    }
+    // With a label the root becomes a named group: the title above, the pills below
+    return (_jsxs(Box, { ref: ref, role: "group", "aria-labelledby": labelId, className: rootClassName, sx: { display: 'flex', flexDirection: 'column', gap: 1.5, ...disabledSx, ...sx }, children: [_jsx(Box, { component: "span", id: labelId, className: "ips-pill-select-label", sx: { fontSize: '0.875rem', fontWeight: 500, color: theme.palette.text.secondary }, children: label }), _jsx(Box, { sx: { display: 'flex', flexWrap: 'wrap', gap: 1 }, children: pills })] }));
+});
+IpsPillSelect.displayName = 'IpsPillSelect';

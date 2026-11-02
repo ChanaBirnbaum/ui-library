@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { Row, RowData } from '@tanstack/react-table';
-
+import React from 'react';
+import type { Row, RowData } from '@tanstack/react-table';
 export interface ExpandCellProps<T extends RowData> {
     row: Row<T>;
 }

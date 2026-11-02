@@ -1,5 +1,4 @@
-import { default as React } from 'react';
-
+import React from 'react';
 export declare const IpsTimePickerMobile: React.ForwardRefExoticComponent<Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "type" | "value" | "defaultValue" | "onChange" | "max" | "min"> & {
     value: string;
     onChange?: (value: string) => void;

@@ -1,88 +1,59 @@
-import { jsx as e, jsxs as c, Fragment as N } from "react/jsx-runtime";
-import { forwardRef as F } from "react";
-import L from "@mui/material/FormControl";
-import M from "@mui/material/InputLabel";
-import O from "@mui/material/Select";
-import T from "@mui/material/MenuItem";
-import k from "@mui/material/FormHelperText";
-import E from "@mui/material/Checkbox";
-import w from "@mui/material/ListItemText";
-import B from "@mui/material/ListSubheader";
-import { groupOptions as H } from "../internal/optionGroups.js";
-const R = F(
-  (d, h) => {
-    const {
-      options: n = [],
-      value: a,
-      onChange: p,
-      label: i,
-      readOnly: s = !1,
-      placeholder: m,
-      error: g = !1,
-      helperText: u,
-      multiple: o = !1,
-      disabled: v = !1,
-      className: b,
-      ...y
-    } = d, x = ["ips-select", b].filter(Boolean).join(" "), C = s ? {
-      pointerEvents: "none",
-      "& .MuiSelect-icon": {
-        display: "none"
-      }
-    } : {}, I = (r) => {
-      p && !s && p(r.target.value);
-    }, S = (r) => /* @__PURE__ */ e(T, { value: r.value, children: o ? /* @__PURE__ */ c(N, { children: [
-      /* @__PURE__ */ e(
-        E,
-        {
-          checked: Array.isArray(a) ? a.includes(r.value) : a === r.value
+import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
+import { forwardRef } from 'react';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import Checkbox from '@mui/material/Checkbox';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import { groupOptions } from '../internal/optionGroups';
+export const IpsSelect = forwardRef((props, ref) => {
+    const { options = [], value, onChange, label, readOnly = false, placeholder, error = false, helperText, multiple = false, disabled = false, className, ...rest } = props;
+    const rootClass = ['ips-select', className].filter(Boolean).join(' ');
+    // Select-specific sx overrides for readOnly mode
+    const selectSx = readOnly
+        ? {
+            pointerEvents: 'none',
+            '& .MuiSelect-icon': {
+                display: 'none',
+            },
         }
-      ),
-      /* @__PURE__ */ e(w, { primary: r.label })
-    ] }) : r.label }, r.value), j = H(n).flatMap((r) => {
-      const l = r.options.map(S);
-      return r.group === null ? l : [
-        /* @__PURE__ */ e(B, { className: "ips-select-group", children: r.group }, `group-${r.group}`),
-        ...l
-      ];
+        : {};
+    const handleChange = (event) => {
+        if (onChange && !readOnly) {
+            onChange(event.target.value);
+        }
+    };
+    const renderOption = (option) => (_jsx(MenuItem, { value: option.value, children: multiple ? (_jsxs(_Fragment, { children: [_jsx(Checkbox, { checked: Array.isArray(value)
+                        ? value.includes(option.value)
+                        : value === option.value }), _jsx(ListItemText, { primary: option.label })] })) : (option.label) }, option.value));
+    // Select does not accept fragments, so groups become a flat list: a subheader, then its items
+    const menuItems = groupOptions(options).flatMap((section) => {
+        const items = section.options.map(renderOption);
+        if (section.group === null) {
+            return items;
+        }
+        return [
+            _jsx(ListSubheader, { className: "ips-select-group", children: section.group }, `group-${section.group}`),
+            ...items,
+        ];
     });
-    return /* @__PURE__ */ c(
-      L,
-      {
-        className: x,
-        error: g,
-        disabled: v || s,
-        fullWidth: !0,
-        children: [
-          i && /* @__PURE__ */ e(M, { children: i }),
-          /* @__PURE__ */ e(
-            O,
-            {
-              ref: h,
-              value: a ?? (o ? [] : ""),
-              onChange: I,
-              label: i,
-              multiple: o,
-              displayEmpty: !!m,
-              renderValue: (r) => {
-                var l;
-                return o && Array.isArray(r) ? r.length === 0 ? m || "" : r.map((t) => {
-                  var f;
-                  return ((f = n.find((A) => A.value === t)) == null ? void 0 : f.label) || t;
-                }).join(", ") : r === "" || r === void 0 ? m || "" : ((l = n.find((t) => t.value === r)) == null ? void 0 : l.label) || r;
-              },
-              sx: C,
-              ...y,
-              children: j
-            }
-          ),
-          u && /* @__PURE__ */ e(k, { children: u })
-        ]
-      }
-    );
-  }
-);
-R.displayName = "IpsSelect";
-export {
-  R as IpsSelect
-};
+    return (_jsxs(FormControl, { className: rootClass, error: error, disabled: disabled || readOnly, fullWidth: true, children: [label && _jsx(InputLabel, { children: label }), _jsx(Select, { ref: ref, value: value ?? (multiple ? [] : ''), onChange: handleChange, label: label, multiple: multiple, displayEmpty: !!placeholder, renderValue: (selected) => {
+                    if (multiple && Array.isArray(selected)) {
+                        if (selected.length === 0) {
+                            return placeholder || '';
+                        }
+                        return selected
+                            .map((val) => options.find((opt) => opt.value === val)?.label || val)
+                            .join(', ');
+                    }
+                    else if (selected === '' || selected === undefined) {
+                        return placeholder || '';
+                    }
+                    return options.find((opt) => opt.value === selected)?.label || selected;
+                }, sx: selectSx, ...rest, children: menuItems }), helperText && _jsx(FormHelperText, { children: helperText })] }));
+});
+IpsSelect.displayName = 'IpsSelect';
+export default IpsSelect;

@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-
-export declare const IpsTextField: React.ForwardRefExoticComponent<(Omit<import('@mui/material/TextField').FilledTextFieldProps & {
+import React from 'react';
+export declare const IpsTextField: React.ForwardRefExoticComponent<(Omit<import("@mui/material/TextField").FilledTextFieldProps & {
     startAdornment?: React.ReactNode;
     endAdornment?: React.ReactNode;
     InputProps?: any;
@@ -10,7 +9,7 @@ export declare const IpsTextField: React.ForwardRefExoticComponent<(Omit<import(
     defaultValue?: string;
     readOnly?: boolean;
     clearButtonLabel?: string;
-}, "ref"> | Omit<import('@mui/material/TextField').OutlinedTextFieldProps & {
+}, "ref"> | Omit<import("@mui/material/TextField").OutlinedTextFieldProps & {
     startAdornment?: React.ReactNode;
     endAdornment?: React.ReactNode;
     InputProps?: any;
@@ -20,7 +19,7 @@ export declare const IpsTextField: React.ForwardRefExoticComponent<(Omit<import(
     defaultValue?: string;
     readOnly?: boolean;
     clearButtonLabel?: string;
-}, "ref"> | Omit<import('@mui/material/TextField').StandardTextFieldProps & {
+}, "ref"> | Omit<import("@mui/material/TextField").StandardTextFieldProps & {
     startAdornment?: React.ReactNode;
     endAdornment?: React.ReactNode;
     InputProps?: any;

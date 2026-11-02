@@ -1,142 +1,80 @@
-import { jsx as i, jsxs as M } from "react/jsx-runtime";
-import { forwardRef as N } from "react";
-import P from "@mui/material/TableContainer";
-import W from "@mui/material/Table";
-import j from "@mui/material/TableHead";
-import D from "@mui/material/TableBody";
-import h from "@mui/material/TableRow";
-import f from "@mui/material/TableCell";
-import _ from "@mui/material/Typography";
-import z from "@mui/material/Paper";
-import L from "@mui/material/Link";
-import O from "@mui/material/Box";
-function q(a, l) {
-  return a === "ellipsis" ? {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    maxWidth: l ?? 200
-  } : a === "wrap" ? { whiteSpace: "normal", wordBreak: "break-word" } : { whiteSpace: "nowrap" };
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { forwardRef } from 'react';
+import TableContainer from '@mui/material/TableContainer';
+import Table from '@mui/material/Table';
+import TableHead from '@mui/material/TableHead';
+import TableBody from '@mui/material/TableBody';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Link from '@mui/material/Link';
+import Box from '@mui/material/Box';
+function getWrapSx(effectiveWrap, colWidth) {
+    if (effectiveWrap === 'ellipsis') {
+        return {
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            maxWidth: colWidth ?? 200,
+        };
+    }
+    if (effectiveWrap === 'wrap') {
+        return { whiteSpace: 'normal', wordBreak: 'break-word' };
+    }
+    return { whiteSpace: 'nowrap' };
 }
-function A(a, l) {
-  const {
-    columns: s,
-    rows: u,
-    stickyHeader: v = !1,
-    maxHeight: g,
-    striped: x = !0,
-    dense: w = !1,
-    emptyText: T = "No data",
-    wrap: S = "ellipsis",
-    hover: b,
-    onRowClick: d,
-    onRowDoubleClick: p,
-    getRowId: k,
-    sx: B,
-    className: R
-  } = a, y = !!(d || p), C = b !== void 0 ? b : y, F = ["ips-table", R].filter(Boolean).join(" ");
-  function H(e, o, m) {
-    const r = o[e.key];
-    if (e.render)
-      return e.render(r, o, m);
-    if (e.type === "link") {
-      const n = e.href ? e.href(o) : String(r ?? ""), t = e.linkTarget === "_blank";
-      return /* @__PURE__ */ i(
-        L,
-        {
-          href: n,
-          target: e.linkTarget ?? "_self",
-          rel: t ? "noopener noreferrer" : void 0,
-          onClick: (c) => c.stopPropagation(),
-          children: String(r ?? "")
+/** Generic render implementation — kept outside forwardRef so the generic Row is preserved */
+function IpsTableBase(props, ref) {
+    const { columns, rows, stickyHeader = false, maxHeight, striped = true, dense = false, emptyText = 'No data', wrap: tableWrap = 'ellipsis', hover, onRowClick, onRowDoubleClick, getRowId, sx, className, } = props;
+    const hasRowHandler = Boolean(onRowClick || onRowDoubleClick);
+    const enableHover = hover !== undefined ? hover : hasRowHandler;
+    const rootClassName = ['ips-table', className].filter(Boolean).join(' ');
+    function renderCell(col, row, rowIndex) {
+        const value = row[col.key];
+        if (col.render) {
+            return col.render(value, row, rowIndex);
         }
-      );
-    }
-    if (e.type === "image") {
-      const n = e.imageSrc ? e.imageSrc(o) : String(r ?? ""), t = e.imageProps ?? {};
-      return /* @__PURE__ */ i(
-        O,
-        {
-          component: "img",
-          src: n,
-          width: t.width,
-          height: t.height,
-          alt: t.alt ?? "",
-          onClick: (c) => c.stopPropagation(),
-          sx: t.rounded ? { borderRadius: "50%", display: "block" } : { display: "block" }
+        if (col.type === 'link') {
+            const href = col.href ? col.href(row) : String(value ?? '');
+            const isBlank = col.linkTarget === '_blank';
+            return (_jsx(Link, { href: href, target: col.linkTarget ?? '_self', rel: isBlank ? 'noopener noreferrer' : undefined, onClick: (e) => e.stopPropagation(), children: String(value ?? '') }));
         }
-      );
+        if (col.type === 'image') {
+            const src = col.imageSrc ? col.imageSrc(row) : String(value ?? '');
+            const ip = col.imageProps ?? {};
+            return (_jsx(Box, { component: "img", src: src, width: ip.width, height: ip.height, alt: ip.alt ?? '', onClick: (e) => e.stopPropagation(), sx: ip.rounded ? { borderRadius: '50%', display: 'block' } : { display: 'block' } }));
+        }
+        return value;
     }
-    return r;
-  }
-  return /* @__PURE__ */ i(
-    P,
-    {
-      ref: l,
-      component: z,
-      className: F,
-      sx: {
-        ...g != null ? { maxHeight: g, overflow: "auto" } : {},
-        ...B
-      },
-      children: /* @__PURE__ */ M(W, { stickyHeader: v, size: w ? "small" : "medium", children: [
-        /* @__PURE__ */ i(j, { children: /* @__PURE__ */ i(h, { children: s.map((e) => /* @__PURE__ */ i(
-          f,
-          {
-            width: e.width,
-            align: e.align ?? "left",
-            sx: {
-              backgroundColor: "#F6F9FC",
-              color: "text.primary",
-              fontWeight: 600,
-              whiteSpace: "nowrap",
-              borderBottom: "1px solid",
-              borderColor: "divider",
-              "&.MuiTableCell-stickyHeader": {
-                backgroundColor: "#F6F9FC"
-              }
-            },
-            children: e.label
-          },
-          e.key
-        )) }) }),
-        /* @__PURE__ */ i(D, { children: u.length === 0 ? /* @__PURE__ */ i(h, { children: /* @__PURE__ */ i(f, { colSpan: s.length, align: "center", children: /* @__PURE__ */ i(_, { variant: "body2", color: "text.secondary", sx: { py: 2 }, children: T }) }) }) : u.map((e, o) => {
-          const m = k ? k(e, o) : e.id != null ? e.id : o;
-          return /* @__PURE__ */ i(
-            h,
-            {
-              hover: C,
-              onClick: d ? (r) => d(r, e, o) : void 0,
-              onDoubleClick: p ? (r) => p(r, e, o) : void 0,
-              sx: {
-                ...y ? { cursor: "pointer" } : {},
-                ...x && o % 2 === 1 ? { backgroundColor: "grey.50" } : {},
-                ...C ? { "&:hover": { backgroundColor: "grey.100" } } : {}
-              },
-              children: s.map((r) => {
-                const n = r.wrap ?? S;
-                return /* @__PURE__ */ i(
-                  f,
-                  {
-                    align: r.align ?? "left",
-                    sx: { ...q(n, r.width), borderBottom: "1px solid", borderColor: "divider" },
-                    children: H(r, e, o)
-                  },
-                  r.key
-                );
-              })
-            },
-            m
-          );
-        }) })
-      ] })
-    }
-  );
+    return (_jsx(TableContainer, { ref: ref, component: Paper, className: rootClassName, sx: {
+            ...(maxHeight != null ? { maxHeight, overflow: 'auto' } : {}),
+            ...sx,
+        }, children: _jsxs(Table, { stickyHeader: stickyHeader, size: dense ? 'small' : 'medium', children: [_jsx(TableHead, { children: _jsx(TableRow, { children: columns.map((col) => (_jsx(TableCell, { width: col.width, align: col.align ?? 'left', sx: {
+                                backgroundColor: '#F6F9FC',
+                                color: 'text.primary',
+                                fontWeight: 600,
+                                whiteSpace: 'nowrap',
+                                borderBottom: '1px solid',
+                                borderColor: 'divider',
+                                '&.MuiTableCell-stickyHeader': {
+                                    backgroundColor: '#F6F9FC',
+                                },
+                            }, children: col.label }, col.key))) }) }), _jsx(TableBody, { children: rows.length === 0 ? (_jsx(TableRow, { children: _jsx(TableCell, { colSpan: columns.length, align: "center", children: _jsx(Typography, { variant: "body2", color: "text.secondary", sx: { py: 2 }, children: emptyText }) }) })) : (rows.map((row, rowIndex) => {
+                        const key = getRowId
+                            ? getRowId(row, rowIndex)
+                            : row['id'] != null
+                                ? row['id']
+                                : rowIndex;
+                        return (_jsx(TableRow, { hover: enableHover, onClick: onRowClick ? (e) => onRowClick(e, row, rowIndex) : undefined, onDoubleClick: onRowDoubleClick ? (e) => onRowDoubleClick(e, row, rowIndex) : undefined, sx: {
+                                ...(hasRowHandler ? { cursor: 'pointer' } : {}),
+                                ...(striped && rowIndex % 2 === 1 ? { backgroundColor: 'grey.50' } : {}),
+                                ...(enableHover ? { '&:hover': { backgroundColor: 'grey.100' } } : {}),
+                            }, children: columns.map((col) => {
+                                const effectiveWrap = col.wrap ?? tableWrap;
+                                return (_jsx(TableCell, { align: col.align ?? 'left', sx: { ...getWrapSx(effectiveWrap, col.width), borderBottom: '1px solid', borderColor: 'divider' }, children: renderCell(col, row, rowIndex) }, col.key));
+                            }) }, key));
+                    })) })] }) }));
 }
-const E = N(
-  A
-);
-E.displayName = "IpsTable";
-export {
-  E as IpsTable
-};
+export const IpsTable = forwardRef(IpsTableBase);
+IpsTable.displayName = 'IpsTable';

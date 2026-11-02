@@ -19,7 +19,7 @@
     "vendor:stylis-rtl": "node scripts/vendor-stylis-rtl.mjs",
     "prebuild": "node scripts/vendor-stylis-rtl.mjs",
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && tsc",
     "build:demo": "vite build --config vite.config.demo.ts",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",

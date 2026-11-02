@@ -1,97 +1,81 @@
-import { jsxs as A, jsx as n } from "react/jsx-runtime";
-import { useState as N, useMemo as _, useCallback as b } from "react";
-import x from "react-dom";
-import F from "@mui/icons-material/CheckCircleOutline";
-import v from "@mui/icons-material/InfoOutlined";
-import z from "@mui/icons-material/WarningAmber";
-import D from "@mui/icons-material/ErrorOutline";
-import { useTheme as P } from "@mui/material/styles";
-import { IpsToastContext as G } from "./IpsToastContext.js";
-import { IpsToastItem as L, TOAST_EDGE_OFFSET_PX as C } from "./IpsToast.js";
-import { TOAST_TYPES as i } from "./IpsToast.types.js";
-const k = "close", g = {
-  [i.SUCCESS]: {
-    bgColor: "#5cb85c",
-    icon: /* @__PURE__ */ n(F, { fontSize: "small" })
-  },
-  [i.INFO]: {
-    bgColor: "#5bc0de",
-    icon: /* @__PURE__ */ n(v, { fontSize: "small" })
-  },
-  [i.WARNING]: {
-    bgColor: "#e4872b",
-    icon: /* @__PURE__ */ n(z, { fontSize: "small" })
-  },
-  [i.DANGER]: {
-    bgColor: "#d9534f",
-    icon: /* @__PURE__ */ n(D, { fontSize: "small" })
-  }
-};
-function y(m, s, e) {
-  const t = C, r = {
-    position: "fixed",
-    zIndex: s,
-    display: "flex",
-    flexDirection: "column",
-    gap: 8
-  };
-  switch (m) {
-    case "bottom-right":
-      return { ...r, bottom: e, right: t };
-    case "bottom-left":
-      return { ...r, bottom: e, left: t };
-    case "top-right":
-      return { ...r, top: t, right: t };
-    case "top-left":
-      return { ...r, top: t, left: t };
-  }
-}
-function H({
-  children: m,
-  deleteTime: s = 3e3,
-  maxToasts: e = 5,
-  position: t = "bottom-right",
-  bottomOffset: r = C,
-  closeButtonLabel: T = k
-}) {
-  const [I, p] = N([]), S = P(), d = _(() => {
-    let o = 0;
-    return () => ++o;
-  }, []), a = b((o) => {
-    p((f) => f.filter((c) => c.id !== o));
-  }, []), h = b(
-    (o, f) => {
-      const c = g[o] ?? g[i.INFO], u = d(), O = {
-        id: u,
-        message: f,
-        type: o,
-        icon: c.icon,
-        bgColor: c.bgColor
-      };
-      p((E) => {
-        const l = [...E, O];
-        return l.length > e ? l.slice(l.length - e) : l;
-      }), setTimeout(() => a(u), s);
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState, useCallback, useMemo } from 'react';
+import ReactDOM from 'react-dom';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { useTheme } from '@mui/material/styles';
+import { IpsToastContext } from './IpsToastContext';
+import { IpsToastItem, TOAST_EDGE_OFFSET_PX } from './IpsToast';
+import { TOAST_TYPES } from './IpsToast.types';
+// The close button's accessible name when the app does not pass one in its own language
+const DEFAULT_CLOSE_BUTTON_LABEL = 'close';
+// ─── Color + icon per type ────────────────────────────────────────────────────
+const TOAST_CONFIG = {
+    [TOAST_TYPES.SUCCESS]: {
+        bgColor: '#5cb85c',
+        icon: _jsx(CheckCircleOutlineIcon, { fontSize: "small" }),
     },
-    [s, e, d, a]
-  );
-  return /* @__PURE__ */ A(G.Provider, { value: h, children: [
-    m,
-    x.createPortal(
-      /* @__PURE__ */ n(
-        "div",
-        {
-          className: "ips-toast-container",
-          style: y(t, S.zIndex.snackbar, r),
-          dir: "rtl",
-          "data-testid": "ips-toast-container",
-          children: I.map((o) => /* @__PURE__ */ n(L, { toast: o, onClose: a, closeButtonLabel: T }, o.id))
-        }
-      ),
-      document.body
-    )
-  ] });
-}
-export {
-  H as IpsToastProvider
+    [TOAST_TYPES.INFO]: {
+        bgColor: '#5bc0de',
+        icon: _jsx(InfoOutlinedIcon, { fontSize: "small" }),
+    },
+    [TOAST_TYPES.WARNING]: {
+        bgColor: '#e4872b',
+        icon: _jsx(WarningAmberIcon, { fontSize: "small" }),
+    },
+    [TOAST_TYPES.DANGER]: {
+        bgColor: '#d9534f',
+        icon: _jsx(ErrorOutlineIcon, { fontSize: "small" }),
+    },
 };
+// ─── Position mapping → inline style ─────────────────────────────────────────
+// zIndex: MUI's snackbar layer, above dialogs and drawers (modal 1300), so a toast is seen even while one is open.
+// bottomOffset: only for the bottom positions, e.g. to stay above a bottom action bar
+function getContainerStyle(position, zIndex, bottomOffset) {
+    const offset = TOAST_EDGE_OFFSET_PX;
+    const base = {
+        position: 'fixed',
+        zIndex,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+    };
+    switch (position) {
+        case 'bottom-right': return { ...base, bottom: bottomOffset, right: offset };
+        case 'bottom-left': return { ...base, bottom: bottomOffset, left: offset };
+        case 'top-right': return { ...base, top: offset, right: offset };
+        case 'top-left': return { ...base, top: offset, left: offset };
+    }
+}
+// ─── Provider ─────────────────────────────────────────────────────────────────
+export function IpsToastProvider({ children, deleteTime = 3000, maxToasts = 5, position = 'bottom-right', bottomOffset = TOAST_EDGE_OFFSET_PX, closeButtonLabel = DEFAULT_CLOSE_BUTTON_LABEL, }) {
+    const [toasts, setToasts] = useState([]);
+    const theme = useTheme();
+    const generateId = useMemo(() => {
+        let counter = 0;
+        return () => ++counter;
+    }, []);
+    const removeToast = useCallback((id) => {
+        setToasts(prev => prev.filter(t => t.id !== id));
+    }, []);
+    const addToast = useCallback((type, message) => {
+        const config = TOAST_CONFIG[type] ?? TOAST_CONFIG[TOAST_TYPES.INFO];
+        const id = generateId();
+        const item = {
+            id,
+            message,
+            type,
+            icon: config.icon,
+            bgColor: config.bgColor,
+        };
+        setToasts(prev => {
+            const next = [...prev, item];
+            // Enforce maxToasts — drop the oldest
+            return next.length > maxToasts ? next.slice(next.length - maxToasts) : next;
+        });
+        setTimeout(() => removeToast(id), deleteTime);
+    }, [deleteTime, maxToasts, generateId, removeToast]);
+    return (_jsxs(IpsToastContext.Provider, { value: addToast, children: [children, ReactDOM.createPortal(_jsx("div", { className: "ips-toast-container", style: getContainerStyle(position, theme.zIndex.snackbar, bottomOffset), dir: "rtl", "data-testid": "ips-toast-container", children: toasts.map(toast => (_jsx(IpsToastItem, { toast: toast, onClose: removeToast, closeButtonLabel: closeButtonLabel }, toast.id))) }), document.body)] }));
+}

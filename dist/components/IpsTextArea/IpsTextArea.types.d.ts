@@ -1,5 +1,4 @@
 import { TextFieldProps } from '@mui/material/TextField';
-
 export type IpsTextAreaProps = TextFieldProps & {
     /** number of visible rows (minRows) */
     rows?: number;

@@ -1,5 +1,4 @@
-import { SelectProps } from '@mui/material/Select';
-
+import type { SelectProps } from '@mui/material/Select';
 export interface IpsChipSelectOption {
     label: string;
     value: string | number;

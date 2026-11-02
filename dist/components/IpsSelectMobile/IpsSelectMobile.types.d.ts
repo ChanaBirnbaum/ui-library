@@ -1,6 +1,5 @@
-import { SelectHTMLAttributes } from 'react';
-import { IpsSelectOption } from '../IpsSelect/IpsSelect.types';
-
+import type { SelectHTMLAttributes } from 'react';
+import type { IpsSelectOption } from '../IpsSelect/IpsSelect.types';
 /** The value type of a single option (kept as is: a number stays a number) */
 export type IpsSelectMobileValue = string | number;
 /**

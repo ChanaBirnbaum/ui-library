@@ -1,6 +1,5 @@
-import { createIpsTheme as e } from "./createIpsTheme.js";
-const m = e("light");
-export {
-  e as createIpsTheme,
-  m as ipsTheme
-};
+import { createIpsTheme } from './createIpsTheme';
+export { createIpsTheme } from './createIpsTheme';
+/** Default light-mode IPS theme. For dark mode use createIpsTheme('dark'). */
+export const ipsTheme = createIpsTheme('light');
+export default ipsTheme;

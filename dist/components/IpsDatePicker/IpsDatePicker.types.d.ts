@@ -1,7 +1,6 @@
-import { DatePickerProps } from '@mui/x-date-pickers/DatePicker';
-import { SxProps, Theme } from '@mui/material/styles';
-import { Locale } from 'date-fns';
-
+import type { DatePickerProps } from '@mui/x-date-pickers/DatePicker';
+import type { SxProps, Theme } from '@mui/material/styles';
+import type { Locale } from 'date-fns';
 export interface IpsDatePickerProps extends Omit<DatePickerProps, 'onChange' | 'value' | 'minDate' | 'maxDate'> {
     /** Controlled date value */
     value?: Date | null;

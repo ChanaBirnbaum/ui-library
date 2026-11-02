@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { IpsThemeProviderProps } from './IpsThemeProvider.types';
-
+import React from 'react';
+import type { IpsThemeProviderProps } from './IpsThemeProvider.types';
 /**
  * IpsThemeProvider
  *

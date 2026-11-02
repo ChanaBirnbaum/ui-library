@@ -1,5 +1,4 @@
-import { ReactNode } from 'react';
-
+import type { ReactNode } from 'react';
 /** The value type of a single option (kept as is: a number stays a number) */
 export type IpsRadioGroupValue = string | number;
 export interface IpsRadioGroupOption {

@@ -1,5 +1,42 @@
-import { default as React } from 'react';
-
+/**
+ * ScanDialog — Dynamsoft Web TWAIN integration
+ *
+ * ## הוראות התקנה למפתחים
+ *
+ * ### 1. התקנת הספרייה
+ * ```bash
+ * npm install dwt
+ * ```
+ * או הוספת script tag ל-index.html:
+ * ```html
+ * <script src="https://unpkg.com/dwt/dist/dynamsoft.webtwain.min.js"></script>
+ * ```
+ *
+ * ### 2. הגדרת Product Key
+ * ```ts
+ * // ב-index.tsx / main.tsx לפני ReactDOM.render:
+ * window.Dynamsoft.DWT.ProductKey = 'YOUR_PRODUCT_KEY'
+ * window.Dynamsoft.DWT.ResourcesPath = '/node_modules/dwt/dist'
+ * ```
+ *
+ * ### 3. שימוש בקומפוננטה
+ * ```tsx
+ * <IpsFileUpload
+ *   sviva="prod"
+ *   system="my-site"
+ *   scan                          // מציג כפתור סריקה
+ *   containerId="dwt-container"   // ID ייחודי לכל instance של DWT
+ * />
+ * ```
+ *
+ * ### 4. דרישות סביבה
+ * - Windows בלבד (DWT תומך בסורקי TWAIN/WIA)
+ * - Chrome / Edge מומלצים
+ * - HTTPS בסביבת production
+ *
+ * @see https://www.dynamsoft.com/web-twain/docs/
+ */
+import React from 'react';
 interface ScanDialogProps {
     open: boolean;
     onClose: () => void;

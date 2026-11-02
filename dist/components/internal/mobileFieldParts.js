@@ -1,111 +1,94 @@
-import { jsx as i } from "react/jsx-runtime";
-import { styled as n } from "@mui/material/styles";
-const t = {
-  heightPx: 42,
-  paddingStartPx: 14,
-  chevronSizePx: 20,
-  chevronInsetPx: 12,
-  // 16px keeps iOS Safari from zooming the page when the field gets focus
-  fontSizePx: 16,
-  fallbackRadiusPx: 6
-}, l = t.chevronInsetPx + t.chevronSizePx + 8, p = n("label")(({ theme: e }) => ({
-  display: "block",
-  marginBottom: "3px",
-  fontSize: "12px",
-  lineHeight: 1,
-  color: e.palette.text.secondary
-})), c = n("span")(({ theme: e }) => ({
-  color: e.palette.error.main
-})), u = n("p", {
-  shouldForwardProp: (e) => e !== "hasError"
-})(({ theme: e, hasError: o }) => ({
-  margin: "4px 0 0",
-  fontSize: "12px",
-  lineHeight: 1.25,
-  color: o ? e.palette.error.main : e.palette.text.secondary
-}));
-function a(e) {
-  var o, r;
-  return ((r = (o = e.custom) == null ? void 0 : o.radius) == null ? void 0 : r.input) ?? t.fallbackRadiusPx;
-}
-function x(e, { hasValue: o, hasError: r }) {
-  return {
-    width: "100%",
-    height: t.heightPx,
-    margin: 0,
-    paddingInlineStart: t.paddingStartPx,
-    paddingInlineEnd: l,
-    fontFamily: "inherit",
-    fontSize: t.fontSizePx,
-    color: o ? e.palette.text.primary : e.palette.text.secondary,
-    backgroundColor: e.palette.background.paper,
-    border: `1px solid ${r ? e.palette.error.main : e.palette.grey[300]}`,
-    borderRadius: a(e)
-  };
-}
-function f(e, o) {
-  const r = o ? e.palette.error.main : e.palette.primary.main;
-  return {
-    borderColor: r,
-    boxShadow: `inset 0 0 0 1px ${r}`
-  };
-}
-function h(e) {
-  return {
-    cursor: "default",
-    color: e.palette.text.disabled,
-    backgroundColor: e.palette.grey[50],
-    borderColor: e.palette.grey[200]
-  };
-}
-const b = n("span")(({ theme: e }) => ({
-  position: "absolute",
-  top: "50%",
-  insetInlineEnd: t.chevronInsetPx,
-  display: "flex",
-  transform: "translateY(-50%)",
-  pointerEvents: "none",
-  color: e.palette.text.secondary
-}));
-function g() {
-  return /* @__PURE__ */ i(
-    "svg",
-    {
-      "aria-hidden": "true",
-      width: t.chevronSizePx,
-      height: t.chevronSizePx,
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: 1.5,
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      children: /* @__PURE__ */ i("path", { d: "m6 9 6 6 6-6" })
-    }
-  );
-}
-const S = {
-  position: "absolute",
-  inset: 0,
-  width: "100%",
-  height: "100%",
-  margin: 0,
-  opacity: 0,
-  fontSize: t.fontSizePx,
-  cursor: "pointer",
-  "&:disabled": { cursor: "default" }
+import { jsx as _jsx } from "react/jsx-runtime";
+import { styled } from '@mui/material/styles';
+// Shared building blocks for the native mobile fields (IpsSelectMobile, IpsMultiSelectMobile, IpsTextFieldMobile,
+// IpsTextAreaMobile, IpsDatePickerMobile, IpsTimePickerMobile), so every Ips*Mobile field has the same label,
+// box, chevron and helper text.
+export const MOBILE_FIELD = {
+    heightPx: 42,
+    paddingStartPx: 14,
+    chevronSizePx: 20,
+    chevronInsetPx: 12,
+    // 16px keeps iOS Safari from zooming the page when the field gets focus
+    fontSizePx: 16,
+    fallbackRadiusPx: 6,
 };
-export {
-  l as CHEVRON_CLEARANCE_PX,
-  g as ChevronDownIcon,
-  t as MOBILE_FIELD,
-  p as MobileFieldLabel,
-  u as MobileHelperText,
-  b as OutlinedChevronSlot,
-  c as RequiredMark,
-  S as invisibleOverlayStyles,
-  a as mobileFieldRadius,
-  x as outlinedFieldBoxStyles,
-  h as outlinedFieldDisabledStyles,
-  f as outlinedFieldFocusStyles
+export const CHEVRON_CLEARANCE_PX = MOBILE_FIELD.chevronInsetPx + MOBILE_FIELD.chevronSizePx + 8;
+export const MobileFieldLabel = styled('label')(({ theme }) => ({
+    display: 'block',
+    marginBottom: '3px',
+    fontSize: '12px',
+    lineHeight: 1,
+    color: theme.palette.text.secondary,
+}));
+export const RequiredMark = styled('span')(({ theme }) => ({
+    color: theme.palette.error.main,
+}));
+export const MobileHelperText = styled('p', {
+    shouldForwardProp: (prop) => prop !== 'hasError',
+})(({ theme, hasError }) => ({
+    margin: '4px 0 0',
+    fontSize: '12px',
+    lineHeight: 1.25,
+    color: hasError ? theme.palette.error.main : theme.palette.text.secondary,
+}));
+/** Field radius from the IPS theme; plain MUI themes (tests, stories) fall back */
+export function mobileFieldRadius(theme) {
+    return theme.custom?.radius?.input ?? MOBILE_FIELD.fallbackRadiusPx;
+}
+/** The outlined field box (border, background, height, text color). Focus styles are added by each field */
+export function outlinedFieldBoxStyles(theme, { hasValue, hasError }) {
+    return {
+        width: '100%',
+        height: MOBILE_FIELD.heightPx,
+        margin: 0,
+        paddingInlineStart: MOBILE_FIELD.paddingStartPx,
+        paddingInlineEnd: CHEVRON_CLEARANCE_PX,
+        fontFamily: 'inherit',
+        fontSize: MOBILE_FIELD.fontSizePx,
+        color: hasValue ? theme.palette.text.primary : theme.palette.text.secondary,
+        backgroundColor: theme.palette.background.paper,
+        border: `1px solid ${hasError ? theme.palette.error.main : theme.palette.grey[300]}`,
+        borderRadius: mobileFieldRadius(theme),
+    };
+}
+/** 2px focus border like the library's fields, without shifting the content */
+export function outlinedFieldFocusStyles(theme, hasError) {
+    const focusColor = hasError ? theme.palette.error.main : theme.palette.primary.main;
+    return {
+        borderColor: focusColor,
+        boxShadow: `inset 0 0 0 1px ${focusColor}`,
+    };
+}
+export function outlinedFieldDisabledStyles(theme) {
+    return {
+        cursor: 'default',
+        color: theme.palette.text.disabled,
+        backgroundColor: theme.palette.grey[50],
+        borderColor: theme.palette.grey[200],
+    };
+}
+/** Positions the chevron inside an outlined field. Taps pass through to the native control */
+export const OutlinedChevronSlot = styled('span')(({ theme }) => ({
+    position: 'absolute',
+    top: '50%',
+    insetInlineEnd: MOBILE_FIELD.chevronInsetPx,
+    display: 'flex',
+    transform: 'translateY(-50%)',
+    pointerEvents: 'none',
+    color: theme.palette.text.secondary,
+}));
+export function ChevronDownIcon() {
+    return (_jsx("svg", { "aria-hidden": "true", width: MOBILE_FIELD.chevronSizePx, height: MOBILE_FIELD.chevronSizePx, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round", strokeLinejoin: "round", children: _jsx("path", { d: "m6 9 6 6 6-6" }) }));
+}
+/** A native control stretched invisibly over a custom trigger, so a tap anywhere opens the OS picker */
+export const invisibleOverlayStyles = {
+    position: 'absolute',
+    inset: 0,
+    width: '100%',
+    height: '100%',
+    margin: 0,
+    opacity: 0,
+    fontSize: MOBILE_FIELD.fontSizePx,
+    cursor: 'pointer',
+    '&:disabled': { cursor: 'default' },
 };

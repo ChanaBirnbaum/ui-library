@@ -1,19 +1,11 @@
-import { jsx as i } from "react/jsx-runtime";
-import { forwardRef as r } from "react";
-import { NativePickerField as m } from "../internal/NativePickerField.js";
-import { ClockIcon as t } from "../internal/mobileFieldEndParts.js";
-const p = (o) => o, s = r((o, e) => /* @__PURE__ */ i(
-  m,
-  {
-    ...o,
-    ref: e,
-    inputType: "time",
-    icon: /* @__PURE__ */ i(t, {}),
-    formatValue: p,
-    rootClassName: "ips-time-picker-mobile"
-  }
-));
-s.displayName = "IpsTimePickerMobile";
-export {
-  s as IpsTimePickerMobile
-};
+import { jsx as _jsx } from "react/jsx-runtime";
+import { forwardRef } from 'react';
+import { NativePickerField } from '../internal/NativePickerField';
+import { ClockIcon } from '../internal/mobileFieldEndParts';
+// Mobile time field built on the native <input type="time">: a tap anywhere opens the OS time picker.
+// Unlike IpsTimePicker it needs no Moment. No MUI components.
+// The native value is already 'HH:mm', which is also the display format
+const showAsIs = (value) => value;
+export const IpsTimePickerMobile = forwardRef((props, ref) => (_jsx(NativePickerField, { ...props, ref: ref, inputType: "time", icon: _jsx(ClockIcon, {}), formatValue: showAsIs, rootClassName: "ips-time-picker-mobile" })));
+IpsTimePickerMobile.displayName = 'IpsTimePickerMobile';
+export default IpsTimePickerMobile;

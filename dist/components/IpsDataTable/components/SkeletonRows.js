@@ -1,25 +1,7 @@
-import { jsx as r, Fragment as a } from "react/jsx-runtime";
-import m from "@mui/material/TableRow";
-import h from "@mui/material/TableCell";
-import l from "@mui/material/Skeleton";
-function s({ rowCount: o = 5, columnCount: i, cellSx: n }) {
-  return /* @__PURE__ */ r(a, { children: Array.from({ length: o }).map((f, e) => /* @__PURE__ */ r(m, { children: Array.from({ length: i }).map((p, t) => /* @__PURE__ */ r(
-    h,
-    {
-      sx: { ...n, whiteSpace: "nowrap", overflow: "hidden" },
-      children: /* @__PURE__ */ r(
-        l,
-        {
-          variant: "text",
-          width: `${60 + Math.floor(Math.sin(e * 7 + t) * 30)}%`,
-          height: 20,
-          animation: "wave"
-        }
-      )
-    },
-    t
-  )) }, e)) });
+import { jsx as _jsx, Fragment as _Fragment } from "react/jsx-runtime";
+import MuiTableRow from '@mui/material/TableRow';
+import MuiTableCell from '@mui/material/TableCell';
+import Skeleton from '@mui/material/Skeleton';
+export function SkeletonRows({ rowCount = 5, columnCount, cellSx }) {
+    return (_jsx(_Fragment, { children: Array.from({ length: rowCount }).map((_, rowIdx) => (_jsx(MuiTableRow, { children: Array.from({ length: columnCount }).map((_, colIdx) => (_jsx(MuiTableCell, { sx: { ...cellSx, whiteSpace: 'nowrap', overflow: 'hidden' }, children: _jsx(Skeleton, { variant: "text", width: `${60 + Math.floor(Math.sin(rowIdx * 7 + colIdx) * 30)}%`, height: 20, animation: "wave" }) }, colIdx))) }, rowIdx))) }));
 }
-export {
-  s as SkeletonRows
-};

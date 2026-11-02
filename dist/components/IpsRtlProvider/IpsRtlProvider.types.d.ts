@@ -1,5 +1,4 @@
-import { ReactNode } from 'react';
-
+import type { ReactNode } from 'react';
 export interface IpsRtlProviderProps {
     /**
      * Content to render with RTL CSS flipping applied.

@@ -1,5 +1,4 @@
-import { Theme } from '@mui/material/styles';
-
+import type { Theme } from '@mui/material/styles';
 /**
  * Creates the IPS MUI v7 theme for the requested colour mode.
  *

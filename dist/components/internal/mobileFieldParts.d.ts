@@ -1,6 +1,5 @@
-import { default as React } from 'react';
-import { Theme } from '@mui/material/styles';
-
+import React from 'react';
+import { type Theme } from '@mui/material/styles';
 export declare const MOBILE_FIELD: {
     readonly heightPx: 42;
     readonly paddingStartPx: 14;
@@ -10,9 +9,9 @@ export declare const MOBILE_FIELD: {
     readonly fallbackRadiusPx: 6;
 };
 export declare const CHEVRON_CLEARANCE_PX: number;
-export declare const MobileFieldLabel: import('@emotion/styled').StyledComponent<import('@mui/system').MUIStyledCommonProps<Theme>, React.DetailedHTMLProps<React.LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>, {}>;
-export declare const RequiredMark: import('@emotion/styled').StyledComponent<import('@mui/system').MUIStyledCommonProps<Theme>, React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, {}>;
-export declare const MobileHelperText: import('@emotion/styled').StyledComponent<import('@mui/system').MUIStyledCommonProps<Theme> & {
+export declare const MobileFieldLabel: import("@emotion/styled").StyledComponent<import("@mui/system").MUIStyledCommonProps<Theme>, React.DetailedHTMLProps<React.LabelHTMLAttributes<HTMLLabelElement>, HTMLLabelElement>, {}>;
+export declare const RequiredMark: import("@emotion/styled").StyledComponent<import("@mui/system").MUIStyledCommonProps<Theme>, React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, {}>;
+export declare const MobileHelperText: import("@emotion/styled").StyledComponent<import("@mui/system").MUIStyledCommonProps<Theme> & {
     hasError: boolean;
 }, React.DetailedHTMLProps<React.HTMLAttributes<HTMLParagraphElement>, HTMLParagraphElement>, {}>;
 /** Field radius from the IPS theme; plain MUI themes (tests, stories) fall back */
@@ -47,7 +46,7 @@ export declare function outlinedFieldDisabledStyles(theme: Theme): {
     borderColor: string;
 };
 /** Positions the chevron inside an outlined field. Taps pass through to the native control */
-export declare const OutlinedChevronSlot: import('@emotion/styled').StyledComponent<import('@mui/system').MUIStyledCommonProps<Theme>, React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, {}>;
+export declare const OutlinedChevronSlot: import("@emotion/styled").StyledComponent<import("@mui/system").MUIStyledCommonProps<Theme>, React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>, {}>;
 export declare function ChevronDownIcon(): React.JSX.Element;
 /** A native control stretched invisibly over a custom trigger, so a tap anywhere opens the OS picker */
 export declare const invisibleOverlayStyles: {

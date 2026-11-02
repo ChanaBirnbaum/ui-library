@@ -1,110 +1,90 @@
-import { jsxs as D, jsx as t } from "react/jsx-runtime";
-import { forwardRef as G, useId as T } from "react";
-import L from "@mui/material/FormControlLabel";
-import X from "@mui/material/Radio";
-import E from "@mui/material/RadioGroup";
-import { styled as s } from "@mui/material/styles";
-const k = 14, w = 18, B = 16, F = 8, W = 16, j = 12, z = 12, H = s("div")({
-  display: "flex",
-  flexDirection: "column",
-  width: "100%"
-}), K = s("span")(({ theme: o }) => ({
-  marginBottom: 4,
-  fontSize: "0.875rem",
-  color: o.palette.text.secondary
-})), M = s("span")({
-  display: "flex",
-  flexDirection: "column",
-  minWidth: 0
-}), U = s("span", {
-  shouldForwardProp: (o) => o !== "isStacked"
-})(({ theme: o, isStacked: l }) => ({
-  fontWeight: l ? o.typography.fontWeightMedium : void 0
-})), Z = s("span", {
-  shouldForwardProp: (o) => o !== "isDisabled"
-})(({ theme: o, isDisabled: l }) => ({
-  fontSize: k,
-  lineHeight: `${w}px`,
-  color: l ? o.palette.text.disabled : o.palette.text.secondary
-})), q = G((o, l) => {
-  const {
-    options: p,
-    value: d,
-    onChange: b,
-    variant: P = "list",
-    label: n,
-    "aria-label": S,
-    "aria-labelledby": f,
-    "aria-describedby": h,
-    name: R,
-    disabled: u = !1,
-    className: A
-  } = o, g = T(), v = `${g}-label`, m = P === "cards", e = m || p.some((i) => !!i.description), $ = ["ips-radio-group", A].filter(Boolean).join(" "), N = (i, x) => {
-    const r = p.find((c) => String(c.value) === x);
-    r && (b == null || b(r.value));
-  }, O = (i, x) => {
-    const r = d !== null && String(i.value) === String(d), c = `${g}-option-${x}`, _ = i.description ? `${c}-title` : void 0, I = i.description ? `${c}-description` : void 0;
-    return /* @__PURE__ */ t(
-      L,
-      {
-        className: r ? "ips-radio-group-option ips-radio-group-option-checked" : "ips-radio-group-option",
-        value: String(i.value),
-        disabled: u,
-        control: /* @__PURE__ */ t(
-          X,
-          {
-            inputProps: { "aria-labelledby": _, "aria-describedby": I },
-            sx: e ? { p: 0 } : void 0
-          }
-        ),
-        label: /* @__PURE__ */ D(M, { children: [
-          /* @__PURE__ */ t(U, { id: _, isStacked: e, children: i.label }),
-          i.description && /* @__PURE__ */ t(Z, { id: I, isDisabled: u, children: i.description })
-        ] }),
-        sx: (a) => {
-          var y, C;
-          return {
-            m: 0,
-            ...e && { alignItems: "flex-start", gap: `${z}px` },
-            ...m && {
-              width: "100%",
-              boxSizing: "border-box",
-              p: `${W}px`,
-              border: "1px solid",
-              borderColor: r ? a.palette.primary.main : a.palette.divider,
-              borderRadius: `${((C = (y = a.custom) == null ? void 0 : y.radius) == null ? void 0 : C.card) ?? j}px`,
-              backgroundColor: a.palette.background.paper,
-              transition: a.transitions.create("border-color"),
-              "&:hover": {
-                borderColor: r || u ? void 0 : a.palette.text.secondary
-              }
-            },
-            "& .MuiFormControlLabel-label": { flex: e ? 1 : void 0, minWidth: 0 }
-          };
-        }
-      },
-      i.value
-    );
-  };
-  return /* @__PURE__ */ D(H, { ref: l, className: $, children: [
-    n && /* @__PURE__ */ t(K, { id: v, children: n }),
-    /* @__PURE__ */ t(
-      E,
-      {
-        name: R,
-        row: !e,
-        value: d === null ? "" : String(d),
-        onChange: N,
-        "aria-labelledby": n ? v : f,
-        "aria-label": n || f ? void 0 : S,
-        "aria-describedby": h,
-        sx: { gap: e ? `${m ? F : B}px` : void 0 },
-        children: p.map(O)
-      }
-    )
-  ] });
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { forwardRef, useId } from 'react';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import { styled } from '@mui/material/styles';
+// Single choice between a few options, for desktop: the MUI-based counterpart of IpsRadioGroupMobile, with the same API.
+// Without descriptions the options sit in one wrapping row. When any option has a description, every option gets its
+// own row: a title and, under it, what choosing it means. variant="cards" shows every option as a bordered card that is
+// clickable as a whole (e.g. choosing one of several records). Keyboard arrows move between the options and check them,
+// as in any radio group.
+const DESCRIPTION_FONT_SIZE_PX = 14;
+const DESCRIPTION_LINE_HEIGHT_PX = 18;
+const STACKED_ROW_GAP_PX = 16;
+const CARDS_GAP_PX = 8;
+const CARD_PADDING_PX = 16;
+const CARD_FALLBACK_RADIUS_PX = 12;
+const RADIO_TEXT_GAP_PX = 12;
+const Root = styled('div')({
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
 });
-q.displayName = "IpsRadioGroup";
-export {
-  q as IpsRadioGroup
-};
+const GroupLabel = styled('span')(({ theme }) => ({
+    marginBottom: 4,
+    fontSize: '0.875rem',
+    color: theme.palette.text.secondary,
+}));
+const OptionText = styled('span')({
+    display: 'flex',
+    flexDirection: 'column',
+    minWidth: 0,
+});
+const OptionTitle = styled('span', {
+    shouldForwardProp: (prop) => prop !== 'isStacked',
+})(({ theme, isStacked }) => ({
+    fontWeight: isStacked ? theme.typography.fontWeightMedium : undefined,
+}));
+const OptionDescription = styled('span', {
+    shouldForwardProp: (prop) => prop !== 'isDisabled',
+})(({ theme, isDisabled }) => ({
+    fontSize: DESCRIPTION_FONT_SIZE_PX,
+    lineHeight: `${DESCRIPTION_LINE_HEIGHT_PX}px`,
+    color: isDisabled ? theme.palette.text.disabled : theme.palette.text.secondary,
+}));
+export const IpsRadioGroup = forwardRef((props, ref) => {
+    const { options, value, onChange, variant = 'list', label, 'aria-label': ariaLabel, 'aria-labelledby': ariaLabelledBy, 'aria-describedby': ariaDescribedBy, name, disabled = false, className, } = props;
+    const generatedId = useId();
+    const labelId = `${generatedId}-label`;
+    const isCards = variant === 'cards';
+    const isStacked = isCards || options.some((option) => Boolean(option.description));
+    const rootClassName = ['ips-radio-group', className].filter(Boolean).join(' ');
+    // RadioGroup works with strings; the consumer gets back the option's original value
+    const handleChange = (_event, selectedValue) => {
+        const selectedOption = options.find((option) => String(option.value) === selectedValue);
+        if (selectedOption) {
+            onChange?.(selectedOption.value);
+        }
+    };
+    const renderOption = (option, index) => {
+        const isChecked = value !== null && String(option.value) === String(value);
+        const optionId = `${generatedId}-option-${index}`;
+        // With a description, the name is the title only and the description is read after it
+        const titleId = option.description ? `${optionId}-title` : undefined;
+        const descriptionId = option.description ? `${optionId}-description` : undefined;
+        return (_jsx(FormControlLabel, { className: isChecked ? 'ips-radio-group-option ips-radio-group-option-checked' : 'ips-radio-group-option', value: String(option.value), disabled: disabled, control: _jsx(Radio, { inputProps: { 'aria-labelledby': titleId, 'aria-describedby': descriptionId }, 
+                // Stacked: no padding, so the 24px radio sits next to the title's first line
+                sx: isStacked ? { p: 0 } : undefined }), label: _jsxs(OptionText, { children: [_jsx(OptionTitle, { id: titleId, isStacked: isStacked, children: option.label }), option.description && (_jsx(OptionDescription, { id: descriptionId, isDisabled: disabled, children: option.description }))] }), sx: (theme) => ({
+                m: 0,
+                ...(isStacked && { alignItems: 'flex-start', gap: `${RADIO_TEXT_GAP_PX}px` }),
+                ...(isCards && {
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    p: `${CARD_PADDING_PX}px`,
+                    border: '1px solid',
+                    borderColor: isChecked ? theme.palette.primary.main : theme.palette.divider,
+                    borderRadius: `${theme.custom?.radius?.card ?? CARD_FALLBACK_RADIUS_PX}px`,
+                    backgroundColor: theme.palette.background.paper,
+                    transition: theme.transitions.create('border-color'),
+                    '&:hover': {
+                        borderColor: isChecked || disabled ? undefined : theme.palette.text.secondary,
+                    },
+                }),
+                '& .MuiFormControlLabel-label': { flex: isStacked ? 1 : undefined, minWidth: 0 },
+            }) }, option.value));
+    };
+    return (_jsxs(Root, { ref: ref, className: rootClassName, children: [label && _jsx(GroupLabel, { id: labelId, children: label }), _jsx(RadioGroup, { name: name, row: !isStacked, value: value === null ? '' : String(value), onChange: handleChange, "aria-labelledby": label ? labelId : ariaLabelledBy, "aria-label": label || ariaLabelledBy ? undefined : ariaLabel, "aria-describedby": ariaDescribedBy, sx: { gap: isStacked ? `${isCards ? CARDS_GAP_PX : STACKED_ROW_GAP_PX}px` : undefined }, children: options.map(renderOption) })] }));
+});
+IpsRadioGroup.displayName = 'IpsRadioGroup';
+export default IpsRadioGroup;
