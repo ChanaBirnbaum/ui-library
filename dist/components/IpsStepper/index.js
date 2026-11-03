@@ -1,0 +1,1 @@
+export { IpsStepper } from './IpsStepper';

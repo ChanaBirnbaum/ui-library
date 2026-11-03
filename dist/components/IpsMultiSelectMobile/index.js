@@ -1,0 +1,1 @@
+export { IpsMultiSelectMobile } from './IpsMultiSelectMobile';

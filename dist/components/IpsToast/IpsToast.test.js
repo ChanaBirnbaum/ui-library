@@ -1,0 +1,137 @@
+import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
+import { render, screen, act, fireEvent } from '@testing-library/react';
+import { IpsToastProvider } from './IpsToastProvider';
+import { useToast } from './useToast';
+import { TOAST_TYPES } from './IpsToast.types';
+// ─── Helper: renders a child that can trigger toasts ─────────────────────────
+function ToastTrigger({ type = TOAST_TYPES.SUCCESS, message = 'Test message', }) {
+    const addToast = useToast();
+    return (_jsx("button", { onClick: () => addToast(type, message), children: "trigger" }));
+}
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+function renderWithProvider(ui, props) {
+    return render(_jsx(IpsToastProvider, { ...props, children: ui }));
+}
+// ─── Tests ───────────────────────────────────────────────────────────────────
+describe('IpsToastProvider', () => {
+    beforeEach(() => {
+        jest.useFakeTimers();
+    });
+    afterEach(() => {
+        act(() => {
+            jest.runOnlyPendingTimers();
+        });
+        jest.useRealTimers();
+    });
+    it('renders children', () => {
+        renderWithProvider(_jsx("span", { children: "child content" }));
+        expect(screen.getByText('child content')).toBeInTheDocument();
+    });
+    it('renders the toast container in document.body', () => {
+        renderWithProvider(_jsx("span", {}));
+        expect(document.body.querySelector('[data-testid="ips-toast-container"]')).toBeInTheDocument();
+    });
+    it('puts the container on the snackbar layer, above open dialogs and drawers', () => {
+        renderWithProvider(_jsx("span", {}));
+        const container = document.body.querySelector('[data-testid="ips-toast-container"]');
+        // MUI's default theme: modal 1300, snackbar 1400
+        expect(container.style.zIndex).toBe('1400');
+    });
+    it('keeps the default bottom distance, and raises a bottom stack by bottomOffset', () => {
+        const { unmount } = renderWithProvider(_jsx("span", {}));
+        const defaultContainer = document.body.querySelector('[data-testid="ips-toast-container"]');
+        expect(defaultContainer.style.bottom).toBe('24px');
+        unmount();
+        renderWithProvider(_jsx("span", {}), { bottomOffset: 92 });
+        const raisedContainer = document.body.querySelector('[data-testid="ips-toast-container"]');
+        expect(raisedContainer.style.bottom).toBe('92px');
+    });
+    it('shows a success toast when addToast is called', () => {
+        renderWithProvider(_jsx(ToastTrigger, { type: TOAST_TYPES.SUCCESS, message: "\u05D4\u05E6\u05DC\u05D7\u05D4!" }));
+        fireEvent.click(screen.getByText('trigger'));
+        expect(screen.getByText('הצלחה!')).toBeInTheDocument();
+        expect(screen.getByRole('alert')).toBeInTheDocument();
+    });
+    it('shows an info toast', () => {
+        renderWithProvider(_jsx(ToastTrigger, { type: TOAST_TYPES.INFO, message: "\u05DE\u05D9\u05D3\u05E2" }));
+        fireEvent.click(screen.getByText('trigger'));
+        expect(screen.getByText('מידע')).toBeInTheDocument();
+    });
+    it('shows a warning toast', () => {
+        renderWithProvider(_jsx(ToastTrigger, { type: TOAST_TYPES.WARNING, message: "\u05D0\u05D6\u05D4\u05E8\u05D4" }));
+        fireEvent.click(screen.getByText('trigger'));
+        expect(screen.getByText('אזהרה')).toBeInTheDocument();
+    });
+    it('shows a danger toast', () => {
+        renderWithProvider(_jsx(ToastTrigger, { type: TOAST_TYPES.DANGER, message: "\u05E9\u05D2\u05D9\u05D0\u05D4" }));
+        fireEvent.click(screen.getByText('trigger'));
+        expect(screen.getByText('שגיאה')).toBeInTheDocument();
+    });
+    it('auto-dismisses the toast after deleteTime ms', () => {
+        renderWithProvider(_jsx(ToastTrigger, { type: TOAST_TYPES.SUCCESS, message: "\u05D0\u05D5\u05D8\u05D5\u05DE\u05D8\u05D9" }), { deleteTime: 3000 });
+        fireEvent.click(screen.getByText('trigger'));
+        expect(screen.getByText('אוטומטי')).toBeInTheDocument();
+        act(() => {
+            jest.advanceTimersByTime(3000);
+        });
+        expect(screen.queryByText('אוטומטי')).not.toBeInTheDocument();
+    });
+    it('removes the toast when the close button is clicked', () => {
+        renderWithProvider(_jsx(ToastTrigger, { type: TOAST_TYPES.INFO, message: "\u05E1\u05D2\u05D5\u05E8 \u05D0\u05D5\u05EA\u05D9" }));
+        fireEvent.click(screen.getByText('trigger'));
+        expect(screen.getByText('סגור אותי')).toBeInTheDocument();
+        fireEvent.click(screen.getByLabelText('close'));
+        expect(screen.queryByText('סגור אותי')).not.toBeInTheDocument();
+    });
+    it('names the close button by closeButtonLabel, and "close" by default', () => {
+        renderWithProvider(_jsx(ToastTrigger, { message: "\u05E9\u05DD \u05D4\u05DB\u05E4\u05EA\u05D5\u05E8" }), { closeButtonLabel: 'סגירה' });
+        fireEvent.click(screen.getByText('trigger'));
+        expect(screen.getByLabelText('סגירה')).toBeInTheDocument();
+        expect(screen.queryByLabelText('close')).not.toBeInTheDocument();
+    });
+    it('enforces maxToasts — drops oldest when limit is exceeded', () => {
+        renderWithProvider(_jsxs(_Fragment, { children: [_jsx(ToastTrigger, { type: TOAST_TYPES.SUCCESS, message: "msg-1" }), _jsx(ToastTrigger, { type: TOAST_TYPES.INFO, message: "msg-2" }), _jsx(ToastTrigger, { type: TOAST_TYPES.WARNING, message: "msg-3" })] }), { maxToasts: 2 });
+        const buttons = screen.getAllByText('trigger');
+        // Add 3 toasts — first should be dropped
+        fireEvent.click(buttons[0]);
+        fireEvent.click(buttons[1]);
+        fireEvent.click(buttons[2]);
+        // Only the 2 most recent should be visible
+        expect(screen.queryByText('msg-1')).not.toBeInTheDocument();
+        expect(screen.getByText('msg-2')).toBeInTheDocument();
+        expect(screen.getByText('msg-3')).toBeInTheDocument();
+    });
+    it('renders multiple toasts at once', () => {
+        renderWithProvider(_jsxs(_Fragment, { children: [_jsx(ToastTrigger, { type: TOAST_TYPES.SUCCESS, message: "first" }), _jsx(ToastTrigger, { type: TOAST_TYPES.DANGER, message: "second" })] }));
+        const buttons = screen.getAllByText('trigger');
+        fireEvent.click(buttons[0]);
+        fireEvent.click(buttons[1]);
+        expect(screen.getByText('first')).toBeInTheDocument();
+        expect(screen.getByText('second')).toBeInTheDocument();
+    });
+    it('falls back to info style for an unknown toast type', () => {
+        renderWithProvider(_jsx(ToastTrigger, { type: "unknown-type", message: "fallback msg" }));
+        fireEvent.click(screen.getByText('trigger'));
+        expect(screen.getByText('fallback msg')).toBeInTheDocument();
+    });
+});
+// ─── TOAST_TYPES constants ────────────────────────────────────────────────────
+describe('TOAST_TYPES', () => {
+    it('has all four type constants', () => {
+        expect(TOAST_TYPES.SUCCESS).toBe('success');
+        expect(TOAST_TYPES.INFO).toBe('info');
+        expect(TOAST_TYPES.WARNING).toBe('warning');
+        expect(TOAST_TYPES.DANGER).toBe('danger');
+    });
+});
+// ─── useToast hook ────────────────────────────────────────────────────────────
+describe('useToast', () => {
+    it('returns a function', () => {
+        const Probe = () => {
+            const addToast = useToast();
+            return _jsx("span", { "data-testid": "fn-type", children: typeof addToast });
+        };
+        render(_jsx(IpsToastProvider, { children: _jsx(Probe, {}) }));
+        expect(screen.getByTestId('fn-type')).toHaveTextContent('function');
+    });
+});

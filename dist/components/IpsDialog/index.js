@@ -1,0 +1,1 @@
+export { IpsDialog } from './IpsDialog';

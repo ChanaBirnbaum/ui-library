@@ -1,0 +1,82 @@
+import { jsx as _jsx } from "react/jsx-runtime";
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import SvgIcon from '@mui/material/SvgIcon';
+import { IpsIconButton } from './IpsIconButton';
+const TestIcon = (props) => (_jsx(SvgIcon, { ...props, children: _jsx("path", { d: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" }) }));
+describe('IpsIconButton', () => {
+    test('renders icon button with icon', () => {
+        render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, { "data-testid": "test-icon" }) }));
+        expect(screen.getByTestId('test-icon')).toBeInTheDocument();
+    });
+    test('applies ips-icon-button className', () => {
+        const { container } = render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), "data-testid": "icon-button" }));
+        const button = container.querySelector('button');
+        expect(button).toHaveClass('ips-icon-button');
+    });
+    test('wraps button in Tooltip when tooltip prop is provided', () => {
+        render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), tooltip: "Test tooltip", "data-testid": "icon-button" }));
+        // Tooltip adds aria-label to the button
+        const button = screen.getByRole('button');
+        expect(button).toHaveAttribute('aria-label', 'Test tooltip');
+    });
+    test('does not wrap button in Tooltip when tooltip prop is not provided', () => {
+        const { container } = render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), "data-testid": "icon-button" }));
+        const button = container.querySelector('button');
+        expect(button).toBeInTheDocument();
+    });
+    test('applies disabled state', () => {
+        render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), disabled: true, "data-testid": "icon-button" }));
+        const button = screen.getByRole('button');
+        expect(button).toBeDisabled();
+    });
+    test('applies size prop', () => {
+        const { container } = render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), size: "small", "data-testid": "icon-button" }));
+        const button = container.querySelector('button');
+        expect(button).toHaveClass('MuiIconButton-sizeSmall');
+    });
+    test('applies color prop', () => {
+        const { container } = render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), color: "primary", "data-testid": "icon-button" }));
+        const button = container.querySelector('button');
+        expect(button).toHaveClass('MuiIconButton-colorPrimary');
+    });
+    test('calls onClick handler when clicked', async () => {
+        const handleClick = jest.fn();
+        render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), onClick: handleClick, "data-testid": "icon-button" }));
+        const button = screen.getByRole('button');
+        await userEvent.click(button);
+        expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+    test('merges custom className', () => {
+        const { container } = render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), className: "custom-class", "data-testid": "icon-button" }));
+        const button = container.querySelector('button');
+        expect(button).toHaveClass('ips-icon-button');
+        expect(button).toHaveClass('custom-class');
+    });
+    test('supports ref forwarding', () => {
+        const ref = React.createRef();
+        render(_jsx(IpsIconButton, { ref: ref, icon: _jsx(TestIcon, {}) }));
+        expect(ref.current).toBeInstanceOf(HTMLButtonElement);
+    });
+    test('uses the plain variant by default', () => {
+        const { container } = render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), "aria-label": "Sort" }));
+        expect(container.querySelector('button')).not.toHaveClass('ips-icon-button-surface');
+    });
+    test('renders the surface variant as a 44px touch target', () => {
+        const { container } = render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), "aria-label": "Sort", variant: "surface" }));
+        const button = container.querySelector('button');
+        expect(button).toHaveClass('ips-icon-button-surface');
+        expect(button).toHaveStyle({ width: '44px', height: '44px' });
+    });
+    test('outlines the surface variant like the mobile fields, with the theme base radius', () => {
+        const { container } = render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), "aria-label": "Sort", variant: "surface" }));
+        const button = container.querySelector('button');
+        // Default MUI theme: grey[300] = #e0e0e0, shape.borderRadius = 4
+        expect(button).toHaveStyle({ border: '1px solid #e0e0e0', borderRadius: '4px' });
+    });
+    test('keeps the plain variant without a border', () => {
+        const { container } = render(_jsx(IpsIconButton, { icon: _jsx(TestIcon, {}), "aria-label": "Sort" }));
+        expect(container.querySelector('button')).not.toHaveStyle({ border: '1px solid #e0e0e0' });
+    });
+});

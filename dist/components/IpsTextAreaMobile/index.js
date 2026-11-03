@@ -1,0 +1,1 @@
+export { IpsTextAreaMobile } from './IpsTextAreaMobile';

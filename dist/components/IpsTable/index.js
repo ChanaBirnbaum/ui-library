@@ -1,0 +1,1 @@
+export { IpsTable } from './IpsTable';

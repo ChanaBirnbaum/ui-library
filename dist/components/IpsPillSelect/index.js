@@ -1,0 +1,1 @@
+export { IpsPillSelect } from './IpsPillSelect';

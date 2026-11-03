@@ -1,0 +1,1 @@
+export { IpsTextFieldMobile } from './IpsTextFieldMobile';

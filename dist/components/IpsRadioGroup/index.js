@@ -1,0 +1,1 @@
+export { IpsRadioGroup } from './IpsRadioGroup';

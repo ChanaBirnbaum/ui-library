@@ -1,0 +1,1 @@
+export { IpsMenu } from './IpsMenu';

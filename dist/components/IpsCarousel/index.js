@@ -1,0 +1,1 @@
+export { IpsCarousel } from './IpsCarousel';

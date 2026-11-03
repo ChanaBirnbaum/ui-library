@@ -1,0 +1,1 @@
+export { IpsRadioGroupMobile } from './IpsRadioGroupMobile';

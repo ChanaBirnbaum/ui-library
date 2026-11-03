@@ -1,0 +1,1 @@
+export { IpsRtlProvider } from './IpsRtlProvider';

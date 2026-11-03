@@ -1,0 +1,1 @@
+export { IpsFileUpload } from './IpsFileUpload';

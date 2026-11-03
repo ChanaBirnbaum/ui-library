@@ -1,0 +1,1 @@
+export { IpsFileUploadMobile } from './IpsFileUploadMobile';

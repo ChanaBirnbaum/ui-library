@@ -1,0 +1,1 @@
+export { IpsChipSelect } from './IpsChipSelect';

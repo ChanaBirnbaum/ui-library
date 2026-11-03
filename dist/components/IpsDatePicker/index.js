@@ -1,0 +1,1 @@
+export { IpsDatePicker } from './IpsDatePicker';

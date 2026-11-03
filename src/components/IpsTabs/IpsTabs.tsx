@@ -2,6 +2,7 @@ import React, { forwardRef } from 'react'
 import MuiTabs from '@mui/material/Tabs'
 import MuiTab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
+import { thinScrollbarSx } from '../../utils/scrollbarSx'
 import type { IpsTabsProps, IpsTabItem, IpsTabRenderContext } from './IpsTabs.types'
 
 // ── Badge label helper ─────────────────────────────────────────────────────────
@@ -124,13 +125,15 @@ export const IpsTabs = forwardRef<HTMLDivElement, IpsTabsProps>(function IpsTabs
   return (
     <Box
       className="ips-tabs-container"
-      sx={{
+      sx={(theme) => ({
         display: 'flex',
         flexDirection: orientation === 'vertical' ? 'row' : 'column',
         height: '100%',
         minHeight: 0,
         '& > .ips-tabs': { flexShrink: 0 },
-      }}
+        // The panel is the scroll container, so it gets the library's thin bar
+        '& > .ips-tab-panel': thinScrollbarSx(theme),
+      })}
     >
       {tabsNode}
 

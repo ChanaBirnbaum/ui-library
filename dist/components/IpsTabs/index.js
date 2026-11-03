@@ -1,0 +1,1 @@
+export { IpsTabs } from './IpsTabs';

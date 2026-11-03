@@ -1,0 +1,1 @@
+export { IpsSelectMobile } from './IpsSelectMobile';
