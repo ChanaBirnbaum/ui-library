@@ -21,6 +21,12 @@ export interface IpsTabItem {
   badge?: ReactNode | number
   /** Panel content — used only when renderPanels is true */
   content?: ReactNode
+  /**
+   * When false, the panel does not scroll — it clips and lays its content out
+   * as a flex column, so content that manages its own height/scroll fills it
+   * without a second scrollbar. Default true.
+   */
+  panelScroll?: boolean
   /** Arbitrary key passthrough for the consumer */
   key?: string | number
 }

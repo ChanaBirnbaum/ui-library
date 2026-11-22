@@ -153,7 +153,9 @@ export const IpsTabs = forwardRef<HTMLDivElement, IpsTabsProps>(function IpsTabs
               style={
                 keepMounted && !isActive
                   ? { display: 'none' }
-                  : { flex: 1, minHeight: 0, minWidth: 0, overflow: 'auto' }
+                  : tab.panelScroll === false
+                    ? { flex: 1, minHeight: 0, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }
+                    : { flex: 1, minHeight: 0, minWidth: 0, overflow: 'auto' }
               }
             >
               {tab.content}
